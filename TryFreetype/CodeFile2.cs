@@ -103,16 +103,15 @@ namespace TryFreetype.Sample2
             if (curContour == null)
                 return;
 
-            if (curContour.Points.Count < 3)
+            if (curContour.FirstPoint == null || curContour.FirstPoint == curPoint)
             {
                 figure.Contours.Remove(curContour);
                 return;
             }
 
-            Point firstPoint = curContour.Points[0];
-            Point lastPoint = curContour.Points[curContour.Points.Count - 1];
+            Point firstPoint = curContour.FirstPoint;
+            Point lastPoint = curPoint;
 
-            curContour.Points.Remove(lastPoint);
             figure.PointGroups.Remove(lastPoint.Group);
 
             firstPoint.IncomingEdge = lastPoint.IncomingEdge;
@@ -144,7 +143,7 @@ namespace TryFreetype.Sample2
             curPoint = newPoint;
             curContour = newContour;
 
-            curContour.Points.Add(newPoint);
+            curContour.FirstPoint = newPoint;
 
             return 0;
         }
@@ -160,6 +159,8 @@ namespace TryFreetype.Sample2
             var edge = new LineEdge { P1 = curPoint, P2 = newPoint };
             curPoint.OutgoingEdge = edge;
             newPoint.IncomingEdge = edge;
+            curPoint.OriginalOutgoingEdge = edge;
+            newPoint.OriginalIncomingEdge = edge;
 
             var newGroup = new PointGroup();
             newGroup.IsFixed = true;
@@ -168,8 +169,6 @@ namespace TryFreetype.Sample2
             figure.PointGroups.Add(newGroup);
 
             curPoint = newPoint;
-
-            curContour.Points.Add(newPoint);
 
             return 0;
         }
@@ -196,7 +195,8 @@ namespace TryFreetype.Sample2
         {
             var splitResult = edge.Split(point);
 
-            //Console.WriteLine(splitResult);
+            edge.P1.OutgoingEdge = splitResult.edgeBefore;
+            edge.P2.IncomingEdge = splitResult.edgeAfter;
 
             var newGroup = new PointGroup();
             newGroup.IsFixed = false;
@@ -204,16 +204,64 @@ namespace TryFreetype.Sample2
             splitResult.nearestPoint.Group = newGroup;
             PointGroups.Add(newGroup);
 
-            edge.P1.OutgoingEdge = splitResult.edgeBefore;
-            edge.P2.IncomingEdge = splitResult.edgeAfter;
-
             return splitResult.nearestPoint;
+        }
+
+        public void DeleteDiscardablePoint(PointGroup pointGroup)
+        {
+            if (pointGroup.IsFixed)
+                throw new ApplicationException("Can't delete a fixed point group.");
+
+            if (pointGroup.Points.Count > 1)
+                throw new ApplicationException("Can't delete a point group that has more than one point.");
+
+            Point pointToDelete = pointGroup.Points[0];
+
+            // Find the original edge and endpoints.
+
+            Point fixedPointBefore = pointToDelete;
+
+            while (!fixedPointBefore.Group.IsFixed)
+            {
+                fixedPointBefore = fixedPointBefore.IncomingEdge.P1;
+            }
+
+            Point fixedPointAfter = fixedPointBefore.OriginalOutgoingEdge.P2;
+
+            // Collect the points between the endpoints.
+
+            Edge directEdge = (Edge) fixedPointBefore.OriginalOutgoingEdge.Clone();
+            Edge firstEdgeToReplace = fixedPointBefore.OutgoingEdge;
+
+            // Replace the path between the original endpoints with the original edge.
+
+            fixedPointBefore.OutgoingEdge = directEdge;
+            fixedPointAfter.IncomingEdge = directEdge;
+
+            // Add the points we collected except for the one to remove.
+
+            var edge = directEdge;
+
+            for ( Point p = firstEdgeToReplace.P2; p != fixedPointAfter; p = p.OutgoingEdge.P2 )
+            {
+                if (p == pointToDelete)
+                    continue;
+
+                var splitResult = edge.Split(p);
+
+                edge.P1.OutgoingEdge = splitResult.edgeBefore;
+                edge.P2.IncomingEdge = splitResult.edgeAfter;
+
+                edge = splitResult.edgeAfter;
+            }
+
+            PointGroups.Remove(pointGroup);
         }
     }
 
     public class Contour
     {
-        public List<Point> Points = new List<Point>();
+        public Point FirstPoint;
     }
 
     public enum EdgeType
@@ -223,7 +271,7 @@ namespace TryFreetype.Sample2
         Cubic
     }
 
-    public abstract class Edge
+    public abstract class Edge : ICloneable
     {
         public EdgeType Type { get; protected set; }
         //public Edge Companion;
@@ -231,6 +279,7 @@ namespace TryFreetype.Sample2
         public Point P2;
 
         internal abstract (Point nearestPoint, Edge edgeBefore, Edge edgeAfter) Split(Point point);
+        public abstract object Clone();
     }
 
     public class LineEdge : Edge
@@ -238,6 +287,17 @@ namespace TryFreetype.Sample2
         public LineEdge()
         {
             Type = EdgeType.Line;
+        }
+
+        public override object Clone()
+        {
+            LineEdge newEdge = new LineEdge
+            {
+                P1 = P1,
+                P2 = P2
+            };
+
+            return newEdge;
         }
 
         internal override (Point nearestPoint, Edge edgeBefore, Edge edgeAfter) Split(Point point)
@@ -300,6 +360,18 @@ namespace TryFreetype.Sample2
             Type = EdgeType.Conic;
         }
 
+        public override object Clone()
+        {
+            ConicEdge newEdge = new ConicEdge
+            {
+                P1 = P1,
+                P2 = P2,
+                Control1 = Control1
+            };
+
+            return newEdge;
+        }
+
         internal override (Point nearestPoint, Edge edgeBefore, Edge edgeAfter) Split(Point point)
         {
             throw new NotImplementedException();
@@ -314,6 +386,19 @@ namespace TryFreetype.Sample2
         public CubicEdge()
         {
             Type = EdgeType.Cubic;
+        }
+
+        public override object Clone()
+        {
+            CubicEdge newEdge = new CubicEdge
+            {
+                P1 = P1,
+                P2 = P2,
+                Control1 = Control1,
+                Control2 = Control2
+            };
+
+            return newEdge;
         }
 
         internal override (Point nearestPoint, Edge edgeBefore, Edge edgeAfter) Split(Point point)
@@ -335,6 +420,8 @@ namespace TryFreetype.Sample2
         public PointGroup Group;
         public Edge OutgoingEdge;
         public Edge IncomingEdge;
+        public Edge OriginalOutgoingEdge;
+        public Edge OriginalIncomingEdge;
 
         public Point()
         {
@@ -376,6 +463,7 @@ namespace TryFreetype.Sample2
 
         double x, y;
         Graphics g;
+        Pen[] pens;
         Pen pen;
 
         private Figure figure;
@@ -400,18 +488,37 @@ namespace TryFreetype.Sample2
             g.ScaleTransform(1, -1);
             //g.TranslateTransform(0, -103);
             g.TranslateTransform(0, -(height - 1));
-            pen = new Pen(Color.Red);
+            pens = new Pen[4]
+                {
+                    new Pen(Color.Red),
+                    new Pen(Color.Blue),
+                    new Pen(Color.Yellow),
+                    new Pen(Color.Green)
+                };
+            pen = pens[0];
         }
 
         public void Render()
         {
+            Point p6 = figure.PointGroups[6].Points[0];
+            Point p1 = new Point { X = (p6.X + p6.OutgoingEdge.P2.X) / 2, Y = p6.Y };
+            var e = figure.PointGroups[6].Points[0].OutgoingEdge;
+            var midPoint = figure.AddDiscardablePoint( p1, e );
+
+            figure.DeleteDiscardablePoint(midPoint.Group);
+
+
             foreach (var contour in figure.Contours)
             {
-                MoveToFunc(contour.Points[0]);
-                for (int i = 0; i < contour.Points.Count; i++)
+                MoveToFunc(contour.FirstPoint);
+
+                Point point = contour.FirstPoint;
+
+                for (int i = 0; true; i++)
                 {
-                    var point = contour.Points[i];
                     var edge = point.OutgoingEdge;
+
+                    pen = pens[i % pens.Length];
 
                     switch (edge.Type)
                     {
@@ -427,20 +534,15 @@ namespace TryFreetype.Sample2
                             CubicToFunc(edge);
                             break;
                     }
+
+                    point = edge.P2;
+
+                    if ( point == contour.FirstPoint )
+                        break;
                 }
             }
 
-            /*
-             * LineTo: 0.03387451171875, 0.0997161865234375
-             * LineTo: 0.052490234375, 0.0997161865234375
-             */
-
 #if !false
-            Point p6 = figure.PointGroups[6].Points[0];
-            Point p1 = new Point { X = (p6.X + p6.OutgoingEdge.P2.X) / 2, Y = p6.Y };
-            var e = figure.PointGroups[6].Points[0].OutgoingEdge;
-            figure.AddDiscardablePoint(p1, e);
-
             Pen redPen = new Pen(Color.Red);
             Pen bluePen = new Pen(Color.Blue);
             int j = 0;
