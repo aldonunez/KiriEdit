@@ -29,6 +29,10 @@ namespace TryFreetype.Sample1
                     Console.WriteLine("BitmapLeft = {0}", face.Glyph.BitmapLeft);
                     Utils.PrintProperties(face.Glyph, "");
 
+                    Console.WriteLine("------------------");
+                    BBox bbox = face.Glyph.Outline.GetBBox();
+                    Utils.PrintProperties(bbox, "");
+
                     {
                         //Graphics g;
                         //g.fil

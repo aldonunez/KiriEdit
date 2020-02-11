@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -48,16 +49,25 @@ namespace TryFreetype
                     }
                 }
 
-                //BindingFlags.DeclaredOnly
-                //var methods = value.GetType().GetMethods();
-                MethodInfo method = null;
+                bool useToString = true;
 
                 if (value != null)
                 {
-                    method = value.GetType().GetMethod("ToString", new Type[0]);
+                    MethodInfo method = value.GetType().GetMethod("ToString", new Type[0]);
+
+                    if (method.DeclaringType == typeof(object))
+                    {
+                        useToString = false;
+                    }
+                    else if (method.DeclaringType == typeof(ValueType))
+                    {
+                        var fields = value.GetType().GetFields();
+                        if (fields.Length == 0)
+                            useToString = false;
+                    }
                 }
 
-                if (method == null || method.DeclaringType != typeof(object))
+                if (useToString)
                 {
                     Console.WriteLine("{0}", value);
                 }

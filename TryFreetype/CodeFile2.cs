@@ -9,6 +9,15 @@ namespace TryFreetype.Sample2
     {
         public static void Run()
         {
+#if false
+            Point p1 = new Point { X = 10, Y = 20 };
+            Point p2 = new Point { X = p1.X + 1000000, Y = p1.Y + 1000000 };
+            LineEdge lineEdge = new LineEdge { P1 = p1, P2 = p2 };
+
+            var result = lineEdge.Split(new Point { X = 13, Y = 24 });
+            return;
+#endif
+
             using (Library lib = new Library())
             {
                 using (var face = new Face(lib, @"C:\Windows\Fonts\consola.ttf"))
@@ -62,8 +71,6 @@ namespace TryFreetype.Sample2
         private Point curPoint;
 
         double x, y;
-        const double XMult = 1000;
-        const double YMult = 1000;
 
         public Figure Figure { get { return figure; } }
 
@@ -119,9 +126,9 @@ namespace TryFreetype.Sample2
         {
             CloseCurrentContour();
 
-            Console.WriteLine("MoveTo: {0}, {1}", to.X, to.Y);
-            x = to.X.ToDouble();
-            y = to.Y.ToDouble();
+            x = to.X.Value / 64.0;
+            y = to.Y.Value / 64.0;
+            Console.WriteLine("MoveTo: {0}, {1}", x, y);
 
             var newPoint = new Point { X = x, Y = y };
 
@@ -129,7 +136,7 @@ namespace TryFreetype.Sample2
             figure.Contours.Add(newContour);
 
             var newGroup = new PointGroup();
-            newGroup.Fixed = true;
+            newGroup.IsFixed = true;
             newGroup.Points.Add(newPoint);
             newPoint.Group = newGroup;
             figure.PointGroups.Add(newGroup);
@@ -144,18 +151,18 @@ namespace TryFreetype.Sample2
 
         private int LineToFunc(ref FTVector to, IntPtr user)
         {
-            Console.WriteLine("LineTo: {0}, {1}", to.X, to.Y);
-            x = to.X.ToDouble();
-            y = to.Y.ToDouble();
+            x = to.X.Value / 64.0;
+            y = to.Y.Value / 64.0;
+            Console.WriteLine("LineTo: {0}, {1}", x, y);
 
             var newPoint = new Point { X = x, Y = y };
 
-            var edge = new Edge { P1 = curPoint, P2 = newPoint, Type = EdgeType.Line };
+            var edge = new LineEdge { P1 = curPoint, P2 = newPoint };
             curPoint.OutgoingEdge = edge;
             newPoint.IncomingEdge = edge;
 
             var newGroup = new PointGroup();
-            newGroup.Fixed = true;
+            newGroup.IsFixed = true;
             newGroup.Points.Add(newPoint);
             newPoint.Group = newGroup;
             figure.PointGroups.Add(newGroup);
@@ -180,11 +187,28 @@ namespace TryFreetype.Sample2
         }
     }
 
-
     public class Figure
     {
         public List<Contour> Contours = new List<Contour>();
         public List<PointGroup> PointGroups = new List<PointGroup>();
+
+        public Point AddDiscardablePoint(Point point, Edge edge)
+        {
+            var splitResult = edge.Split(point);
+
+            //Console.WriteLine(splitResult);
+
+            var newGroup = new PointGroup();
+            newGroup.IsFixed = false;
+            newGroup.Points.Add(splitResult.nearestPoint);
+            splitResult.nearestPoint.Group = newGroup;
+            PointGroups.Add(newGroup);
+
+            edge.P1.OutgoingEdge = splitResult.edgeBefore;
+            edge.P2.IncomingEdge = splitResult.edgeAfter;
+
+            return splitResult.nearestPoint;
+        }
     }
 
     public class Contour
@@ -199,19 +223,108 @@ namespace TryFreetype.Sample2
         Cubic
     }
 
-    public class Edge
+    public abstract class Edge
     {
-        public EdgeType Type;
-        public Edge Companion;
+        public EdgeType Type { get; protected set; }
+        //public Edge Companion;
         public Point P1;
         public Point P2;
+
+        internal abstract (Point nearestPoint, Edge edgeBefore, Edge edgeAfter) Split(Point point);
+    }
+
+    public class LineEdge : Edge
+    {
+        public LineEdge()
+        {
+            Type = EdgeType.Line;
+        }
+
+        internal override (Point nearestPoint, Edge edgeBefore, Edge edgeAfter) Split(Point point)
+        {
+            var valueNearestPoint = FindNearestPoint(point, P1.ToValuePoint(), P2.ToValuePoint());
+
+            var nearestPoint = new Point(valueNearestPoint);
+            var edgeBefore = new LineEdge { P1 = P1, P2 = nearestPoint };
+            var edgeAfter = new LineEdge { P1 = nearestPoint, P2 = P2 };
+
+            nearestPoint.IncomingEdge = edgeBefore;
+            nearestPoint.OutgoingEdge = edgeAfter;
+
+            return (nearestPoint, edgeBefore, edgeAfter);
+        }
+
+        private ValuePoint FindNearestPoint(Point point, ValuePoint p1, ValuePoint p2)
+        {
+            ValuePoint valuePoint = point.ToValuePoint();
+            double distP1 = Math.Abs(valuePoint.GetDistance(p1));
+            double distP2 = Math.Abs(valuePoint.GetDistance(p2));
+            double distP1P2 = Math.Abs(p1.GetDistance(p2));
+
+            //Console.WriteLine("Checking {0}, {1} (dP1={2}, dP2={3}, dP1P2={4}", p1, p2, distP1, distP2, distP1P2);
+
+            if (distP1P2 <= 1.0)
+            {
+                if (distP1 <= distP2)
+                {
+                    return p1;
+                }
+                else
+                {
+                    return p2;
+                }
+            }
+
+            ValuePoint midPoint = new ValuePoint();
+
+            midPoint.X = (p2.X + p1.X) / 2;
+            midPoint.Y = (p2.Y + p1.Y) / 2;
+
+            if (distP1 <= distP2)
+            {
+                return FindNearestPoint(point, p1, midPoint);
+            }
+            else
+            {
+                return FindNearestPoint(point, midPoint, p2);
+            }
+        }
+    }
+
+    public class ConicEdge : Edge
+    {
+        public Point Control1;
+
+        public ConicEdge()
+        {
+            Type = EdgeType.Conic;
+        }
+
+        internal override (Point nearestPoint, Edge edgeBefore, Edge edgeAfter) Split(Point point)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class CubicEdge : Edge
+    {
         public Point Control1;
         public Point Control2;
+
+        public CubicEdge()
+        {
+            Type = EdgeType.Cubic;
+        }
+
+        internal override (Point nearestPoint, Edge edgeBefore, Edge edgeAfter) Split(Point point)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class PointGroup
     {
-        public bool Fixed;
+        public bool IsFixed;
         public List<Point> Points { get; } = new List<Point>();
     }
 
@@ -222,6 +335,39 @@ namespace TryFreetype.Sample2
         public PointGroup Group;
         public Edge OutgoingEdge;
         public Edge IncomingEdge;
+
+        public Point()
+        {
+        }
+
+        internal Point(ValuePoint valuePoint)
+        {
+            X = valuePoint.X;
+            Y = valuePoint.Y;
+        }
+
+        internal ValuePoint ToValuePoint()
+        {
+            return new ValuePoint { X = X, Y = Y };
+        }
+    }
+
+    internal struct ValuePoint
+    {
+        public double X;
+        public double Y;
+
+        internal double GetDistance(ValuePoint otherPoint)
+        {
+            double w = otherPoint.X - X;
+            double h = otherPoint.Y - Y;
+            return Math.Sqrt(w * w + h * h);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("({0}, {1})", X, Y);
+        }
     }
 
     class FigureRenderer
@@ -231,8 +377,6 @@ namespace TryFreetype.Sample2
         double x, y;
         Graphics g;
         Pen pen;
-        const double XMult = 1000;
-        const double YMult = 1000;
 
         private Figure figure;
 
@@ -285,6 +429,47 @@ namespace TryFreetype.Sample2
                     }
                 }
             }
+
+            /*
+             * LineTo: 0.03387451171875, 0.0997161865234375
+             * LineTo: 0.052490234375, 0.0997161865234375
+             */
+
+#if !false
+            Point p6 = figure.PointGroups[6].Points[0];
+            Point p1 = new Point { X = (p6.X + p6.OutgoingEdge.P2.X) / 2, Y = p6.Y };
+            var e = figure.PointGroups[6].Points[0].OutgoingEdge;
+            figure.AddDiscardablePoint(p1, e);
+
+            Pen redPen = new Pen(Color.Red);
+            Pen bluePen = new Pen(Color.Blue);
+            int j = 0;
+
+            foreach (var group in figure.PointGroups)
+            {
+                Point p = group.Points[0];
+                Pen pen = null;
+                float radius = 5f;
+
+                if (group.IsFixed)
+                {
+                    pen = redPen;
+                }
+                else
+                {
+                    pen = bluePen;
+                }
+                j++;
+
+                g.DrawEllipse(
+                    pen,
+                    (float) p.X - radius,
+                    (float) p.Y - radius,
+                    radius * 2,
+                    radius * 2
+                    );
+            }
+#endif
         }
 
         private int MoveToFunc(Point p)
@@ -302,10 +487,10 @@ namespace TryFreetype.Sample2
             Console.WriteLine("LineTo: {0}, {1}", to.X, to.Y);
             g.DrawLine(
                 pen,
-                (float) (x * XMult),
-                (float) (y * YMult),
-                (float) (to.X * XMult),
-                (float) (to.Y * YMult));
+                (float) x,
+                (float) y,
+                (float) to.X,
+                (float) to.Y);
             x = to.X;
             y = to.Y;
             return 0;
@@ -313,7 +498,7 @@ namespace TryFreetype.Sample2
 
         private int ConicToFunc(Edge edge)
         {
-            var control = edge.Control1;
+            var control = ((ConicEdge) edge).Control1;
             var to = edge.P2;
             Console.WriteLine("ConicTo: {0},{1} {2},{3}", control.X, control.Y, to.X, to.Y);
             return 0;
@@ -321,8 +506,8 @@ namespace TryFreetype.Sample2
 
         private int CubicToFunc(Edge edge)
         {
-            var control1 = edge.Control1;
-            var control2 = edge.Control2;
+            var control1 = ((CubicEdge) edge).Control1;
+            var control2 = ((CubicEdge) edge).Control2;
             var to = edge.P2;
             Console.WriteLine("CubicTo: {0},{1} {2},{3} {4},{5}", control1.X, control1.Y, control2.X, control2.Y, to.X, to.Y);
             return 0;
