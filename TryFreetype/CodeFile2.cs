@@ -264,6 +264,8 @@ namespace TryFreetype.Sample2
 
         public void AddCut(Point point1, Point point2)
         {
+            //return;
+
             // Only allow one cut between the same point groups.
 
             // TODO: Do this in the caller.
@@ -280,9 +282,11 @@ namespace TryFreetype.Sample2
             // Move half the edges from the old points to the new points.
 
             newPoint1.IncomingEdge = point1.IncomingEdge;
+            newPoint1.IncomingEdge.P2 = newPoint1;
             point1.IncomingEdge = null;
 
             newPoint2.OutgoingEdge = point2.OutgoingEdge;
+            newPoint2.OutgoingEdge.P1 = newPoint2;
             point2.OutgoingEdge = null;
 
             // Add a line edge between old points and between new points.
@@ -311,46 +315,51 @@ namespace TryFreetype.Sample2
         private void ModifyContours(Point point1, Point point2)
         {
             Point p = point1.OutgoingEdge.P2;
+            bool separateContours = false;
+
+            Console.WriteLine("Starting at {0}, searching for {1}", point1, point2);
 
             while (true)
             {
+                Console.WriteLine(p);
+
                 if (p == point1)
                 {
                     // The points are in different contours.
+                    separateContours = true;
+                    break;
                 }
                 else if (p == point2)
                 {
                     // The points are in the same contour.
+                    separateContours = false;
+                    break;
                 }
 
                 p = p.OutgoingEdge.P2;
             }
+
+            ReplaceContours(point1);
+
+            if (separateContours)
+                ReplaceContours(point2);
         }
 
-        private Contour FindContour(Point childPoint)
+        private void ReplaceContours(Point point)
         {
-            foreach (var contour in Contours)
+            Contour contour = new Contour();
+            Point p = point;
+
+            do
             {
-                Point p = contour.FirstPoint;
-                bool found = false;
+                Contours.Remove(p.Contour);
+                p.Contour = contour;
 
-                do
-                {
-                    if (p == childPoint)
-                    {
-                        found = true;
-                        break;
-                    }
+                p = p.OutgoingEdge.P2;
+            } while (p != point);
 
-                    p = p.OutgoingEdge.P2;
-
-                } while (p != contour.FirstPoint);
-
-                if (found)
-                    return contour;
-            }
-
-            return null;
+            contour.FirstPoint = point;
+            Contours.Add(contour);
         }
     }
 
@@ -548,6 +557,11 @@ namespace TryFreetype.Sample2
         {
             return new ValuePoint { X = X, Y = Y };
         }
+
+        public override string ToString()
+        {
+            return string.Format("({0}, {1})", X, Y);
+        }
     }
 
     internal struct ValuePoint
@@ -611,12 +625,20 @@ namespace TryFreetype.Sample2
 
         public void Render()
         {
+#if true
             Point p6 = figure.PointGroups[6].Points[0];
             Point p1 = new Point { X = (p6.X + p6.OutgoingEdge.P2.X) / 2, Y = p6.Y };
             var e = figure.PointGroups[6].Points[0].OutgoingEdge;
             var midPoint = figure.AddDiscardablePoint( p1, e );
+#endif
 
+#if true
+            figure.AddCut(midPoint, figure.PointGroups[9].Points[0]);
+#endif
+
+#if false
             figure.DeleteDiscardablePoint(midPoint.Group);
+#endif
 
 
             foreach (var contour in figure.Contours)
