@@ -193,6 +193,7 @@ namespace TryFreetype.Sample2
     {
         public List<Contour> Contours = new List<Contour>();
         public List<PointGroup> PointGroups = new List<PointGroup>();
+        public List<Cut> Cuts = new List<Cut>();
 
         public Point AddDiscardablePoint(Point point, Edge edge)
         {
@@ -262,10 +263,8 @@ namespace TryFreetype.Sample2
             PointGroups.Remove(pointGroup);
         }
 
-        public void AddCut(Point point1, Point point2)
+        public Cut AddCut(Point point1, Point point2)
         {
-            //return;
-
             // Only allow one cut between the same point groups.
 
             // TODO: Do this in the caller.
@@ -310,6 +309,12 @@ namespace TryFreetype.Sample2
             ModifyContours(point1, newPoint1);
 
             // Save cut object.
+
+            Cut cut = new Cut(lineForNew, lineForOld);
+
+            Cuts.Add(cut);
+
+            return cut;
         }
 
         private void ModifyContours(Point point1, Point point2)
@@ -360,6 +365,44 @@ namespace TryFreetype.Sample2
 
             contour.FirstPoint = point;
             Contours.Add(contour);
+        }
+
+        public void DeleteCut(Cut cut)
+        {
+            Point point1 = null;
+            Point point2 = null;
+            var edge1 = cut.PairedEdge1;
+            var edge2 = cut.PairedEdge2;
+
+            // Link points from one edge to the other.
+
+            edge1.P1.OutgoingEdge = edge2.P2.OutgoingEdge;
+            edge1.P1.OutgoingEdge.P1 = edge1.P1;
+            point1 = edge1.P1;
+
+            edge1.P2.IncomingEdge = edge2.P1.IncomingEdge;
+            edge1.P2.IncomingEdge.P2 = edge1.P2;
+            point2 = edge1.P2;
+
+            // Split or combine contours.
+
+            ModifyContours(point1, point2);
+
+            // Delete the cut.
+
+            Cuts.Remove(cut);
+        }
+    }
+
+    public class Cut
+    {
+        public LineEdge PairedEdge1;
+        public LineEdge PairedEdge2;
+
+        public Cut(LineEdge pairedEdge1, LineEdge pairedEdge2)
+        {
+            PairedEdge1 = pairedEdge1;
+            PairedEdge2 = pairedEdge2;
         }
     }
 
@@ -633,7 +676,10 @@ namespace TryFreetype.Sample2
 #endif
 
 #if true
-            figure.AddCut(midPoint, figure.PointGroups[9].Points[0]);
+            var cut = figure.AddCut(midPoint, figure.PointGroups[9].Points[0]);
+    #if true
+            figure.DeleteCut(cut);
+    #endif
 #endif
 
 #if false
