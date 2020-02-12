@@ -144,6 +144,7 @@ namespace TryFreetype.Sample2
             curContour = newContour;
 
             curContour.FirstPoint = newPoint;
+            newPoint.Contour = curContour;
 
             return 0;
         }
@@ -169,6 +170,8 @@ namespace TryFreetype.Sample2
             figure.PointGroups.Add(newGroup);
 
             curPoint = newPoint;
+
+            newPoint.Contour = curContour;
 
             return 0;
         }
@@ -202,6 +205,7 @@ namespace TryFreetype.Sample2
             newGroup.IsFixed = false;
             newGroup.Points.Add(splitResult.nearestPoint);
             splitResult.nearestPoint.Group = newGroup;
+            splitResult.nearestPoint.Contour = edge.P1.Contour;
             PointGroups.Add(newGroup);
 
             return splitResult.nearestPoint;
@@ -256,6 +260,97 @@ namespace TryFreetype.Sample2
             }
 
             PointGroups.Remove(pointGroup);
+        }
+
+        public void AddCut(Point point1, Point point2)
+        {
+            // Only allow one cut between the same point groups.
+
+            // TODO: Do this in the caller.
+            // Find a point in each group that share the same contour: old points
+
+            // Add a point to each point group: new points
+
+            Point newPoint1 = point1.Group.MakePoint();
+            point1.Group.Points.Add(newPoint1);
+
+            Point newPoint2 = point2.Group.MakePoint();
+            point2.Group.Points.Add(newPoint2);
+
+            // Move half the edges from the old points to the new points.
+
+            newPoint1.IncomingEdge = point1.IncomingEdge;
+            point1.IncomingEdge = null;
+
+            newPoint2.OutgoingEdge = point2.OutgoingEdge;
+            point2.OutgoingEdge = null;
+
+            // Add a line edge between old points and between new points.
+
+            LineEdge lineForNew = new LineEdge();
+            lineForNew.P1 = newPoint1;
+            lineForNew.P2 = newPoint2;
+
+            LineEdge lineForOld = new LineEdge();
+            lineForOld.P1 = point2;
+            lineForOld.P2 = point1;
+
+            newPoint1.OutgoingEdge = lineForNew;
+            newPoint2.IncomingEdge = lineForNew;
+
+            point1.IncomingEdge = lineForOld;
+            point2.OutgoingEdge = lineForOld;
+
+            // Split or combine contours.
+
+            ModifyContours(point1, newPoint1);
+
+            // Save cut object.
+        }
+
+        private void ModifyContours(Point point1, Point point2)
+        {
+            Point p = point1.OutgoingEdge.P2;
+
+            while (true)
+            {
+                if (p == point1)
+                {
+                    // The points are in different contours.
+                }
+                else if (p == point2)
+                {
+                    // The points are in the same contour.
+                }
+
+                p = p.OutgoingEdge.P2;
+            }
+        }
+
+        private Contour FindContour(Point childPoint)
+        {
+            foreach (var contour in Contours)
+            {
+                Point p = contour.FirstPoint;
+                bool found = false;
+
+                do
+                {
+                    if (p == childPoint)
+                    {
+                        found = true;
+                        break;
+                    }
+
+                    p = p.OutgoingEdge.P2;
+
+                } while (p != contour.FirstPoint);
+
+                if (found)
+                    return contour;
+            }
+
+            return null;
         }
     }
 
@@ -411,6 +506,14 @@ namespace TryFreetype.Sample2
     {
         public bool IsFixed;
         public List<Point> Points { get; } = new List<Point>();
+
+        public Point MakePoint()
+        {
+            Point p = new Point(Points[0].X, Points[0].Y);
+            p.Group = this;
+
+            return p;
+        }
     }
 
     public class Point
@@ -418,13 +521,21 @@ namespace TryFreetype.Sample2
         public double X;
         public double Y;
         public PointGroup Group;
+        public bool IsFixed;
         public Edge OutgoingEdge;
         public Edge IncomingEdge;
         public Edge OriginalOutgoingEdge;
         public Edge OriginalIncomingEdge;
+        public Contour Contour;
 
         public Point()
         {
+        }
+
+        public Point(double x, double y)
+        {
+            X = x;
+            Y = y;
         }
 
         internal Point(ValuePoint valuePoint)
