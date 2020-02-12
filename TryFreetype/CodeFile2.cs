@@ -1,5 +1,6 @@
 ﻿using SharpFont;
 using System;
+using TryFreetype.Model;
 
 namespace TryFreetype.Sample2
 {

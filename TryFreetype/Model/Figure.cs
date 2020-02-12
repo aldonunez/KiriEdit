@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TryFreetype.Sample2
+namespace TryFreetype.Model
 {
     public class Figure
     {

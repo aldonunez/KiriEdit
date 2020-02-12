@@ -1,7 +1,8 @@
 ﻿using SharpFont;
 using System;
+using TryFreetype.Model;
 
-namespace TryFreetype.Sample2
+namespace TryFreetype
 {
     class GlyphWalker
     {

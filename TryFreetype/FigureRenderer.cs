@@ -1,8 +1,10 @@
 ﻿using SharpFont;
 using System;
 using System.Drawing;
+using TryFreetype.Model;
+using Point = TryFreetype.Model.Point;
 
-namespace TryFreetype.Sample2
+namespace TryFreetype
 {
     class FigureRenderer
     {
