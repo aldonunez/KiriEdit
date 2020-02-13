@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace TryFreetype
 {
-    static class Utils
+    public static class Utils
     {
         public static void PrintProperties(object obj, string indent)
         {
