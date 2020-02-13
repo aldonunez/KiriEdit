@@ -20,6 +20,20 @@ namespace TryFreetype.Model
         public Point FirstPoint;
     }
 
+    internal struct SplitResult
+    {
+        public Point nearestPoint;
+        public Edge edgeBefore;
+        public Edge edgeAfter;
+
+        public SplitResult(Point nearestPoint, Edge edgeBefore, Edge edgeAfter)
+        {
+            this.nearestPoint = nearestPoint;
+            this.edgeBefore = edgeBefore;
+            this.edgeAfter = edgeAfter;
+        }
+    }
+
     public enum EdgeType
     {
         Line,
@@ -30,17 +44,24 @@ namespace TryFreetype.Model
     public abstract class Edge : ICloneable
     {
         public EdgeType Type { get; protected set; }
+        public bool Unbreakable { get; private set; }
         //public Edge Companion;
         public Point P1;
         public Point P2;
 
-        internal abstract (Point nearestPoint, Edge edgeBefore, Edge edgeAfter) Split(Point point);
+        public Edge(bool unbreakable = false)
+        {
+            Unbreakable = unbreakable;
+        }
+
+        internal abstract SplitResult Split(Point point);
         public abstract object Clone();
     }
 
     public class LineEdge : Edge
     {
-        public LineEdge()
+        public LineEdge(bool unbreakable = false) :
+            base(unbreakable)
         {
             Type = EdgeType.Line;
         }
@@ -56,7 +77,7 @@ namespace TryFreetype.Model
             return newEdge;
         }
 
-        internal override (Point nearestPoint, Edge edgeBefore, Edge edgeAfter) Split(Point point)
+        internal override SplitResult Split(Point point)
         {
             var valueNearestPoint = FindNearestPoint(point, P1.ToValuePoint(), P2.ToValuePoint());
 
@@ -67,7 +88,7 @@ namespace TryFreetype.Model
             nearestPoint.IncomingEdge = edgeBefore;
             nearestPoint.OutgoingEdge = edgeAfter;
 
-            return (nearestPoint, edgeBefore, edgeAfter);
+            return new SplitResult(nearestPoint, edgeBefore, edgeAfter);
         }
 
         private ValuePoint FindNearestPoint(Point point, ValuePoint p1, ValuePoint p2)
@@ -128,7 +149,7 @@ namespace TryFreetype.Model
             return newEdge;
         }
 
-        internal override (Point nearestPoint, Edge edgeBefore, Edge edgeAfter) Split(Point point)
+        internal override SplitResult Split(Point point)
         {
             throw new NotImplementedException();
         }
@@ -157,7 +178,7 @@ namespace TryFreetype.Model
             return newEdge;
         }
 
-        internal override (Point nearestPoint, Edge edgeBefore, Edge edgeAfter) Split(Point point)
+        internal override SplitResult Split(Point point)
         {
             throw new NotImplementedException();
         }

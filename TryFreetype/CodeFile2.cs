@@ -54,7 +54,7 @@ namespace TryFreetype.Sample2
 
 #if true
                             var cut = figure.AddCut(midPoint, figure.PointGroups[9].Points[0]);
-#if true
+#if !true
                             figure.DeleteCut(cut);
 #endif
 #endif

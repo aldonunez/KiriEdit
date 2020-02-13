@@ -1,29 +1,91 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace TryFreetype.Model
 {
     public class Figure
     {
-        public List<Contour> Contours = new List<Contour>();
-        public List<PointGroup> PointGroups = new List<PointGroup>();
-        public List<Cut> Cuts = new List<Cut>();
+        private List<Contour> _contours = new List<Contour>();
+        public IReadOnlyList<Contour> Contours { get; private set; }
+
+        private List<PointGroup> _pointGroups = new List<PointGroup>();
+        public IReadOnlyList<PointGroup> PointGroups { get; private set; }
+
+        private List<Cut> _cuts = new List<Cut>();
+        public IReadOnlyList<Cut> Cuts { get; private set; }
+
+        public Figure(IEnumerable<PointGroup> pointGroups)
+        {
+            ValidatePointGroups(pointGroups);
+
+            var contours = new HashSet<Contour>();
+
+            foreach (var group in pointGroups)
+            {
+                contours.Add(group.Points[0].Contour);
+            }
+
+            _pointGroups.AddRange(pointGroups);
+            _contours.AddRange(contours);
+
+            PointGroups = _pointGroups.AsReadOnly();
+            Contours = _contours.AsReadOnly();
+            Cuts = _cuts.AsReadOnly();
+        }
+
+        private void ValidatePointGroups(IEnumerable<PointGroup> pointGroups)
+        {
+            foreach (var group in pointGroups)
+            {
+                if (!group.IsFixed)
+                    throw new ApplicationException("");
+                if (group.Points.Count != 1)
+                    throw new ApplicationException("");
+
+                var point = group.Points[0];
+
+                if (point.Contour == null
+                    || point.Group != group
+                    || point.IncomingEdge == null
+                    || point.OutgoingEdge == null
+                    || point.OriginalIncomingEdge == null
+                    || point.OriginalOutgoingEdge == null
+                    || point.IncomingEdge != point.OriginalIncomingEdge
+                    || point.OutgoingEdge != point.OriginalOutgoingEdge
+                    || point.IncomingEdge.P2 != point
+                    || point.OutgoingEdge.P1 != point
+                    || point.Contour.FirstPoint == null
+                    )
+                    throw new ApplicationException("");
+            }
+        }
 
         public Point AddDiscardablePoint(Point point, Edge edge)
         {
-            var splitResult = edge.Split(point);
+            if (edge.Unbreakable)
+                throw new ApplicationException("");
 
-            edge.P1.OutgoingEdge = splitResult.edgeBefore;
-            edge.P2.IncomingEdge = splitResult.edgeAfter;
+            var splitResult = SplitEdge(point, edge);
 
             var newGroup = new PointGroup();
             newGroup.IsFixed = false;
             newGroup.Points.Add(splitResult.nearestPoint);
             splitResult.nearestPoint.Group = newGroup;
             splitResult.nearestPoint.Contour = edge.P1.Contour;
-            PointGroups.Add(newGroup);
+            _pointGroups.Add(newGroup);
 
             return splitResult.nearestPoint;
+        }
+
+        private SplitResult SplitEdge(Point point, Edge edge)
+        {
+            var splitResult = edge.Split(point);
+
+            edge.P1.OutgoingEdge = splitResult.edgeBefore;
+            edge.P2.IncomingEdge = splitResult.edgeAfter;
+
+            return splitResult;
         }
 
         public void DeleteDiscardablePoint(PointGroup pointGroup)
@@ -33,6 +95,8 @@ namespace TryFreetype.Model
 
             if (pointGroup.Points.Count > 1)
                 throw new ApplicationException("Can't delete a point group that has more than one point.");
+
+            Debug.Assert(pointGroup.Points.Count == 1);
 
             Point pointToDelete = pointGroup.Points[0];
 
@@ -66,23 +130,23 @@ namespace TryFreetype.Model
                 if (p == pointToDelete)
                     continue;
 
-                var splitResult = edge.Split(p);
-
-                edge.P1.OutgoingEdge = splitResult.edgeBefore;
-                edge.P2.IncomingEdge = splitResult.edgeAfter;
+                var splitResult = SplitEdge(p, edge);
 
                 edge = splitResult.edgeAfter;
             }
 
-            PointGroups.Remove(pointGroup);
+            _pointGroups.Remove(pointGroup);
         }
+
+        // TODO: Do this in the caller.
+        // Find a point in each group that share the same contour: old points
 
         public Cut AddCut(Point point1, Point point2)
         {
             // Only allow one cut between the same point groups.
 
-            // TODO: Do this in the caller.
-            // Find a point in each group that share the same contour: old points
+            if (CutExists(point1.Group, point2.Group))
+                throw new ApplicationException("Only one cut is allowed between these point groups.");
 
             // Add a point to each point group: new points
 
@@ -104,11 +168,11 @@ namespace TryFreetype.Model
 
             // Add a line edge between old points and between new points.
 
-            LineEdge lineForNew = new LineEdge();
+            LineEdge lineForNew = new LineEdge(unbreakable: true);
             lineForNew.P1 = newPoint1;
             lineForNew.P2 = newPoint2;
 
-            LineEdge lineForOld = new LineEdge();
+            LineEdge lineForOld = new LineEdge(unbreakable: true);
             lineForOld.P1 = point2;
             lineForOld.P2 = point1;
 
@@ -126,9 +190,21 @@ namespace TryFreetype.Model
 
             Cut cut = new Cut(lineForNew, lineForOld);
 
-            Cuts.Add(cut);
+            _cuts.Add(cut);
 
             return cut;
+        }
+
+        private bool CutExists(PointGroup group1, PointGroup group2)
+        {
+            foreach (var cut in _cuts)
+            {
+                if ((cut.PairedEdge1.P1.Group == group1 && cut.PairedEdge1.P2.Group == group2)
+                    || (cut.PairedEdge1.P1.Group == group2 && cut.PairedEdge1.P2.Group == group1))
+                    return true;
+            }
+
+            return false;
         }
 
         private void ModifyContours(Point point1, Point point2)
@@ -136,12 +212,8 @@ namespace TryFreetype.Model
             Point p = point1.OutgoingEdge.P2;
             bool separateContours = false;
 
-            Console.WriteLine("Starting at {0}, searching for {1}", point1, point2);
-
             while (true)
             {
-                Console.WriteLine(p);
-
                 if (p == point1)
                 {
                     // The points are in different contours.
@@ -171,19 +243,19 @@ namespace TryFreetype.Model
 
             do
             {
-                Contours.Remove(p.Contour);
+                _contours.Remove(p.Contour);
                 p.Contour = contour;
 
                 p = p.OutgoingEdge.P2;
             } while (p != point);
 
             contour.FirstPoint = point;
-            Contours.Add(contour);
+            _contours.Add(contour);
         }
 
         public void DeleteCut(Cut cut)
         {
-            if (!Cuts.Contains(cut))
+            if (!_cuts.Contains(cut))
                 throw new ApplicationException("This cut doesn't exist.");
 
             Point point1 = null;
@@ -212,7 +284,7 @@ namespace TryFreetype.Model
 
             // Delete the cut.
 
-            Cuts.Remove(cut);
+            _cuts.Remove(cut);
         }
     }
 }

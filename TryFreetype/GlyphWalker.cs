@@ -1,5 +1,6 @@
 ﻿using SharpFont;
 using System;
+using System.Collections.Generic;
 using TryFreetype.Model;
 
 namespace TryFreetype
@@ -7,11 +8,14 @@ namespace TryFreetype
     class GlyphWalker
     {
         private GlyphSlot glyphSlot;
-        private Figure figure = new Figure();
+        private Figure figure;
         private Contour curContour;
         private Point curPoint;
 
         double x, y;
+
+        private List<Contour> _contours = new List<Contour>();
+        private List<PointGroup> _pointGroups = new List<PointGroup>();
 
         public Figure Figure { get { return figure; } }
 
@@ -37,6 +41,8 @@ namespace TryFreetype
             o.Decompose(outlineFuncs, IntPtr.Zero);
 
             CloseCurrentContour();
+
+            figure = new Figure(_pointGroups);
         }
 
         private void CloseCurrentContour()
@@ -46,17 +52,18 @@ namespace TryFreetype
 
             if (curContour.FirstPoint == null || curContour.FirstPoint == curPoint)
             {
-                figure.Contours.Remove(curContour);
+                _contours.Remove(curContour);
                 return;
             }
 
             Point firstPoint = curContour.FirstPoint;
             Point lastPoint = curPoint;
 
-            figure.PointGroups.Remove(lastPoint.Group);
+            _pointGroups.Remove(lastPoint.Group);
 
             firstPoint.IncomingEdge = lastPoint.IncomingEdge;
             firstPoint.IncomingEdge.P2 = firstPoint;
+            firstPoint.OriginalIncomingEdge = firstPoint.IncomingEdge;
 
             curContour = null;
             curPoint = null;
@@ -73,13 +80,13 @@ namespace TryFreetype
             var newPoint = new Point { X = x, Y = y };
 
             var newContour = new Contour();
-            figure.Contours.Add(newContour);
+            _contours.Add(newContour);
 
             var newGroup = new PointGroup();
             newGroup.IsFixed = true;
             newGroup.Points.Add(newPoint);
             newPoint.Group = newGroup;
-            figure.PointGroups.Add(newGroup);
+            _pointGroups.Add(newGroup);
 
             curPoint = newPoint;
             curContour = newContour;
@@ -108,7 +115,7 @@ namespace TryFreetype
             newGroup.IsFixed = true;
             newGroup.Points.Add(newPoint);
             newPoint.Group = newGroup;
-            figure.PointGroups.Add(newGroup);
+            _pointGroups.Add(newGroup);
 
             curPoint = newPoint;
 
