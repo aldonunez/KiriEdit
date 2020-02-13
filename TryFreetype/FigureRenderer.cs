@@ -19,14 +19,12 @@ namespace TryFreetype
 
         public Bitmap Bitmap { get { return bitmap; } }
 
-        public FigureRenderer(GlyphSlot glyphSlot, Figure figure)
+        public FigureRenderer(Figure figure)
         {
             this.figure = figure;
 
-            var bbox = glyphSlot.Outline.GetBBox();
-
-            int width = glyphSlot.Metrics.Width.ToInt32();
-            int height = glyphSlot.Metrics.Height.ToInt32();
+            int width = figure.Width;
+            int height = figure.Height;
 
             bitmap = new Bitmap(width, height);
             Pen borderPen = new Pen(Color.White);

@@ -64,7 +64,7 @@ namespace TryFreetype.Sample2
 #endif
                         }
 
-                        FigureRenderer renderer = new FigureRenderer(face.Glyph, walker.Figure);
+                        FigureRenderer renderer = new FigureRenderer(walker.Figure);
 
                         renderer.Render();
 

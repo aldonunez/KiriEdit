@@ -4,7 +4,7 @@
     {
         static void Main(string[] args)
         {
-            TryFreetype.Sample2.Sample.Run();
+            TryFreetype.Sample3.Sample.Run();
         }
     }
 }

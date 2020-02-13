@@ -6,6 +6,9 @@ namespace TryFreetype.Model
 {
     public class Figure
     {
+        public int Width { get; }
+        public int Height { get; }
+
         private List<Contour> _contours = new List<Contour>();
         public IReadOnlyList<Contour> Contours { get; }
 
@@ -15,8 +18,11 @@ namespace TryFreetype.Model
         private List<Cut> _cuts = new List<Cut>();
         public IReadOnlyList<Cut> Cuts { get; }
 
-        public Figure(IEnumerable<PointGroup> pointGroups)
+        public Figure(IEnumerable<PointGroup> pointGroups, int width, int height)
         {
+            Width = width;
+            Height = height;
+
             ValidatePointGroups(pointGroups);
 
             var contours = new HashSet<Contour>();

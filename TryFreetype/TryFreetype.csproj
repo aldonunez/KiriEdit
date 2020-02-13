@@ -78,6 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FigureRenderer.cs" />
+    <Compile Include="Font.cs" />
     <Compile Include="GlyphWalker.cs" />
     <Compile Include="Model\Elements.cs" />
     <Compile Include="Model\Figure.cs" />

@@ -19,13 +19,18 @@ namespace TryFreetype
 
         public Figure Figure { get { return figure; } }
 
+        public GlyphWalker(FontGlyph glyph) :
+            this(glyph.Glyph)
+        {
+        }
+
         public GlyphWalker(GlyphSlot glyphSlot)
         {
             this.glyphSlot = glyphSlot;
 
             var bbox = glyphSlot.Outline.GetBBox();
-            int width = glyphSlot.Metrics.Width.ToInt32();
-            int height = glyphSlot.Metrics.Height.ToInt32();
+            int width = glyphSlot.Metrics.Width.Ceiling();
+            int height = glyphSlot.Metrics.Height.Ceiling();
         }
 
         public void Decompose()
@@ -42,7 +47,10 @@ namespace TryFreetype
 
             CloseCurrentContour();
 
-            figure = new Figure(_pointGroups);
+            int width = glyphSlot.Metrics.Width.Ceiling();
+            int height = glyphSlot.Metrics.Height.Ceiling();
+
+            figure = new Figure(_pointGroups, width, height);
         }
 
         private void CloseCurrentContour()
