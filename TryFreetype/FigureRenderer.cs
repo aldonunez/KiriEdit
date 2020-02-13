@@ -6,7 +6,7 @@ using Point = TryFreetype.Model.Point;
 
 namespace TryFreetype
 {
-    class FigureRenderer
+    public class FigureRenderer
     {
         private readonly Bitmap bitmap;
 

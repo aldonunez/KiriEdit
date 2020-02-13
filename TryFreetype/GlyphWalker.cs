@@ -5,7 +5,7 @@ using TryFreetype.Model;
 
 namespace TryFreetype
 {
-    class GlyphWalker
+    public class GlyphWalker
     {
         private GlyphSlot glyphSlot;
         private Figure figure;

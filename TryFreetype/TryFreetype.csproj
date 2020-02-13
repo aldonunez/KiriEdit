@@ -77,7 +77,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CodeFile2.cs" />
     <Compile Include="FigureRenderer.cs" />
     <Compile Include="GlyphWalker.cs" />
     <Compile Include="Model\Elements.cs" />
