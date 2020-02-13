@@ -77,13 +77,12 @@ namespace TryFreetype
             y = to.Y.Value / 64.0;
             Console.WriteLine("MoveTo: {0}, {1}", x, y);
 
-            var newPoint = new Point { X = x, Y = y };
+            var newPoint = new Point(x, y);
 
             var newContour = new Contour();
             _contours.Add(newContour);
 
-            var newGroup = new PointGroup();
-            newGroup.IsFixed = true;
+            var newGroup = new PointGroup(isFixed: true);
             newGroup.Points.Add(newPoint);
             newPoint.Group = newGroup;
             _pointGroups.Add(newGroup);
@@ -103,7 +102,7 @@ namespace TryFreetype
             y = to.Y.Value / 64.0;
             Console.WriteLine("LineTo: {0}, {1}", x, y);
 
-            var newPoint = new Point { X = x, Y = y };
+            var newPoint = new Point(x, y);
 
             var edge = new LineEdge { P1 = curPoint, P2 = newPoint };
             curPoint.OutgoingEdge = edge;
@@ -111,8 +110,7 @@ namespace TryFreetype
             curPoint.OriginalOutgoingEdge = edge;
             newPoint.OriginalIncomingEdge = edge;
 
-            var newGroup = new PointGroup();
-            newGroup.IsFixed = true;
+            var newGroup = new PointGroup(isFixed: true);
             newGroup.Points.Add(newPoint);
             newPoint.Group = newGroup;
             _pointGroups.Add(newGroup);

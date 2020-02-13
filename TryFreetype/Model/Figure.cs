@@ -69,7 +69,6 @@ namespace TryFreetype.Model
             var splitResult = SplitEdge(point, edge);
 
             var newGroup = new PointGroup();
-            newGroup.IsFixed = false;
             newGroup.Points.Add(splitResult.nearestPoint);
             splitResult.nearestPoint.Group = newGroup;
             splitResult.nearestPoint.Contour = edge.P1.Contour;

@@ -48,7 +48,7 @@ namespace TryFreetype.Model
         public Point P1;
         public Point P2;
 
-        public Edge(EdgeType type, bool unbreakable = false)
+        protected Edge(EdgeType type, bool unbreakable = false)
         {
             Type = type;
             Unbreakable = unbreakable;
@@ -91,8 +91,6 @@ namespace TryFreetype.Model
             double distP2 = Math.Abs(valuePoint.GetDistance(p2));
             double distP1P2 = Math.Abs(p1.GetDistance(p2));
 
-            //Console.WriteLine("Checking {0}, {1} (dP1={2}, dP2={3}, dP1P2={4}", p1, p2, distP1, distP2, distP1P2);
-
             if (distP1P2 <= 1.0)
             {
                 if (distP1 <= distP2)
@@ -105,10 +103,11 @@ namespace TryFreetype.Model
                 }
             }
 
-            ValuePoint midPoint = new ValuePoint();
-
-            midPoint.X = (p2.X + p1.X) / 2;
-            midPoint.Y = (p2.Y + p1.Y) / 2;
+            ValuePoint midPoint = new ValuePoint
+            {
+                X = (p2.X + p1.X) / 2,
+                Y = (p2.Y + p1.Y) / 2
+            };
 
             if (distP1 <= distP2)
             {
@@ -164,8 +163,17 @@ namespace TryFreetype.Model
 
     public class PointGroup
     {
-        public bool IsFixed;
+        public bool IsFixed { get; }
         public List<Point> Points { get; } = new List<Point>();
+
+        public PointGroup()
+        {
+        }
+
+        public PointGroup(bool isFixed)
+        {
+            IsFixed = isFixed;
+        }
 
         public Point MakePoint()
         {
@@ -178,19 +186,15 @@ namespace TryFreetype.Model
 
     public class Point
     {
-        public double X;
-        public double Y;
+        public double X { get; }
+        public double Y { get; }
+
         public PointGroup Group;
-        public bool IsFixed;
+        public Contour Contour;
         public Edge OutgoingEdge;
         public Edge IncomingEdge;
         public Edge OriginalOutgoingEdge;
         public Edge OriginalIncomingEdge;
-        public Contour Contour;
-
-        public Point()
-        {
-        }
 
         public Point(double x, double y)
         {

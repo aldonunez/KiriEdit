@@ -47,7 +47,7 @@ namespace TryFreetype.Sample2
                             Figure figure = walker.Figure;
 #if true
                             Point p6 = figure.PointGroups[6].Points[0];
-                            Point p1 = new Point { X = (p6.X + p6.OutgoingEdge.P2.X) / 2, Y = p6.Y };
+                            Point p1 = new Point((p6.X + p6.OutgoingEdge.P2.X) / 2, p6.Y);
                             var e = figure.PointGroups[6].Points[0].OutgoingEdge;
                             var midPoint = figure.AddDiscardablePoint(p1, e);
 #endif
