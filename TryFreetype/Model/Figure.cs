@@ -183,6 +183,9 @@ namespace TryFreetype.Model
 
         public void DeleteCut(Cut cut)
         {
+            if (!Cuts.Contains(cut))
+                throw new ApplicationException("This cut doesn't exist.");
+
             Point point1 = null;
             Point point2 = null;
             var edge1 = cut.PairedEdge1;
@@ -197,6 +200,11 @@ namespace TryFreetype.Model
             edge1.P2.IncomingEdge = edge2.P1.IncomingEdge;
             edge1.P2.IncomingEdge.P2 = edge1.P2;
             point2 = edge1.P2;
+
+            // Remove extra points from their groups.
+
+            edge2.P1.Group.Points.Remove(edge2.P1);
+            edge2.P2.Group.Points.Remove(edge2.P2);
 
             // Split or combine contours.
 
