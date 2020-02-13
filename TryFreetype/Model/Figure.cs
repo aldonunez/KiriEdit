@@ -7,13 +7,13 @@ namespace TryFreetype.Model
     public class Figure
     {
         private List<Contour> _contours = new List<Contour>();
-        public IReadOnlyList<Contour> Contours { get; private set; }
+        public IReadOnlyList<Contour> Contours { get; }
 
         private List<PointGroup> _pointGroups = new List<PointGroup>();
-        public IReadOnlyList<PointGroup> PointGroups { get; private set; }
+        public IReadOnlyList<PointGroup> PointGroups { get; }
 
         private List<Cut> _cuts = new List<Cut>();
-        public IReadOnlyList<Cut> Cuts { get; private set; }
+        public IReadOnlyList<Cut> Cuts { get; }
 
         public Figure(IEnumerable<PointGroup> pointGroups)
         {

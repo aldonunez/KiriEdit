@@ -5,8 +5,8 @@ namespace TryFreetype.Model
 {
     public class Cut
     {
-        public LineEdge PairedEdge1;
-        public LineEdge PairedEdge2;
+        public LineEdge PairedEdge1 { get; }
+        public LineEdge PairedEdge2 { get; }
 
         public Cut(LineEdge pairedEdge1, LineEdge pairedEdge2)
         {
@@ -43,14 +43,14 @@ namespace TryFreetype.Model
 
     public abstract class Edge : ICloneable
     {
-        public EdgeType Type { get; protected set; }
-        public bool Unbreakable { get; private set; }
-        //public Edge Companion;
+        public EdgeType Type { get; }
+        public bool Unbreakable { get; }
         public Point P1;
         public Point P2;
 
-        public Edge(bool unbreakable = false)
+        public Edge(EdgeType type, bool unbreakable = false)
         {
+            Type = type;
             Unbreakable = unbreakable;
         }
 
@@ -61,20 +61,13 @@ namespace TryFreetype.Model
     public class LineEdge : Edge
     {
         public LineEdge(bool unbreakable = false) :
-            base(unbreakable)
+            base(EdgeType.Line, unbreakable)
         {
-            Type = EdgeType.Line;
         }
 
         public override object Clone()
         {
-            LineEdge newEdge = new LineEdge
-            {
-                P1 = P1,
-                P2 = P2
-            };
-
-            return newEdge;
+            return MemberwiseClone();
         }
 
         internal override SplitResult Split(Point point)
@@ -132,21 +125,14 @@ namespace TryFreetype.Model
     {
         public Point Control1;
 
-        public ConicEdge()
+        public ConicEdge() :
+            base(EdgeType.Conic)
         {
-            Type = EdgeType.Conic;
         }
 
         public override object Clone()
         {
-            ConicEdge newEdge = new ConicEdge
-            {
-                P1 = P1,
-                P2 = P2,
-                Control1 = Control1
-            };
-
-            return newEdge;
+            return MemberwiseClone();
         }
 
         internal override SplitResult Split(Point point)
@@ -160,22 +146,14 @@ namespace TryFreetype.Model
         public Point Control1;
         public Point Control2;
 
-        public CubicEdge()
+        public CubicEdge() :
+            base(EdgeType.Cubic)
         {
-            Type = EdgeType.Cubic;
         }
 
         public override object Clone()
         {
-            CubicEdge newEdge = new CubicEdge
-            {
-                P1 = P1,
-                P2 = P2,
-                Control1 = Control1,
-                Control2 = Control2
-            };
-
-            return newEdge;
+            return MemberwiseClone();
         }
 
         internal override SplitResult Split(Point point)
