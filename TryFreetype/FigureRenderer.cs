@@ -6,20 +6,26 @@ using Point = TryFreetype.Model.Point;
 
 namespace TryFreetype
 {
-    public class FigureRenderer
+    public interface IFigureRenderer
+    {
+        Bitmap Bitmap { get; }
+
+        void Render();
+    }
+
+    public abstract class FigureRendererBase : IFigureRenderer
     {
         private readonly Bitmap bitmap;
 
         double x, y;
-        Graphics g;
-        Pen[] pens;
+        protected Graphics g { get; }
         Pen pen;
 
-        private Figure figure;
+        protected Figure figure { get; }
 
         public Bitmap Bitmap { get { return bitmap; } }
 
-        public FigureRenderer(Figure figure)
+        public FigureRendererBase(Figure figure)
         {
             this.figure = figure;
 
@@ -36,20 +42,24 @@ namespace TryFreetype
             g.TranslateTransform(
                 (float) -figure.OffsetX,
                 -(height - 1) - (float) figure.OffsetY);
-            pens = new Pen[4]
-                {
-                    new Pen(Color.Red),
-                    new Pen(Color.Blue),
-                    new Pen(Color.Yellow),
-                    new Pen(Color.Green)
-                };
-            pen = pens[0];
+        }
+
+        protected virtual void OnBeginContour(Contour contour)
+        {
+        }
+
+        protected abstract Pen OnBeginEdge();
+
+        protected virtual void OnEndFigure()
+        {
         }
 
         public void Render()
         {
             foreach (var contour in figure.Contours)
             {
+                OnBeginContour(contour);
+
                 MoveToFunc(contour.FirstPoint);
 
                 Point point = contour.FirstPoint;
@@ -58,7 +68,7 @@ namespace TryFreetype
                 {
                     var edge = point.OutgoingEdge;
 
-                    pen = pens[i % pens.Length];
+                    pen = OnBeginEdge();
 
                     switch (edge.Type)
                     {
@@ -82,49 +92,7 @@ namespace TryFreetype
                 }
             }
 
-#if !false
-            Pen redPen = new Pen(Color.Red);
-            Pen orangePen = new Pen(Color.Orange);
-            Pen whitePen = new Pen(Color.White);
-            int j = 0;
-
-            foreach (var group in figure.PointGroups)
-            {
-                Point p = group.Points[0];
-                Pen pen = null;
-                float radius = 5f;
-                float wideRadius = radius + 2f;
-
-                if (group.IsFixed)
-                {
-                    pen = redPen;
-                }
-                else
-                {
-                    pen = orangePen;
-                }
-                j++;
-
-                g.DrawEllipse(
-                    pen,
-                    (float) p.X - radius,
-                    (float) p.Y - radius,
-                    radius * 2,
-                    radius * 2
-                    );
-
-                if (group.Points.Count > 1)
-                {
-                    g.DrawEllipse(
-                        whitePen,
-                        (float) p.X - wideRadius,
-                        (float) p.Y - wideRadius,
-                        wideRadius * 2,
-                        wideRadius * 2
-                        );
-                }
-            }
-#endif
+            OnEndFigure();
         }
 
         private int MoveToFunc(Point p)
@@ -189,6 +157,99 @@ namespace TryFreetype
             x = to.X;
             y = to.Y;
             return 0;
+        }
+    }
+
+    public class DebugFigureRenderer : FigureRendererBase
+    {
+        private Pen[] _pens;
+        private int _nextPenIndex;
+
+        public DebugFigureRenderer(Figure figure) :
+            base(figure)
+        {
+            _pens = new Pen[4]
+            {
+                    new Pen(Color.Red),
+                    new Pen(Color.Blue),
+                    new Pen(Color.Yellow),
+                    new Pen(Color.Green)
+            };
+        }
+
+        protected override void OnBeginContour(Contour contour)
+        {
+            _nextPenIndex = 0;
+        }
+
+        protected override Pen OnBeginEdge()
+        {
+            int penIndex = _nextPenIndex;
+            _nextPenIndex = (_nextPenIndex + 1) % _pens.Length;
+            return _pens[penIndex];
+        }
+
+        protected override void OnEndFigure()
+        {
+            base.OnEndFigure();
+
+            Pen redPen = new Pen(Color.Red);
+            Pen orangePen = new Pen(Color.Orange);
+            Pen whitePen = new Pen(Color.White);
+            int j = 0;
+
+            foreach (var group in figure.PointGroups)
+            {
+                Point p = group.Points[0];
+                Pen pen = null;
+                float radius = 5f;
+                float wideRadius = radius + 2f;
+
+                if (group.IsFixed)
+                {
+                    pen = redPen;
+                }
+                else
+                {
+                    pen = orangePen;
+                }
+                j++;
+
+                g.DrawEllipse(
+                    pen,
+                    (float) p.X - radius,
+                    (float) p.Y - radius,
+                    radius * 2,
+                    radius * 2
+                    );
+
+                if (group.Points.Count > 1)
+                {
+                    g.DrawEllipse(
+                        whitePen,
+                        (float) p.X - wideRadius,
+                        (float) p.Y - wideRadius,
+                        wideRadius * 2,
+                        wideRadius * 2
+                        );
+                }
+            }
+        }
+    }
+
+    public class FigureRenderer : FigureRendererBase
+    {
+        Pen _pen;
+
+        public FigureRenderer(Figure figure) :
+            base(figure)
+        {
+            _pen = new Pen(Color.Black);
+        }
+
+        protected override Pen OnBeginEdge()
+        {
+            return _pen;
         }
     }
 }

@@ -36,7 +36,7 @@ namespace TryFreetype.Sample3
 #endif
                     }
 
-                    FigureRenderer renderer = new FigureRenderer(walker.Figure);
+                    IFigureRenderer renderer = new DebugFigureRenderer(walker.Figure);
 
                     renderer.Render();
 
