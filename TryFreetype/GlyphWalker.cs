@@ -47,10 +47,11 @@ namespace TryFreetype
 
             CloseCurrentContour();
 
+            var bbox = glyphSlot.Outline.GetBBox();
             int width = glyphSlot.Metrics.Width.Ceiling();
             int height = glyphSlot.Metrics.Height.Ceiling();
 
-            figure = new Figure(_pointGroups, width, height);
+            figure = new Figure(_pointGroups, width, height, bbox.Left / 64.0, bbox.Bottom / 64.0);
         }
 
         private void CloseCurrentContour()
@@ -132,7 +133,30 @@ namespace TryFreetype
 
         private int ConicToFunc(ref FTVector control, ref FTVector to, IntPtr user)
         {
-            Console.WriteLine("ConicTo: {0},{1} {2},{3}", control.X, control.Y, to.X, to.Y);
+            x = to.X.Value / 64.0;
+            y = to.Y.Value / 64.0;
+            double controlX = control.X.Value / 64.0;
+            double controlY = control.Y.Value / 64.0;
+            Console.WriteLine("ConicTo: {0},{1} {2},{3}", controlX, controlY, x, y);
+
+            var newPoint = new Point(x, y);
+            var controlPoint = new Point(controlX, controlY);
+
+            var edge = new ConicEdge { P1 = curPoint, Control1 = controlPoint, P2 = newPoint };
+            curPoint.OutgoingEdge = edge;
+            newPoint.IncomingEdge = edge;
+            curPoint.OriginalOutgoingEdge = edge;
+            newPoint.OriginalIncomingEdge = edge;
+
+            var newGroup = new PointGroup(isFixed: true);
+            newGroup.Points.Add(newPoint);
+            newPoint.Group = newGroup;
+            _pointGroups.Add(newGroup);
+
+            curPoint = newPoint;
+
+            newPoint.Contour = curContour;
+
             return 0;
         }
 

@@ -33,8 +33,9 @@ namespace TryFreetype
             //g.DrawRectangle(borderPen, 0, 0, bitmap.Width - 1, bitmap.Height - 1);
             //g.DrawEllipse(borderPen, 128, 224, 10, 10);
             g.ScaleTransform(1, -1);
-            //g.TranslateTransform(0, -103);
-            g.TranslateTransform(0, -(height - 1));
+            g.TranslateTransform(
+                (float) -figure.OffsetX,
+                -(height - 1) - (float) figure.OffsetY);
             pens = new Pen[4]
                 {
                     new Pen(Color.Red),
@@ -155,6 +156,18 @@ namespace TryFreetype
             var control = ((ConicEdge) edge).Control1;
             var to = edge.P2;
             Console.WriteLine("ConicTo: {0},{1} {2},{3}", control.X, control.Y, to.X, to.Y);
+            // TODO: Not quadratic.
+            g.DrawBeziers(
+                pen,
+                new PointF[]
+                {
+                    new PointF((float) x, (float) y),
+                    new PointF((float) control.X, (float) control.Y),
+                    new PointF((float) control.X, (float) control.Y),
+                    new PointF((float) to.X, (float) to.Y)
+                });
+            x = to.X;
+            y = to.Y;
             return 0;
         }
 

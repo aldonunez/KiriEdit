@@ -8,6 +8,8 @@ namespace TryFreetype.Model
     {
         public int Width { get; }
         public int Height { get; }
+        public double OffsetX { get; }
+        public double OffsetY { get; }
 
         private List<Contour> _contours = new List<Contour>();
         public IReadOnlyList<Contour> Contours { get; }
@@ -18,10 +20,12 @@ namespace TryFreetype.Model
         private List<Cut> _cuts = new List<Cut>();
         public IReadOnlyList<Cut> Cuts { get; }
 
-        public Figure(IEnumerable<PointGroup> pointGroups, int width, int height)
+        public Figure(IEnumerable<PointGroup> pointGroups, int width, int height, double offsetX, double offsetY)
         {
             Width = width;
             Height = height;
+            OffsetX = offsetX;
+            OffsetY = offsetY;
 
             ValidatePointGroups(pointGroups);
 
