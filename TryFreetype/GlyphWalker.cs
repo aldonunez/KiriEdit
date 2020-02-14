@@ -162,7 +162,33 @@ namespace TryFreetype
 
         private int CubicToFunc(ref FTVector control1, ref FTVector control2, ref FTVector to, IntPtr user)
         {
-            Console.WriteLine("CubicTo: {0},{1} {2},{3} {4},{5}", control1.X, control1.Y, control2.X, control2.Y, to.X, to.Y);
+            x = to.X.Value / 64.0;
+            y = to.Y.Value / 64.0;
+            double controlX1 = control1.X.Value / 64.0;
+            double controlY1 = control1.Y.Value / 64.0;
+            double controlX2 = control2.X.Value / 64.0;
+            double controlY2 = control2.Y.Value / 64.0;
+            Console.WriteLine("CubicTo: {0},{1} {2},{3} {4},{5}", controlX1, controlY1, controlX2, controlY2, x, y);
+
+            var newPoint = new Point(x, y);
+            var controlPoint1 = new Point(controlX1, controlY1);
+            var controlPoint2 = new Point(controlX2, controlY2);
+
+            var edge = new CubicEdge { P1 = curPoint, Control1 = controlPoint1, Control2 = controlPoint2, P2 = newPoint };
+            curPoint.OutgoingEdge = edge;
+            newPoint.IncomingEdge = edge;
+            curPoint.OriginalOutgoingEdge = edge;
+            newPoint.OriginalIncomingEdge = edge;
+
+            var newGroup = new PointGroup(isFixed: true);
+            newGroup.Points.Add(newPoint);
+            newPoint.Group = newGroup;
+            _pointGroups.Add(newGroup);
+
+            curPoint = newPoint;
+
+            newPoint.Contour = curContour;
+
             return 0;
         }
     }

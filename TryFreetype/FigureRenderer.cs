@@ -177,6 +177,17 @@ namespace TryFreetype
             var control2 = ((CubicEdge) edge).Control2;
             var to = edge.P2;
             Console.WriteLine("CubicTo: {0},{1} {2},{3} {4},{5}", control1.X, control1.Y, control2.X, control2.Y, to.X, to.Y);
+            g.DrawBeziers(
+                pen,
+                new PointF[]
+                {
+                    new PointF((float) x, (float) y),
+                    new PointF((float) control1.X, (float) control1.Y),
+                    new PointF((float) control2.X, (float) control2.Y),
+                    new PointF((float) to.X, (float) to.Y)
+                });
+            x = to.X;
+            y = to.Y;
             return 0;
         }
     }
