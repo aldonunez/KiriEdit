@@ -6,59 +6,22 @@ using Point = TryFreetype.Model.Point;
 
 namespace TryFreetype
 {
-    public interface IFigureRenderer
+    public abstract class FigureWalkerBase
     {
-        Bitmap Bitmap { get; }
+        protected Figure Figure { get; }
 
-        void Render();
-    }
-
-    public abstract class FigureRendererBase : IFigureRenderer
-    {
-        private readonly Bitmap bitmap;
-
-        double x, y;
-        protected Graphics g { get; }
-        Pen pen;
-
-        protected Figure figure { get; }
-
-        public Bitmap Bitmap { get { return bitmap; } }
-
-        public FigureRendererBase(Figure figure)
+        protected FigureWalkerBase(Figure figure)
         {
-            this.figure = figure;
-
-            int width = figure.Width;
-            int height = figure.Height;
-
-            bitmap = new Bitmap(width, height);
-            Pen borderPen = new Pen(Color.White);
-
-            g = Graphics.FromImage(bitmap);
-            g.ScaleTransform(1, -1);
-            g.TranslateTransform(
-                (float) -figure.OffsetX,
-                -(height - 1) - (float) figure.OffsetY);
-        }
-
-        protected virtual void OnBeginContour(Contour contour)
-        {
-        }
-
-        protected abstract Pen OnBeginEdge();
-
-        protected virtual void OnEndFigure()
-        {
+            Figure = figure;
         }
 
         public void Render()
         {
-            foreach (var contour in figure.Contours)
+            foreach (var contour in Figure.Contours)
             {
                 OnBeginContour(contour);
 
-                MoveToFunc(contour.FirstPoint);
+                OnMoveTo(contour.FirstPoint);
 
                 Point point = contour.FirstPoint;
 
@@ -66,26 +29,26 @@ namespace TryFreetype
                 {
                     var edge = point.OutgoingEdge;
 
-                    pen = OnBeginEdge();
+                    Pen pen = OnBeginEdge();
 
                     switch (edge.Type)
                     {
                         case EdgeType.Line:
-                            LineToFunc(edge);
+                            OnLineTo(edge);
                             break;
 
                         case EdgeType.Conic:
-                            ConicToFunc(edge);
+                            OnConicTo(edge);
                             break;
 
                         case EdgeType.Cubic:
-                            CubicToFunc(edge);
+                            OnCubicTo(edge);
                             break;
                     }
 
                     point = edge.P2;
 
-                    if ( point == contour.FirstPoint )
+                    if (point == contour.FirstPoint)
                         break;
                 }
             }
@@ -93,85 +56,72 @@ namespace TryFreetype
             OnEndFigure();
         }
 
-        private int MoveToFunc(Point p)
+        protected virtual void OnMoveTo(Point point)
         {
-            var to = p;
-            Console.WriteLine("MoveTo: {0}, {1}", to.X, to.Y);
-            x = to.X;
-            y = to.Y;
-            return 0;
         }
 
-        private int LineToFunc(Edge edge)
+        protected virtual void OnLineTo(Edge edge)
         {
-            var to = edge.P2;
-            Console.WriteLine("LineTo: {0}, {1}", to.X, to.Y);
-            g.DrawLine(
-                pen,
-                (float) x,
-                (float) y,
-                (float) to.X,
-                (float) to.Y);
-            x = to.X;
-            y = to.Y;
-            return 0;
         }
 
-        private int ConicToFunc(Edge edge)
+        protected virtual void OnConicTo(Edge edge)
         {
-            var control = ((ConicEdge) edge).Control1;
-            var to = edge.P2;
-            Console.WriteLine("ConicTo: {0},{1} {2},{3}", control.X, control.Y, to.X, to.Y);
-            // TODO: Not quadratic.
-            g.DrawBeziers(
-                pen,
-                new PointF[]
-                {
-                    new PointF((float) x, (float) y),
-                    new PointF((float) control.X, (float) control.Y),
-                    new PointF((float) control.X, (float) control.Y),
-                    new PointF((float) to.X, (float) to.Y)
-                });
-            x = to.X;
-            y = to.Y;
-            return 0;
         }
 
-        private int CubicToFunc(Edge edge)
+        protected virtual void OnCubicTo(Edge edge)
         {
-            var control1 = ((CubicEdge) edge).Control1;
-            var control2 = ((CubicEdge) edge).Control2;
-            var to = edge.P2;
-            Console.WriteLine("CubicTo: {0},{1} {2},{3} {4},{5}", control1.X, control1.Y, control2.X, control2.Y, to.X, to.Y);
-            g.DrawBeziers(
-                pen,
-                new PointF[]
-                {
-                    new PointF((float) x, (float) y),
-                    new PointF((float) control1.X, (float) control1.Y),
-                    new PointF((float) control2.X, (float) control2.Y),
-                    new PointF((float) to.X, (float) to.Y)
-                });
-            x = to.X;
-            y = to.Y;
-            return 0;
+        }
+
+        protected virtual void OnBeginContour(Contour contour)
+        {
+        }
+
+        protected virtual Pen OnBeginEdge()
+        {
+            return null;
+        }
+
+        protected virtual void OnEndFigure()
+        {
         }
     }
 
-    public class DebugFigureRenderer : FigureRendererBase
+    public class DebugFigureRenderer : FigureWalkerBase
     {
+        double x, y;
+        private readonly Bitmap bitmap;
+        protected Graphics g { get; }
+        Pen pen;
+
         private Pen[] _pens;
         private int _nextPenIndex;
+
+        protected Figure figure { get; }
+
+        public Bitmap Bitmap { get { return bitmap; } }
 
         public DebugFigureRenderer(Figure figure) :
             base(figure)
         {
+            this.figure = figure;
+
+            int width = figure.Width;
+            int height = figure.Height;
+
+            bitmap = new Bitmap(width, height);
+
+            g = Graphics.FromImage(bitmap);
+            g.ScaleTransform(1, -1);
+            g.TranslateTransform(
+                (float) -figure.OffsetX,
+                -(height - 1) - (float) figure.OffsetY);
+
             _pens = new Pen[4]
             {
-                    new Pen(Color.Red),
-                    new Pen(Color.Blue),
-                    new Pen(Color.Yellow),
-                    new Pen(Color.Green)
+                new Pen(Color.Red),
+                new Pen(Color.Blue),
+                new Pen(Color.Yellow),
+                new Pen(Color.Green)
             };
         }
 
@@ -233,25 +183,69 @@ namespace TryFreetype
                 }
             }
         }
-    }
 
-    public class FigureRenderer : FigureRendererBase
-    {
-        Pen _pen;
-
-        public FigureRenderer(Figure figure) :
-            base(figure)
+        protected override void OnMoveTo(Point p)
         {
-            _pen = new Pen(Color.Black);
+            var to = p;
+            Console.WriteLine("MoveTo: {0}, {1}", to.X, to.Y);
+            x = to.X;
+            y = to.Y;
         }
 
-        protected override Pen OnBeginEdge()
+        protected override void OnLineTo(Edge edge)
         {
-            return _pen;
+            var to = edge.P2;
+            Console.WriteLine("LineTo: {0}, {1}", to.X, to.Y);
+            g.DrawLine(
+                pen,
+                (float) x,
+                (float) y,
+                (float) to.X,
+                (float) to.Y);
+            x = to.X;
+            y = to.Y;
+        }
+
+        protected override void OnConicTo(Edge edge)
+        {
+            var control = ((ConicEdge) edge).Control1;
+            var to = edge.P2;
+            Console.WriteLine("ConicTo: {0},{1} {2},{3}", control.X, control.Y, to.X, to.Y);
+            // TODO: Not quadratic.
+            g.DrawBeziers(
+                pen,
+                new PointF[]
+                {
+                    new PointF((float) x, (float) y),
+                    new PointF((float) control.X, (float) control.Y),
+                    new PointF((float) control.X, (float) control.Y),
+                    new PointF((float) to.X, (float) to.Y)
+                });
+            x = to.X;
+            y = to.Y;
+        }
+
+        protected override void OnCubicTo(Edge edge)
+        {
+            var control1 = ((CubicEdge) edge).Control1;
+            var control2 = ((CubicEdge) edge).Control2;
+            var to = edge.P2;
+            Console.WriteLine("CubicTo: {0},{1} {2},{3} {4},{5}", control1.X, control1.Y, control2.X, control2.Y, to.X, to.Y);
+            g.DrawBeziers(
+                pen,
+                new PointF[]
+                {
+                    new PointF((float) x, (float) y),
+                    new PointF((float) control1.X, (float) control1.Y),
+                    new PointF((float) control2.X, (float) control2.Y),
+                    new PointF((float) to.X, (float) to.Y)
+                });
+            x = to.X;
+            y = to.Y;
         }
     }
 
-    public class FigureRenderer2 : IFigureRenderer
+    public class OutlineRenderer : FigureWalkerBase
     {
         private readonly Figure figure;
         private readonly Bitmap bitmap;
@@ -262,7 +256,8 @@ namespace TryFreetype
 
         public Bitmap Bitmap => bitmap;
 
-        public FigureRenderer2(Figure figure)
+        public OutlineRenderer(Figure figure) :
+            base(figure)
         {
             this.figure = figure;
 
