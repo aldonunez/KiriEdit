@@ -407,21 +407,10 @@ namespace TryFreetype
         {
             // https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
 
-            int x0 = (int) Math.Round(_x - figure.OffsetX);
-            int y0 = (int) Math.Round(figure.Height - _y - 1 + figure.OffsetY);
-            int x1 = (int) Math.Round(to.X - figure.OffsetX);
-            int y1 = (int) Math.Round(figure.Height - to.Y - 1 + figure.OffsetY);
-
-            if (x0 >= figure.Width)
-                x0 = figure.Width - 1;
-            if (y0 >= figure.Height)
-                y0 = figure.Height - 1;
-
-            if (x1 >= figure.Width)
-                x1 = figure.Width - 1;
-            if (y1 >= figure.Height)
-                y1 = figure.Height - 1;
-            // TODO: probably clamp to 0, too.
+            int x0 = RoundAndClampX(TransformX(_x));
+            int y0 = RoundAndClampY(TransformY(_y));
+            int x1 = RoundAndClampX(TransformX(to.X));
+            int y1 = RoundAndClampY(TransformY(to.Y));
 
             int dx = Math.Abs(x1 - x0);
             int sx = x0 < x1 ? 1 : -1;
@@ -432,10 +421,7 @@ namespace TryFreetype
 
             while (true)
             {
-                int px = x0;
-                int py = y0;
-
-                bitmap.SetPixel(px, py, pen.Color);
+                bitmap.SetPixel(x0, y0, pen.Color);
 
                 if (x0 == x1 && y0 == y1)
                     break;
@@ -455,17 +441,50 @@ namespace TryFreetype
             }
         }
 
+        private int RoundAndClampX(double x)
+        {
+            int iX = (int) Math.Round(x);
+            if (iX >= figure.Width)
+                iX = figure.Width - 1;
+            else if (iX < 0)
+                iX = 0;
+            return iX;
+        }
+
+        private int RoundAndClampY(double y)
+        {
+            int iY = (int) Math.Round(y);
+            if (iY >= figure.Height)
+                iY = figure.Height - 1;
+            else if (iY < 0)
+                iY = 0;
+            return iY;
+        }
+
+        private double TransformX(double x)
+        {
+            return x - figure.OffsetX;
+        }
+
+        private double TransformY(double y)
+        {
+            return figure.Height - y - 1 + figure.OffsetY;
+        }
+
+        private Point TransformPoint(Point point)
+        {
+            return new Point(
+                TransformX(point.X),
+                TransformY(point.Y));
+        }
+
         private void DrawConic(Point control, Point to)
         {
             Point tFrom = new Point(
-                _x - figure.OffsetX,
-                figure.Height - _y - 1 + figure.OffsetY);
-            Point tControl = new Point(
-                control.X - figure.OffsetX,
-                figure.Height - control.Y - 1 + figure.OffsetY);
-            Point tTo = new Point(
-                to.X - figure.OffsetX,
-                figure.Height - to.Y - 1 + figure.OffsetY);
+                TransformX(_x),
+                TransformY(_y));
+            Point tControl = TransformPoint(control);
+            Point tTo = TransformPoint(to);
 
             double length =
                 GetLength(tFrom, tControl)
@@ -480,27 +499,16 @@ namespace TryFreetype
             {
                 p = CalcConic(t, tFrom, tControl, tTo);
 
-                x = (int) Math.Round(p.X);
-                y = (int) Math.Round(p.Y);
-                // TODO: clamp
-                if (x >= figure.Width)
-                    x = figure.Width - 1;
-                if (y >= figure.Height)
-                    y = figure.Height - 1;
+                x = RoundAndClampX(p.X);
+                y = RoundAndClampY(p.Y);
 
                 bitmap.SetPixel(x, y, pen.Color);
             }
 
             p = CalcConic(1.0, tFrom, tControl, tTo);
 
-            x = (int) Math.Round(p.X);
-            y = (int) Math.Round(p.Y);
-            // TODO: clamp
-            if (x >= figure.Width)
-                x = figure.Width - 1;
-            if (y >= figure.Height)
-                y = figure.Height - 1;
-            y = -200;
+            x = RoundAndClampX(p.X);
+            y = RoundAndClampY(p.Y);
 
             bitmap.SetPixel(x, y, pen.Color);
         }
@@ -508,17 +516,11 @@ namespace TryFreetype
         private void DrawCubic(Point control1, Point control2, Point to)
         {
             Point tFrom = new Point(
-                _x - figure.OffsetX,
-                figure.Height - _y - 1 + figure.OffsetY);
-            Point tControl1 = new Point(
-                control1.X - figure.OffsetX,
-                figure.Height - control1.Y - 1 + figure.OffsetY);
-            Point tControl2 = new Point(
-                control2.X - figure.OffsetX,
-                figure.Height - control2.Y - 1 + figure.OffsetY);
-            Point tTo = new Point(
-                to.X - figure.OffsetX,
-                figure.Height - to.Y - 1 + figure.OffsetY);
+                TransformX(_x),
+                TransformY(_y));
+            Point tControl1 = TransformPoint(control1);
+            Point tControl2 = TransformPoint(control2);
+            Point tTo = TransformPoint(to);
 
             double length =
                 GetLength(tFrom, tControl1)
@@ -534,26 +536,16 @@ namespace TryFreetype
             {
                 p = CalcCubic(t, tFrom, tControl1, tControl2, tTo);
 
-                x = (int) Math.Round(p.X);
-                y = (int) Math.Round(p.Y);
-                // TODO: clamp
-                if (x >= figure.Width)
-                    x = figure.Width - 1;
-                if (y >= figure.Height)
-                    y = figure.Height - 1;
+                x = RoundAndClampX(p.X);
+                y = RoundAndClampY(p.Y);
 
                 bitmap.SetPixel(x, y, pen.Color);
             }
 
             p = CalcCubic(1.0, tFrom, tControl1, tControl2, tTo);
 
-            x = (int) Math.Round(p.X);
-            y = (int) Math.Round(p.Y);
-            // TODO: clamp
-            if (x >= figure.Width)
-                x = figure.Width - 1;
-            if (y >= figure.Height)
-                y = figure.Height - 1;
+            x = RoundAndClampX(p.X);
+            y = RoundAndClampY(p.Y);
 
             bitmap.SetPixel(x, y, pen.Color);
         }
