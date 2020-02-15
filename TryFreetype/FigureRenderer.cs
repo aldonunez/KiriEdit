@@ -457,10 +457,19 @@ namespace TryFreetype
 
         private void DrawConic(Point control, Point to)
         {
-            var p0 = new Point(_x, _y);
+            Point tFrom = new Point(
+                _x - figure.OffsetX,
+                figure.Height - _y - 1 + figure.OffsetY);
+            Point tControl = new Point(
+                control.X - figure.OffsetX,
+                figure.Height - control.Y - 1 + figure.OffsetY);
+            Point tTo = new Point(
+                to.X - figure.OffsetX,
+                figure.Height - to.Y - 1 + figure.OffsetY);
+
             double length =
-                GetLength(p0, control)
-                + GetLength(control, to);
+                GetLength(tFrom, tControl)
+                + GetLength(tControl, tTo);
 
             double dt = 1.0 / length;
             ValuePoint p;
@@ -469,10 +478,10 @@ namespace TryFreetype
 
             for (double t = 0.0; t < 1.0; t += dt)
             {
-                p = CalcConic(t, p0, control, to);
+                p = CalcConic(t, tFrom, tControl, tTo);
 
-                x = (int) Math.Round(p.X - figure.OffsetX);
-                y = (int) Math.Round(figure.Height - p.Y - 1 + figure.OffsetY);
+                x = (int) Math.Round(p.X);
+                y = (int) Math.Round(p.Y);
                 // TODO: clamp
                 if (x >= figure.Width)
                     x = figure.Width - 1;
@@ -482,26 +491,39 @@ namespace TryFreetype
                 bitmap.SetPixel(x, y, pen.Color);
             }
 
-            p = CalcConic(1.0, p0, control, to);
+            p = CalcConic(1.0, tFrom, tControl, tTo);
 
-            x = (int) Math.Round(p.X - figure.OffsetX);
-            y = (int) Math.Round(figure.Height - p.Y - 1 + figure.OffsetY);
+            x = (int) Math.Round(p.X);
+            y = (int) Math.Round(p.Y);
             // TODO: clamp
             if (x >= figure.Width)
                 x = figure.Width - 1;
             if (y >= figure.Height)
                 y = figure.Height - 1;
+            y = -200;
 
             bitmap.SetPixel(x, y, pen.Color);
         }
 
         private void DrawCubic(Point control1, Point control2, Point to)
         {
-            var p0 = new Point(_x, _y);
+            Point tFrom = new Point(
+                _x - figure.OffsetX,
+                figure.Height - _y - 1 + figure.OffsetY);
+            Point tControl1 = new Point(
+                control1.X - figure.OffsetX,
+                figure.Height - control1.Y - 1 + figure.OffsetY);
+            Point tControl2 = new Point(
+                control2.X - figure.OffsetX,
+                figure.Height - control2.Y - 1 + figure.OffsetY);
+            Point tTo = new Point(
+                to.X - figure.OffsetX,
+                figure.Height - to.Y - 1 + figure.OffsetY);
+
             double length =
-                GetLength(p0, control1)
-                + GetLength(control1, control2)
-                + GetLength(control2, to);
+                GetLength(tFrom, tControl1)
+                + GetLength(tControl1, tControl2)
+                + GetLength(tControl2, tTo);
 
             double dt = 1.0 / length;
             ValuePoint p;
@@ -510,10 +532,10 @@ namespace TryFreetype
 
             for (double t = 0.0; t < 1.0; t += dt)
             {
-                p = CalcCubic(t, p0, control1, control2, to);
+                p = CalcCubic(t, tFrom, tControl1, tControl2, tTo);
 
-                x = (int) Math.Round(p.X - figure.OffsetX);
-                y = (int) Math.Round(figure.Height - p.Y - 1 + figure.OffsetY);
+                x = (int) Math.Round(p.X);
+                y = (int) Math.Round(p.Y);
                 // TODO: clamp
                 if (x >= figure.Width)
                     x = figure.Width - 1;
@@ -523,10 +545,10 @@ namespace TryFreetype
                 bitmap.SetPixel(x, y, pen.Color);
             }
 
-            p = CalcCubic(1.0, p0, control1, control2, to);
+            p = CalcCubic(1.0, tFrom, tControl1, tControl2, tTo);
 
-            x = (int) Math.Round(p.X - figure.OffsetX);
-            y = (int) Math.Round(figure.Height - p.Y - 1 + figure.OffsetY);
+            x = (int) Math.Round(p.X);
+            y = (int) Math.Round(p.Y);
             // TODO: clamp
             if (x >= figure.Width)
                 x = figure.Width - 1;
