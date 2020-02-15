@@ -405,12 +405,17 @@ namespace TryFreetype
 
         private void DrawLine(Point to)
         {
-            // https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
-
             int x0 = RoundAndClampX(TransformX(_x));
             int y0 = RoundAndClampY(TransformY(_y));
             int x1 = RoundAndClampX(TransformX(to.X));
             int y1 = RoundAndClampY(TransformY(to.Y));
+
+            DrawLine(x0, y0, x1, y1);
+        }
+
+        private void DrawLine(int x0, int y0, int x1, int y1)
+        {
+            // https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
 
             int dx = Math.Abs(x1 - x0);
             int sx = x0 < x1 ? 1 : -1;
@@ -494,6 +499,8 @@ namespace TryFreetype
             ValuePoint p;
             int x;
             int y;
+            int prevX = RoundAndClampX(tFrom.X);
+            int prevY = RoundAndClampY(tFrom.Y);
 
             for (double t = 0.0; t < 1.0; t += dt)
             {
@@ -502,7 +509,18 @@ namespace TryFreetype
                 x = RoundAndClampX(p.X);
                 y = RoundAndClampY(p.Y);
 
-                bitmap.SetPixel(x, y, pen.Color);
+                if (((x - prevX) <= 1 && (x - prevX) >= -1)
+                    && ((y - prevY) <= 1 && (y - prevY) >= -1))
+                {
+                    bitmap.SetPixel(x, y, pen.Color);
+                }
+                else
+                {
+                    DrawLine(prevX, prevY, x, y);
+                }
+
+                prevX = x;
+                prevY = y;
             }
 
             p = CalcConic(1.0, tFrom, tControl, tTo);
@@ -510,7 +528,21 @@ namespace TryFreetype
             x = RoundAndClampX(p.X);
             y = RoundAndClampY(p.Y);
 
+            if (((x - prevX) <= 1 && (x - prevX) >= -1)
+                && ((y - prevY) <= 1 && (y - prevY) >= -1))
+            {
+                bitmap.SetPixel(x, y, pen.Color);
+            }
+            else
+            {
+                DrawLine(prevX, prevY, x, y);
+            }
+
             bitmap.SetPixel(x, y, pen.Color);
+
+            // TODO: Find a way to get rid of bunches of pixels.
+            //       If the current (a) and last two pixels (b, c) fit in a 2x2 square,
+            //       then we can get rid of the previous one (b).
         }
 
         private void DrawCubic(Point control1, Point control2, Point to)
