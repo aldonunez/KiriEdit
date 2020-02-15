@@ -82,6 +82,7 @@
     <Compile Include="GlyphWalker.cs" />
     <Compile Include="Model\Elements.cs" />
     <Compile Include="Model\Figure.cs" />
+    <Compile Include="OutlineRenderer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
