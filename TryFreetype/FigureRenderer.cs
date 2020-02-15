@@ -36,8 +36,6 @@ namespace TryFreetype
             Pen borderPen = new Pen(Color.White);
 
             g = Graphics.FromImage(bitmap);
-            //g.DrawRectangle(borderPen, 0, 0, bitmap.Width - 1, bitmap.Height - 1);
-            //g.DrawEllipse(borderPen, 128, 224, 10, 10);
             g.ScaleTransform(1, -1);
             g.TranslateTransform(
                 (float) -figure.OffsetX,
@@ -259,7 +257,7 @@ namespace TryFreetype
         private readonly Bitmap bitmap;
         private readonly Graphics g;
 
-        private double x, y;
+        private double _x, _y;
         private Pen pen;
 
         public Bitmap Bitmap => bitmap;
@@ -275,8 +273,6 @@ namespace TryFreetype
             Pen borderPen = new Pen(Color.White);
 
             g = Graphics.FromImage(bitmap);
-            //g.DrawRectangle(borderPen, 0, 0, bitmap.Width - 1, bitmap.Height - 1);
-            //g.DrawEllipse(borderPen, 128, 224, 10, 10);
             g.ScaleTransform(1, -1);
             g.TranslateTransform(
                 (float) -figure.OffsetX,
@@ -324,8 +320,8 @@ namespace TryFreetype
         {
             var to = p;
             Console.WriteLine("MoveTo: {0}, {1}", to.X, to.Y);
-            x = to.X;
-            y = to.Y;
+            _x = to.X;
+            _y = to.Y;
             return 0;
         }
 
@@ -333,20 +329,99 @@ namespace TryFreetype
         {
             var to = edge.P2;
             Console.WriteLine("LineTo: {0}, {1}", to.X, to.Y);
-#if false
-            g.DrawLine(
-                pen,
-                (float) x,
-                (float) y,
-                (float) to.X,
-                (float) to.Y);
-#else
+            DrawLine(to);
+            _x = to.X;
+            _y = to.Y;
+            return 0;
+        }
+
+        private int ConicToFunc(Edge edge)
+        {
+            var control = ((ConicEdge) edge).Control1;
+            var to = edge.P2;
+            Console.WriteLine("ConicTo: {0},{1} {2},{3}", control.X, control.Y, to.X, to.Y);
+            DrawConic(control, to);
+            _x = to.X;
+            _y = to.Y;
+            return 0;
+        }
+
+        private int CubicToFunc(Edge edge)
+        {
+            var control1 = ((CubicEdge) edge).Control1;
+            var control2 = ((CubicEdge) edge).Control2;
+            var to = edge.P2;
+            Console.WriteLine("CubicTo: {0},{1} {2},{3} {4},{5}", control1.X, control1.Y, control2.X, control2.Y, to.X, to.Y);
+            DrawCubic(control1, control2, to);
+            _x = to.X;
+            _y = to.Y;
+            return 0;
+        }
+
+        private static double GetLength(Point p1, Point p2)
+        {
+            return p1.ToValuePoint().GetDistance(p2.ToValuePoint());
+        }
+
+        private static ValuePoint CalcConic(double t, Point p0, Point p1, Point p2)
+        {
+            var result = new ValuePoint();
+
+            result.X =
+                p0.X * Math.Pow((1 - t), 2) +
+                p1.X * 2 * t * (1 - t) +
+                p2.X * Math.Pow(t, 2)
+                ;
+
+            result.Y =
+                p0.Y * Math.Pow((1 - t), 2) +
+                p1.Y * 2 * t * (1 - t) +
+                p2.Y * Math.Pow(t, 2)
+                ;
+
+            return result;
+        }
+
+        private static ValuePoint CalcCubic(double t, Point p0, Point p1, Point p2, Point p3)
+        {
+            var result = new ValuePoint();
+
+            result.X =
+                p0.X * Math.Pow((1 - t), 3) +
+                p1.X * 3 * t * Math.Pow((1 - t), 2) +
+                p2.X * 3 * Math.Pow(t, 2) * (1 - t) +
+                p3.X * Math.Pow(t, 3)
+                ;
+
+            result.Y =
+                p0.Y * Math.Pow((1 - t), 3) +
+                p1.Y * 3 * t * Math.Pow((1 - t), 2) +
+                p2.Y * 3 * Math.Pow(t, 2) * (1 - t) +
+                p3.Y * Math.Pow(t, 3)
+                ;
+
+            return result;
+        }
+
+        private void DrawLine(Point to)
+        {
             // https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
 
-            int x0 = (int) Math.Round(x);
-            int y0 = (int) Math.Round(y);
-            int x1 = (int) Math.Round(to.X);
-            int y1 = (int) Math.Round(to.Y);
+            int x0 = (int) Math.Round(_x - figure.OffsetX);
+            int y0 = (int) Math.Round(figure.Height - _y - 1 + figure.OffsetY);
+            int x1 = (int) Math.Round(to.X - figure.OffsetX);
+            int y1 = (int) Math.Round(figure.Height - to.Y - 1 + figure.OffsetY);
+
+            if (x0 >= figure.Width)
+                x0 = figure.Width - 1;
+            if (y0 >= figure.Height)
+                y0 = figure.Height - 1;
+
+            if (x1 >= figure.Width)
+                x1 = figure.Width - 1;
+            if (y1 >= figure.Height)
+                y1 = figure.Height - 1;
+            // TODO: probably clamp to 0, too.
 
             int dx = Math.Abs(x1 - x0);
             int sx = x0 < x1 ? 1 : -1;
@@ -358,7 +433,7 @@ namespace TryFreetype
             while (true)
             {
                 int px = x0;
-                int py = figure.Height - y0 - 1;
+                int py = y0;
 
                 bitmap.SetPixel(px, py, pen.Color);
 
@@ -378,50 +453,87 @@ namespace TryFreetype
                     y0 += sy;
                 }
             }
-#endif
-            x = to.X;
-            y = to.Y;
-            return 0;
         }
 
-        private int ConicToFunc(Edge edge)
+        private void DrawConic(Point control, Point to)
         {
-            var control = ((ConicEdge) edge).Control1;
-            var to = edge.P2;
-            Console.WriteLine("ConicTo: {0},{1} {2},{3}", control.X, control.Y, to.X, to.Y);
-            // TODO: Not quadratic.
-            g.DrawBeziers(
-                pen,
-                new PointF[]
-                {
-                    new PointF((float) x, (float) y),
-                    new PointF((float) control.X, (float) control.Y),
-                    new PointF((float) control.X, (float) control.Y),
-                    new PointF((float) to.X, (float) to.Y)
-                });
-            x = to.X;
-            y = to.Y;
-            return 0;
+            var p0 = new Point(_x, _y);
+            double length =
+                GetLength(p0, control)
+                + GetLength(control, to);
+
+            double dt = 1.0 / length;
+            ValuePoint p;
+            int x;
+            int y;
+
+            for (double t = 0.0; t < 1.0; t += dt)
+            {
+                p = CalcConic(t, p0, control, to);
+
+                x = (int) Math.Round(p.X - figure.OffsetX);
+                y = (int) Math.Round(figure.Height - p.Y - 1 + figure.OffsetY);
+                // TODO: clamp
+                if (x >= figure.Width)
+                    x = figure.Width - 1;
+                if (y >= figure.Height)
+                    y = figure.Height - 1;
+
+                bitmap.SetPixel(x, y, pen.Color);
+            }
+
+            p = CalcConic(1.0, p0, control, to);
+
+            x = (int) Math.Round(p.X - figure.OffsetX);
+            y = (int) Math.Round(figure.Height - p.Y - 1 + figure.OffsetY);
+            // TODO: clamp
+            if (x >= figure.Width)
+                x = figure.Width - 1;
+            if (y >= figure.Height)
+                y = figure.Height - 1;
+
+            bitmap.SetPixel(x, y, pen.Color);
         }
 
-        private int CubicToFunc(Edge edge)
+        private void DrawCubic(Point control1, Point control2, Point to)
         {
-            var control1 = ((CubicEdge) edge).Control1;
-            var control2 = ((CubicEdge) edge).Control2;
-            var to = edge.P2;
-            Console.WriteLine("CubicTo: {0},{1} {2},{3} {4},{5}", control1.X, control1.Y, control2.X, control2.Y, to.X, to.Y);
-            g.DrawBeziers(
-                pen,
-                new PointF[]
-                {
-                    new PointF((float) x, (float) y),
-                    new PointF((float) control1.X, (float) control1.Y),
-                    new PointF((float) control2.X, (float) control2.Y),
-                    new PointF((float) to.X, (float) to.Y)
-                });
-            x = to.X;
-            y = to.Y;
-            return 0;
+            var p0 = new Point(_x, _y);
+            double length =
+                GetLength(p0, control1)
+                + GetLength(control1, control2)
+                + GetLength(control2, to);
+
+            double dt = 1.0 / length;
+            ValuePoint p;
+            int x;
+            int y;
+
+            for (double t = 0.0; t < 1.0; t += dt)
+            {
+                p = CalcCubic(t, p0, control1, control2, to);
+
+                x = (int) Math.Round(p.X - figure.OffsetX);
+                y = (int) Math.Round(figure.Height - p.Y - 1 + figure.OffsetY);
+                // TODO: clamp
+                if (x >= figure.Width)
+                    x = figure.Width - 1;
+                if (y >= figure.Height)
+                    y = figure.Height - 1;
+
+                bitmap.SetPixel(x, y, pen.Color);
+            }
+
+            p = CalcCubic(1.0, p0, control1, control2, to);
+
+            x = (int) Math.Round(p.X - figure.OffsetX);
+            y = (int) Math.Round(figure.Height - p.Y - 1 + figure.OffsetY);
+            // TODO: clamp
+            if (x >= figure.Width)
+                x = figure.Width - 1;
+            if (y >= figure.Height)
+                y = figure.Height - 1;
+
+            bitmap.SetPixel(x, y, pen.Color);
         }
     }
 }
