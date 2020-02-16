@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 
 namespace TryFreetype.Model
@@ -12,7 +13,7 @@ namespace TryFreetype.Model
         public double OffsetY { get; }
 
         private List<Contour> _contours = new List<Contour>();
-        public IReadOnlyList<Contour> Contours { get; }
+        public ReadOnlyCollection<Contour> Contours { get; }
 
         private List<PointGroup> _pointGroups = new List<PointGroup>();
         public IReadOnlyList<PointGroup> PointGroups { get; }

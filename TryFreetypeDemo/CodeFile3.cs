@@ -36,12 +36,20 @@ namespace TryFreetype.Sample3
 #endif
                     }
 
-                    //var renderer = new DebugFigureRenderer(walker.Figure);
+#if false
+                    var renderer = new DebugFigureRenderer(walker.Figure);
+
+                    renderer.Render();
+                    renderer.Bitmap.Save(@"C:\Temp\b.bmp");
+#else
                     var renderer = new OutlineRenderer(walker.Figure);
 
                     renderer.Render();
 
-                    renderer.Bitmap.Save(@"C:\Temp\b.bmp");
+                    var mask = renderer.OutlineMask;
+                    var bitmap = mask.RenderBitmap();
+                    bitmap.Save(@"C:\Temp\b.bmp");
+#endif
                 }
             }
         }

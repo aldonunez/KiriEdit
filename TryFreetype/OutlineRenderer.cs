@@ -7,12 +7,12 @@ namespace TryFreetype
 {
     public class OutlineRenderer : FigureWalkerBase
     {
-        private readonly Bitmap _bitmap;
-
         private double _x, _y;
         private Color _color = Color.Red;
 
-        public Bitmap Bitmap => _bitmap;
+        private int _curContourIndex;
+        private byte[,] _maskBuf;
+        public OutlineMask OutlineMask { get; private set; }
 
         public OutlineRenderer(Figure figure) :
             base(figure)
@@ -20,7 +20,7 @@ namespace TryFreetype
             int width = figure.Width;
             int height = figure.Height;
 
-            _bitmap = new Bitmap(width, height);
+            _maskBuf = new byte[height, width];
 
             // Transformation:
             //g = Graphics.FromImage(bitmap);
@@ -28,6 +28,20 @@ namespace TryFreetype
             //g.TranslateTransform(
             //    (float) -figure.OffsetX,
             //    -(height - 1) - (float) figure.OffsetY);
+        }
+
+        protected override void OnEndFigure()
+        {
+            base.OnEndFigure();
+
+            OutlineMask = new OutlineMask(Figure, _maskBuf);
+        }
+
+        protected override void OnBeginContour(Contour contour)
+        {
+            base.OnBeginContour(contour);
+
+            _curContourIndex = Figure.Contours.IndexOf(contour);
         }
 
         protected override void OnMoveTo(Point p)
@@ -113,6 +127,11 @@ namespace TryFreetype
             return result;
         }
 
+        private void SetPixel(int x, int y)
+        {
+            _maskBuf[y, x] = (byte) (OutlineMask.OutlineBit | (1 << _curContourIndex));
+        }
+
         private void DrawLine(Point to)
         {
             int x0 = RoundAndClampX(TransformX(_x));
@@ -136,7 +155,7 @@ namespace TryFreetype
 
             while (true)
             {
-                _bitmap.SetPixel(x0, y0, _color);
+                SetPixel(x0, y0);
 
                 if (x0 == x1 && y0 == y1)
                     break;
@@ -222,7 +241,7 @@ namespace TryFreetype
                 if (((x - prevX) <= 1 && (x - prevX) >= -1)
                     && ((y - prevY) <= 1 && (y - prevY) >= -1))
                 {
-                    _bitmap.SetPixel(x, y, _color);
+                    SetPixel(x, y);
                 }
                 else
                 {
@@ -241,14 +260,14 @@ namespace TryFreetype
             if (((x - prevX) <= 1 && (x - prevX) >= -1)
                 && ((y - prevY) <= 1 && (y - prevY) >= -1))
             {
-                _bitmap.SetPixel(x, y, _color);
+                SetPixel(x, y);
             }
             else
             {
                 DrawLine(prevX, prevY, x, y);
             }
 
-            _bitmap.SetPixel(x, y, _color);
+            SetPixel(x, y);
 
             // TODO: Find a way to get rid of bunches of pixels.
             //       If the current (a) and last two pixels (b, c) fit in a 2x2 square,
@@ -281,7 +300,7 @@ namespace TryFreetype
                 x = RoundAndClampX(p.X);
                 y = RoundAndClampY(p.Y);
 
-                _bitmap.SetPixel(x, y, _color);
+                SetPixel(x, y);
             }
 
             p = CalcCubic(1.0, tFrom, tControl1, tControl2, tTo);
@@ -289,7 +308,7 @@ namespace TryFreetype
             x = RoundAndClampX(p.X);
             y = RoundAndClampY(p.Y);
 
-            _bitmap.SetPixel(x, y, _color);
+            SetPixel(x, y);
         }
     }
 }
