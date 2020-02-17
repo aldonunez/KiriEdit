@@ -5,6 +5,7 @@ using TryFreetype.Model;
 
 namespace TryFreetype
 {
+    // TODO: Make this internal.
     public class GlyphWalker
     {
         private GlyphSlot glyphSlot;
@@ -18,11 +19,6 @@ namespace TryFreetype
         private List<PointGroup> _pointGroups = new List<PointGroup>();
 
         public Figure Figure { get { return figure; } }
-
-        public GlyphWalker(FontGlyph glyph) :
-            this(glyph.Glyph)
-        {
-        }
 
         public GlyphWalker(GlyphSlot glyphSlot)
         {

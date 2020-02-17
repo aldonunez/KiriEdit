@@ -3,18 +3,6 @@ using System;
 
 namespace TryFreetype
 {
-    public class FontGlyph
-    {
-        private GlyphSlot _glyphSlot;
-
-        internal FontGlyph(GlyphSlot glyphSlot)
-        {
-            _glyphSlot = glyphSlot;
-        }
-
-        internal GlyphSlot Glyph { get => _glyphSlot; }
-    }
-
     public class FontFace : IDisposable
     {
         private Library _library;
@@ -27,13 +15,20 @@ namespace TryFreetype
             _face = new Face(_library, path);
         }
 
-        public FontGlyph GetGlyph(char character, uint size)
+        public Model.Figure DecomposeGlyph(char character, int size)
         {
-            _face.SetPixelSizes(0, size);
+            if (size <= 0)
+                throw new ArgumentOutOfRangeException(nameof(size));
+
+            _face.SetPixelSizes(0, (uint) size);
 
             _face.LoadChar(character, LoadFlags.NoBitmap, LoadTarget.Normal);
 
-            return new FontGlyph(_face.Glyph);
+            var walker = new GlyphWalker(_face.Glyph);
+
+            walker.Decompose();
+
+            return walker.Figure;
         }
 
         public void Dispose()
