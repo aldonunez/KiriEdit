@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using TryFreetype.Model;
 using Point = TryFreetype.Model.Point;
@@ -309,6 +311,185 @@ namespace TryFreetype
             y = RoundAndClampY(p.Y);
 
             SetPixel(x, y);
+        }
+
+        //--------------------------------------------------------------------
+
+        private enum Orientation
+        {
+            Unknown,
+            Inside,
+            Outside,
+        }
+
+        private Orientation GetOrientation(Contour contour)
+        {
+            double prevX = contour.FirstPoint.X;
+            double prevY = contour.FirstPoint.Y;
+            Point p = contour.FirstPoint;
+            double area = 0;
+
+            while (true)
+            {
+                var edge = p.OutgoingEdge;
+
+                switch (edge.Type)
+                {
+                    case EdgeType.Line:
+                        area += (edge.P2.Y - prevY) * (edge.P2.X + prevX);
+                        break;
+
+                    case EdgeType.Conic:
+                        {
+                            var conicEdge = (ConicEdge) edge;
+                            area += (conicEdge.Control1.Y - prevY) * (conicEdge.Control1.X + prevX);
+                            area += (conicEdge.P2.Y - prevY) * (conicEdge.P2.X + prevX);
+                        }
+                        break;
+
+                    case EdgeType.Cubic:
+                        {
+                            var conicEdge = (CubicEdge) edge;
+                            area += (conicEdge.Control1.Y - prevY) * (conicEdge.Control1.X + prevX);
+                            area += (conicEdge.Control2.Y - prevY) * (conicEdge.Control2.X + prevX);
+                            area += (conicEdge.P2.Y - prevY) * (conicEdge.P2.X + prevX);
+                        }
+                        break;
+                }
+
+                prevX = edge.P2.X;
+                prevY = edge.P2.Y;
+
+                p = p.OutgoingEdge.P2;
+
+                if (p == contour.FirstPoint)
+                    break;
+            }
+
+            if (area > 0)
+                return Orientation.Inside;
+            else if (area < 0)
+                return Orientation.Outside;
+            else
+                return Orientation.Unknown;
+        }
+
+        private Point FindRightmostPoint(Contour contour)
+        {
+            Point p = contour.FirstPoint;
+            Point rightP = new Point(0, 0);
+
+            while (true)
+            {
+                if (p.X > rightP.X)
+                    rightP = p;
+
+                p = p.OutgoingEdge.P2;
+
+                if (p == contour.FirstPoint)
+                    break;
+            }
+
+            return rightP;
+        }
+
+        public void Render2()
+        {
+            var outsideContours = new List<Contour>();
+            var insideContours = new List<Contour>();
+
+            foreach (var contour in Figure.Contours)
+            {
+                Orientation orientation = GetOrientation(contour);
+
+                switch (orientation)
+                {
+                    case Orientation.Inside:
+                        insideContours.Add(contour);
+                        break;
+
+                    case Orientation.Outside:
+                        outsideContours.Add(contour);
+                        break;
+
+                    default:
+                        Debug.Fail("");
+                        break;
+                }
+            }
+
+            foreach (var contour in Figure.Contours)
+            {
+                if (insideContours.Contains(contour))
+                    continue;
+
+                OnBeginContour(contour);
+
+                OnMoveTo(contour.FirstPoint);
+
+                Point point = contour.FirstPoint;
+
+                for (int i = 0; true; i++)
+                {
+                    var edge = point.OutgoingEdge;
+
+                    OnBeginEdge();
+
+                    switch (edge.Type)
+                    {
+                        case EdgeType.Line:
+                            OnLineTo(edge);
+                            break;
+
+                        case EdgeType.Conic:
+                            OnConicTo(edge);
+                            break;
+
+                        case EdgeType.Cubic:
+                            OnCubicTo(edge);
+                            break;
+                    }
+
+                    point = edge.P2;
+
+                    if (point == contour.FirstPoint)
+                        break;
+                }
+            }
+
+            OnEndFigure();
+
+            foreach (var contour in insideContours)
+            {
+                Point rightP = FindRightmostPoint(contour);
+                int y = (int) Math.Round(rightP.Y);
+                int outerIndex = 0;
+
+                for (int x = (int) Math.Round(rightP.X); x < Figure.Width - 1; x++)
+                {
+                    byte b = _maskBuf[y, x];
+
+                    if (b != 0)
+                    {
+                        for (int i = 0; i < 7; i++)
+                        {
+                            if ((b & (1 << i)) != 0)
+                            {
+                                outerIndex = i;
+                                Console.WriteLine("Found");
+                                goto Found;
+                            }
+                        }
+                    }
+                }
+            Found:
+                int innerIndex = Figure.Contours.IndexOf(contour);
+                Console.WriteLine("{0} goes with {1}", innerIndex, outerIndex);
+
+                // TODO: At this point we can:
+                //      1. Match all inner contours with outer ones.
+                //      2. Serialize SVG files with matching sets of inner and outer contours.
+            }
         }
     }
 }
