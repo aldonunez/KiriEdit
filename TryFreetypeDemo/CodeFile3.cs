@@ -44,10 +44,10 @@ namespace TryFreetype.Sample3
 #else
                     var renderer = new OutlineRenderer(walker.Figure);
 
-                    renderer.Render();
+                    renderer.CalculateShapes();
 
-                    var mask = renderer.OutlineMask;
-                    var bitmap = mask.RenderBitmap();
+                    //renderer.RenderOutline();
+                    var bitmap = renderer.RenderBitmap();
                     bitmap.Save(@"C:\Temp\b.bmp");
 #endif
                 }

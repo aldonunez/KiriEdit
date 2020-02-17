@@ -5,87 +5,67 @@ using Point = TryFreetype.Model.Point;
 
 namespace TryFreetype
 {
-    public abstract class FigureWalkerBase
+    public delegate void LineToHandler(Edge edge);
+    public delegate void ConicToHandler(Edge edge);
+    public delegate void CubicToHandler(Edge edge);
+
+    public class FigureWalker
     {
-        protected Figure Figure { get; }
+        public event LineToHandler LineTo;
+        public event ConicToHandler ConicTo;
+        public event CubicToHandler CubicTo;
 
-        protected FigureWalkerBase(Figure figure)
+        public void WalkContour(Contour contour)
         {
-            Figure = figure;
-        }
+            Point point = contour.FirstPoint;
 
-        public void Render()
-        {
-            foreach (var contour in Figure.Contours)
+            while (true)
             {
-                OnBeginContour(contour);
+                var edge = point.OutgoingEdge;
 
-                OnMoveTo(contour.FirstPoint);
-
-                Point point = contour.FirstPoint;
-
-                for (int i = 0; true; i++)
+                switch (edge.Type)
                 {
-                    var edge = point.OutgoingEdge;
+                    case EdgeType.Line:
+                        OnLineTo(edge);
+                        break;
 
-                    OnBeginEdge();
+                    case EdgeType.Conic:
+                        OnConicTo(edge);
+                        break;
 
-                    switch (edge.Type)
-                    {
-                        case EdgeType.Line:
-                            OnLineTo(edge);
-                            break;
-
-                        case EdgeType.Conic:
-                            OnConicTo(edge);
-                            break;
-
-                        case EdgeType.Cubic:
-                            OnCubicTo(edge);
-                            break;
-                    }
-
-                    point = edge.P2;
-
-                    if (point == contour.FirstPoint)
+                    case EdgeType.Cubic:
+                        OnCubicTo(edge);
                         break;
                 }
+
+                point = edge.P2;
+
+                if (point == contour.FirstPoint)
+                    break;
             }
-
-            OnEndFigure();
-        }
-
-        protected virtual void OnMoveTo(Point point)
-        {
         }
 
         protected virtual void OnLineTo(Edge edge)
         {
+            LineTo?.Invoke(edge);
         }
 
         protected virtual void OnConicTo(Edge edge)
         {
+            ConicTo?.Invoke(edge);
         }
 
         protected virtual void OnCubicTo(Edge edge)
         {
-        }
-
-        protected virtual void OnBeginContour(Contour contour)
-        {
-        }
-
-        protected virtual void OnBeginEdge()
-        {
-        }
-
-        protected virtual void OnEndFigure()
-        {
+            CubicTo?.Invoke(edge);
         }
     }
 
-    public class DebugFigureRenderer : FigureWalkerBase
+    public class DebugFigureRenderer
     {
+        private Figure _figure;
+        private FigureWalker _figureWalker;
+
         double x, y;
         private readonly Bitmap bitmap;
         protected Graphics g { get; }
@@ -96,9 +76,15 @@ namespace TryFreetype
 
         public Bitmap Bitmap { get { return bitmap; } }
 
-        public DebugFigureRenderer(Figure figure) :
-            base(figure)
+        public DebugFigureRenderer(Figure figure)
         {
+            _figure = figure;
+
+            _figureWalker = new FigureWalker();
+            _figureWalker.LineTo += LineTo;
+            _figureWalker.ConicTo += ConicTo;
+            _figureWalker.CubicTo += CubicTo;
+
             int width = figure.Width;
             int height = figure.Height;
 
@@ -119,28 +105,39 @@ namespace TryFreetype
             };
         }
 
-        protected override void OnBeginContour(Contour contour)
+        public void Render()
+        {
+            foreach (var contour in _figure.Contours)
+            {
+                BeginContour(contour);
+                MoveTo(contour.FirstPoint);
+
+                _figureWalker.WalkContour(contour);
+            }
+
+            EndFigure();
+        }
+
+        private void BeginContour(Contour contour)
         {
             _nextPenIndex = 0;
         }
 
-        protected override void OnBeginEdge()
+        private void BeginEdge()
         {
             int penIndex = _nextPenIndex;
             _nextPenIndex = (_nextPenIndex + 1) % _pens.Length;
             pen = _pens[penIndex];
         }
 
-        protected override void OnEndFigure()
+        private void EndFigure()
         {
-            base.OnEndFigure();
-
             Pen redPen = new Pen(Color.Red);
             Pen orangePen = new Pen(Color.Orange);
             Pen whitePen = new Pen(Color.White);
             int j = 0;
 
-            foreach (var group in Figure.PointGroups)
+            foreach (var group in _figure.PointGroups)
             {
                 Point p = group.Points[0];
                 Pen pen = null;
@@ -178,7 +175,7 @@ namespace TryFreetype
             }
         }
 
-        protected override void OnMoveTo(Point p)
+        private void MoveTo(Point p)
         {
             var to = p;
             Console.WriteLine("MoveTo: {0}, {1}", to.X, to.Y);
@@ -186,8 +183,9 @@ namespace TryFreetype
             y = to.Y;
         }
 
-        protected override void OnLineTo(Edge edge)
+        private void LineTo(Edge edge)
         {
+            BeginEdge();
             var to = edge.P2;
             Console.WriteLine("LineTo: {0}, {1}", to.X, to.Y);
             g.DrawLine(
@@ -200,8 +198,9 @@ namespace TryFreetype
             y = to.Y;
         }
 
-        protected override void OnConicTo(Edge edge)
+        private void ConicTo(Edge edge)
         {
+            BeginEdge();
             var control = ((ConicEdge) edge).Control1;
             var to = edge.P2;
             Console.WriteLine("ConicTo: {0},{1} {2},{3}", control.X, control.Y, to.X, to.Y);
@@ -219,8 +218,9 @@ namespace TryFreetype
             y = to.Y;
         }
 
-        protected override void OnCubicTo(Edge edge)
+        private void CubicTo(Edge edge)
         {
+            BeginEdge();
             var control1 = ((CubicEdge) edge).Control1;
             var control2 = ((CubicEdge) edge).Control2;
             var to = edge.P2;

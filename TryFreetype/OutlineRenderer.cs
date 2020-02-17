@@ -7,18 +7,25 @@ using Point = TryFreetype.Model.Point;
 
 namespace TryFreetype
 {
-    public class OutlineRenderer : FigureWalkerBase
+    public class OutlineRenderer
     {
+        private Figure _figure;
+        private FigureWalker _figureWalker;
         private double _x, _y;
         private Color _color = Color.Red;
 
         private int _curContourIndex;
         private byte[,] _maskBuf;
-        public OutlineMask OutlineMask { get; private set; }
 
-        public OutlineRenderer(Figure figure) :
-            base(figure)
+        public OutlineRenderer(Figure figure)
         {
+            _figure = figure;
+
+            _figureWalker = new FigureWalker();
+            _figureWalker.LineTo += LineTo;
+            _figureWalker.ConicTo += ConicTo;
+            _figureWalker.CubicTo += CubicTo;
+
             int width = figure.Width;
             int height = figure.Height;
 
@@ -32,21 +39,7 @@ namespace TryFreetype
             //    -(height - 1) - (float) figure.OffsetY);
         }
 
-        protected override void OnEndFigure()
-        {
-            base.OnEndFigure();
-
-            OutlineMask = new OutlineMask(Figure, _maskBuf);
-        }
-
-        protected override void OnBeginContour(Contour contour)
-        {
-            base.OnBeginContour(contour);
-
-            _curContourIndex = Figure.Contours.IndexOf(contour);
-        }
-
-        protected override void OnMoveTo(Point p)
+        private void MoveTo(Point p)
         {
             var to = p;
             Console.WriteLine("MoveTo: {0}, {1}", to.X, to.Y);
@@ -54,7 +47,7 @@ namespace TryFreetype
             _y = to.Y;
         }
 
-        protected override void OnLineTo(Edge edge)
+        private void LineTo(Edge edge)
         {
             var to = edge.P2;
             Console.WriteLine("LineTo: {0}, {1}", to.X, to.Y);
@@ -63,7 +56,7 @@ namespace TryFreetype
             _y = to.Y;
         }
 
-        protected override void OnConicTo(Edge edge)
+        private void ConicTo(Edge edge)
         {
             var control = ((ConicEdge) edge).Control1;
             var to = edge.P2;
@@ -73,7 +66,7 @@ namespace TryFreetype
             _y = to.Y;
         }
 
-        protected override void OnCubicTo(Edge edge)
+        private void CubicTo(Edge edge)
         {
             var control1 = ((CubicEdge) edge).Control1;
             var control2 = ((CubicEdge) edge).Control2;
@@ -131,7 +124,7 @@ namespace TryFreetype
 
         private void SetPixel(int x, int y)
         {
-            _maskBuf[y, x] = (byte) (OutlineMask.OutlineBit | (1 << _curContourIndex));
+            _maskBuf[y, x] = (byte) (1 << _curContourIndex);
         }
 
         private void DrawLine(Point to)
@@ -180,8 +173,8 @@ namespace TryFreetype
         private int RoundAndClampX(double x)
         {
             int iX = (int) Math.Round(x);
-            if (iX >= Figure.Width)
-                iX = Figure.Width - 1;
+            if (iX >= _figure.Width)
+                iX = _figure.Width - 1;
             else if (iX < 0)
                 iX = 0;
             return iX;
@@ -190,8 +183,8 @@ namespace TryFreetype
         private int RoundAndClampY(double y)
         {
             int iY = (int) Math.Round(y);
-            if (iY >= Figure.Height)
-                iY = Figure.Height - 1;
+            if (iY >= _figure.Height)
+                iY = _figure.Height - 1;
             else if (iY < 0)
                 iY = 0;
             return iY;
@@ -199,12 +192,12 @@ namespace TryFreetype
 
         private double TransformX(double x)
         {
-            return x - Figure.OffsetX;
+            return x - _figure.OffsetX;
         }
 
         private double TransformY(double y)
         {
-            return Figure.Height - y - 1 + Figure.OffsetY;
+            return _figure.Height - y - 1 + _figure.OffsetY;
         }
 
         private Point TransformPoint(Point point)
@@ -393,12 +386,12 @@ namespace TryFreetype
             return rightP;
         }
 
-        public void Render2()
+        public void CalculateShapes()
         {
             var outsideContours = new List<Contour>();
             var insideContours = new List<Contour>();
 
-            foreach (var contour in Figure.Contours)
+            foreach (var contour in _figure.Contours)
             {
                 Orientation orientation = GetOrientation(contour);
 
@@ -418,46 +411,16 @@ namespace TryFreetype
                 }
             }
 
-            foreach (var contour in Figure.Contours)
+            foreach (var contour in _figure.Contours)
             {
                 if (insideContours.Contains(contour))
                     continue;
 
-                OnBeginContour(contour);
+                _curContourIndex = _figure.Contours.IndexOf(contour);
+                MoveTo(contour.FirstPoint);
 
-                OnMoveTo(contour.FirstPoint);
-
-                Point point = contour.FirstPoint;
-
-                for (int i = 0; true; i++)
-                {
-                    var edge = point.OutgoingEdge;
-
-                    OnBeginEdge();
-
-                    switch (edge.Type)
-                    {
-                        case EdgeType.Line:
-                            OnLineTo(edge);
-                            break;
-
-                        case EdgeType.Conic:
-                            OnConicTo(edge);
-                            break;
-
-                        case EdgeType.Cubic:
-                            OnCubicTo(edge);
-                            break;
-                    }
-
-                    point = edge.P2;
-
-                    if (point == contour.FirstPoint)
-                        break;
-                }
+                _figureWalker.WalkContour(contour);
             }
-
-            OnEndFigure();
 
             foreach (var contour in insideContours)
             {
@@ -465,7 +428,7 @@ namespace TryFreetype
                 int y = (int) Math.Round(rightP.Y);
                 int outerIndex = 0;
 
-                for (int x = (int) Math.Round(rightP.X); x < Figure.Width - 1; x++)
+                for (int x = (int) Math.Round(rightP.X); x < _figure.Width - 1; x++)
                 {
                     byte b = _maskBuf[y, x];
 
@@ -483,7 +446,7 @@ namespace TryFreetype
                     }
                 }
             Found:
-                int innerIndex = Figure.Contours.IndexOf(contour);
+                int innerIndex = _figure.Contours.IndexOf(contour);
                 Console.WriteLine("{0} goes with {1}", innerIndex, outerIndex);
 
                 // TODO: At this point we can:
@@ -491,5 +454,37 @@ namespace TryFreetype
                 //      2. Serialize SVG files with matching sets of inner and outer contours.
             }
         }
+
+#if DEBUG
+        public void RenderOutline()
+        {
+            foreach (var contour in _figure.Contours)
+            {
+                //if (insideContours.Contains(contour))
+                //    continue;
+
+                MoveTo(contour.FirstPoint);
+
+                _figureWalker.WalkContour(contour);
+            }
+        }
+
+        public Bitmap RenderBitmap()
+        {
+            var color = Color.Red;
+            var bitmap = new Bitmap(_figure.Width, _figure.Height);
+
+            for (int y = 0; y < _figure.Height; y++)
+            {
+                for (int x = 0; x < _figure.Width; x++)
+                {
+                    if (_maskBuf[y, x] != 0)
+                        bitmap.SetPixel(x, y, color);
+                }
+            }
+
+            return bitmap;
+        }
+#endif
     }
 }
