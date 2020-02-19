@@ -219,7 +219,7 @@ namespace TryFreetype.Model
         }
     }
 
-    internal struct ValuePoint
+    public struct ValuePoint
     {
         public double X;
         public double Y;

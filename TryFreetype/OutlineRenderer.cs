@@ -77,51 +77,6 @@ namespace TryFreetype
             _y = to.Y;
         }
 
-        private static double GetLength(Point p1, Point p2)
-        {
-            return p1.ToValuePoint().GetDistance(p2.ToValuePoint());
-        }
-
-        private static ValuePoint CalcConic(double t, Point p0, Point p1, Point p2)
-        {
-            var result = new ValuePoint();
-
-            result.X =
-                p0.X * Math.Pow((1 - t), 2) +
-                p1.X * 2 * t * (1 - t) +
-                p2.X * Math.Pow(t, 2)
-                ;
-
-            result.Y =
-                p0.Y * Math.Pow((1 - t), 2) +
-                p1.Y * 2 * t * (1 - t) +
-                p2.Y * Math.Pow(t, 2)
-                ;
-
-            return result;
-        }
-
-        private static ValuePoint CalcCubic(double t, Point p0, Point p1, Point p2, Point p3)
-        {
-            var result = new ValuePoint();
-
-            result.X =
-                p0.X * Math.Pow((1 - t), 3) +
-                p1.X * 3 * t * Math.Pow((1 - t), 2) +
-                p2.X * 3 * Math.Pow(t, 2) * (1 - t) +
-                p3.X * Math.Pow(t, 3)
-                ;
-
-            result.Y =
-                p0.Y * Math.Pow((1 - t), 3) +
-                p1.Y * 3 * t * Math.Pow((1 - t), 2) +
-                p2.Y * 3 * Math.Pow(t, 2) * (1 - t) +
-                p3.Y * Math.Pow(t, 3)
-                ;
-
-            return result;
-        }
-
         private void SetPixel(int x, int y)
         {
             _maskBuf[y, x] = (byte) (1 << _curContourIndex);
@@ -215,11 +170,7 @@ namespace TryFreetype
             Point tControl = TransformPoint(control);
             Point tTo = TransformPoint(to);
 
-            double length =
-                GetLength(tFrom, tControl)
-                + GetLength(tControl, tTo);
-
-            double dt = 1.0 / length;
+            double dt = Curve.CalcConicDeltaT(tFrom, tControl, tTo);
             ValuePoint p;
             int x;
             int y;
@@ -228,7 +179,7 @@ namespace TryFreetype
 
             for (double t = 0.0; t < 1.0; t += dt)
             {
-                p = CalcConic(t, tFrom, tControl, tTo);
+                p = Curve.CalcConic(t, tFrom, tControl, tTo);
 
                 x = RoundAndClampX(p.X);
                 y = RoundAndClampY(p.Y);
@@ -247,7 +198,7 @@ namespace TryFreetype
                 prevY = y;
             }
 
-            p = CalcConic(1.0, tFrom, tControl, tTo);
+            p = Curve.CalcConic(1.0, tFrom, tControl, tTo);
 
             x = RoundAndClampX(p.X);
             y = RoundAndClampY(p.Y);
@@ -278,19 +229,14 @@ namespace TryFreetype
             Point tControl2 = TransformPoint(control2);
             Point tTo = TransformPoint(to);
 
-            double length =
-                GetLength(tFrom, tControl1)
-                + GetLength(tControl1, tControl2)
-                + GetLength(tControl2, tTo);
-
-            double dt = 1.0 / length;
+            double dt = Curve.CalcCubicDeltaT(tFrom, tControl1, tControl2, tTo);
             ValuePoint p;
             int x;
             int y;
 
             for (double t = 0.0; t < 1.0; t += dt)
             {
-                p = CalcCubic(t, tFrom, tControl1, tControl2, tTo);
+                p = Curve.CalcCubic(t, tFrom, tControl1, tControl2, tTo);
 
                 x = RoundAndClampX(p.X);
                 y = RoundAndClampY(p.Y);
@@ -298,7 +244,7 @@ namespace TryFreetype
                 SetPixel(x, y);
             }
 
-            p = CalcCubic(1.0, tFrom, tControl1, tControl2, tTo);
+            p = Curve.CalcCubic(1.0, tFrom, tControl1, tControl2, tTo);
 
             x = RoundAndClampX(p.X);
             y = RoundAndClampY(p.Y);
@@ -312,10 +258,10 @@ namespace TryFreetype
         {
             Unknown,
             Inside,
-            Outside,
+            Outside
         }
 
-        private Orientation GetOrientation(Contour contour)
+        private static Orientation GetOrientation(Contour contour)
         {
             double prevX = contour.FirstPoint.X;
             double prevY = contour.FirstPoint.Y;
@@ -367,7 +313,7 @@ namespace TryFreetype
                 return Orientation.Unknown;
         }
 
-        private Point FindRightmostPoint(Contour contour)
+        private static Point FindRightmostPoint(Contour contour)
         {
             Point p = contour.FirstPoint;
             Point rightP = new Point(0, 0);
@@ -460,9 +406,6 @@ namespace TryFreetype
         {
             foreach (var contour in _figure.Contours)
             {
-                //if (insideContours.Contains(contour))
-                //    continue;
-
                 MoveTo(contour.FirstPoint);
 
                 _figureWalker.WalkContour(contour);
