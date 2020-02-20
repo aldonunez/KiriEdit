@@ -54,8 +54,23 @@ namespace TryFreetype.Model
             Unbreakable = unbreakable;
         }
 
+        public abstract BBox GetBBox();
         internal abstract SplitResult Split(Point point);
         public abstract object Clone();
+    }
+
+    public struct BBox
+    {
+        public double Left;
+        public double Top;
+        public double Right;
+        public double Bottom;
+
+        public bool IsPointInside(double x, double y)
+        {
+            return (x >= Left) && (x <= Right)
+                && (y <= Top) && (y >= Bottom);
+        }
     }
 
     public class LineEdge : Edge
@@ -68,6 +83,19 @@ namespace TryFreetype.Model
         public override object Clone()
         {
             return MemberwiseClone();
+        }
+
+        public override BBox GetBBox()
+        {
+            BBox bbox = new BBox
+            {
+                Left = Math.Min(P1.X, P2.X),
+                Right = Math.Max(P1.X, P2.X),
+                Top = Math.Max(P1.Y, P2.Y),
+                Bottom = Math.Min(P1.Y, P2.Y)
+            };
+
+            return bbox;
         }
 
         internal override SplitResult Split(Point point)
@@ -134,6 +162,18 @@ namespace TryFreetype.Model
             return MemberwiseClone();
         }
 
+        public override BBox GetBBox()
+        {
+            BBox bbox = new BBox
+            {
+                Left = Math.Min(P1.X, Math.Min(P2.X, Control1.X)),
+                Right = Math.Max(P1.X, Math.Max(P2.X, Control1.X)),
+                Top = Math.Max(P1.Y, Math.Max(P2.Y, Control1.Y)),
+                Bottom = Math.Min(P1.Y, Math.Min(P2.Y, Control1.Y)),
+            };
+            return bbox;
+        }
+
         internal override SplitResult Split(Point point)
         {
             throw new NotImplementedException();
@@ -153,6 +193,18 @@ namespace TryFreetype.Model
         public override object Clone()
         {
             return MemberwiseClone();
+        }
+
+        public override BBox GetBBox()
+        {
+            BBox bbox = new BBox
+            {
+                Left = Math.Min(P1.X, Math.Min(P2.X, Math.Min(Control1.X, Control2.X))),
+                Right = Math.Max(P1.X, Math.Max(P2.X, Math.Max(Control1.X, Control2.X))),
+                Top = Math.Max(P1.Y, Math.Max(P2.Y, Math.Max(Control1.Y, Control2.Y))),
+                Bottom = Math.Min(P1.Y, Math.Min(P2.Y, Math.Min(Control1.Y, Control2.Y))),
+            };
+            return bbox;
         }
 
         internal override SplitResult Split(Point point)
