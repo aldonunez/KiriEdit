@@ -43,6 +43,8 @@ namespace TryFreetype.Sample3
                 //renderer.RenderOutline();
                 var bitmap = renderer.RenderBitmap();
                 bitmap.Save(@"C:\Temp\b.bmp");
+
+                FigureSerializer.Serialize(figure, System.Console.Out);
 #endif
             }
         }

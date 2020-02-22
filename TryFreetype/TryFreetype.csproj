@@ -78,6 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Curve.cs" />
+    <Compile Include="FigureSerializer.cs" />
     <Compile Include="FigureWalker.cs" />
     <Compile Include="Font.cs" />
     <Compile Include="GlyphWalker.cs" />
