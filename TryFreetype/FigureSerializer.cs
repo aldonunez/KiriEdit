@@ -114,7 +114,51 @@ namespace TryFreetype
                 edge = edge.P2.OutgoingEdge;
             }
 
-            // TODO: original edges
+            foreach (var pointGroup in _figure.PointGroups)
+            {
+                if (!pointGroup.IsFixed)
+                    continue;
+
+                _writer.WriteLine("    original-edge");
+
+                edge = pointGroup.Points[0].OriginalOutgoingEdge;
+
+                int id0, id1, id2, id3;
+
+                id0 = _pointGroupToId[pointGroup];
+
+                switch (edge.Type)
+                {
+                    case EdgeType.Line:
+                        id1 = _pointGroupToId[edge.P2.Group];
+                        _writer.WriteLine("      type line");
+                        _writer.WriteLine("      pointgroups {0} {1}", id0, id1);
+                        break;
+
+                    case EdgeType.Conic:
+                        id1 = _pointToId[((ConicEdge) edge).Control1];
+                        id2 = _pointGroupToId[edge.P2.Group];
+                        _writer.WriteLine("      type conic");
+                        _writer.WriteLine("      pointgroups {0} {1}", id0, id2);
+                        _writer.WriteLine("      points {0}", id1);
+                        //WritePoint(((ConicEdge) edge).Control1);
+                        break;
+
+                    case EdgeType.Cubic:
+                        id1 = _pointToId[((CubicEdge) edge).Control1];
+                        id2 = _pointToId[((CubicEdge) edge).Control2];
+                        id3 = _pointGroupToId[edge.P2.Group];
+                        _writer.WriteLine("      type cubic");
+                        _writer.WriteLine("      pointgroups {0} {1}", id0, id3);
+                        _writer.WriteLine("      points {0} {1}", id1, id2);
+                        WritePoint(((CubicEdge) edge).Control1);
+                        WritePoint(((CubicEdge) edge).Control2);
+                        break;
+                }
+
+
+                _writer.WriteLine("    end original-edge");
+            }
 
             _writer.WriteLine("  end contour");
         }
