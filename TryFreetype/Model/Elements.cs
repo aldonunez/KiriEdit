@@ -41,6 +41,20 @@ namespace TryFreetype.Model
         Cubic
     }
 
+    public struct BBox
+    {
+        public double Left;
+        public double Top;
+        public double Right;
+        public double Bottom;
+
+        public bool IsPointInside(double x, double y)
+        {
+            return (x >= Left) && (x <= Right)
+                && (y <= Top) && (y >= Bottom);
+        }
+    }
+
     public abstract class Edge : ICloneable
     {
         public EdgeType Type { get; }
@@ -59,25 +73,13 @@ namespace TryFreetype.Model
         public abstract object Clone();
     }
 
-    public struct BBox
-    {
-        public double Left;
-        public double Top;
-        public double Right;
-        public double Bottom;
-
-        public bool IsPointInside(double x, double y)
-        {
-            return (x >= Left) && (x <= Right)
-                && (y <= Top) && (y >= Bottom);
-        }
-    }
-
     public class LineEdge : Edge
     {
-        public LineEdge(bool unbreakable = false) :
+        public LineEdge(Point p1, Point p2, bool unbreakable = false) :
             base(EdgeType.Line, unbreakable)
         {
+            P1 = p1;
+            P2 = p2;
         }
 
         public override object Clone()
@@ -103,8 +105,8 @@ namespace TryFreetype.Model
             var valueNearestPoint = FindNearestPoint(point, P1.ToValuePoint(), P2.ToValuePoint());
 
             var nearestPoint = new Point(valueNearestPoint);
-            var edgeBefore = new LineEdge { P1 = P1, P2 = nearestPoint };
-            var edgeAfter = new LineEdge { P1 = nearestPoint, P2 = P2 };
+            var edgeBefore = new LineEdge(P1, nearestPoint);
+            var edgeAfter = new LineEdge(nearestPoint, P2);
 
             nearestPoint.IncomingEdge = edgeBefore;
             nearestPoint.OutgoingEdge = edgeAfter;
@@ -152,9 +154,12 @@ namespace TryFreetype.Model
     {
         public Point Control1;
 
-        public ConicEdge() :
+        public ConicEdge(Point p1, Point c1, Point p2) :
             base(EdgeType.Conic)
         {
+            P1 = p1;
+            Control1 = c1;
+            P2 = p2;
         }
 
         public override object Clone()
@@ -185,9 +190,13 @@ namespace TryFreetype.Model
         public Point Control1;
         public Point Control2;
 
-        public CubicEdge() :
+        public CubicEdge(Point p1, Point c1, Point c2, Point p2) :
             base(EdgeType.Cubic)
         {
+            P1 = p1;
+            Control1 = c1;
+            Control2 = c2;
+            P2 = p2;
         }
 
         public override object Clone()

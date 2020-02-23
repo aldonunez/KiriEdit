@@ -109,7 +109,7 @@ namespace TryFreetype
 
             var newPoint = new Point(x, y);
 
-            var edge = new LineEdge { P1 = curPoint, P2 = newPoint };
+            var edge = new LineEdge(curPoint, newPoint);
             curPoint.OutgoingEdge = edge;
             newPoint.IncomingEdge = edge;
             curPoint.OriginalOutgoingEdge = edge;
@@ -138,7 +138,7 @@ namespace TryFreetype
             var newPoint = new Point(x, y);
             var controlPoint = new Point(controlX, controlY);
 
-            var edge = new ConicEdge { P1 = curPoint, Control1 = controlPoint, P2 = newPoint };
+            var edge = new ConicEdge(curPoint, controlPoint, newPoint);
             curPoint.OutgoingEdge = edge;
             newPoint.IncomingEdge = edge;
             curPoint.OriginalOutgoingEdge = edge;
@@ -170,7 +170,7 @@ namespace TryFreetype
             var controlPoint1 = new Point(controlX1, controlY1);
             var controlPoint2 = new Point(controlX2, controlY2);
 
-            var edge = new CubicEdge { P1 = curPoint, Control1 = controlPoint1, Control2 = controlPoint2, P2 = newPoint };
+            var edge = new CubicEdge(curPoint, controlPoint1, controlPoint2, newPoint);
             curPoint.OutgoingEdge = edge;
             newPoint.IncomingEdge = edge;
             curPoint.OriginalOutgoingEdge = edge;

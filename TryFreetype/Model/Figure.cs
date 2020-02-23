@@ -178,13 +178,8 @@ namespace TryFreetype.Model
 
             // Add a line edge between old points and between new points.
 
-            LineEdge lineForNew = new LineEdge(unbreakable: true);
-            lineForNew.P1 = newPoint1;
-            lineForNew.P2 = newPoint2;
-
-            LineEdge lineForOld = new LineEdge(unbreakable: true);
-            lineForOld.P1 = point2;
-            lineForOld.P2 = point1;
+            LineEdge lineForNew = new LineEdge(newPoint1, newPoint2, unbreakable: true);
+            LineEdge lineForOld = new LineEdge(point2, point1, unbreakable: true);
 
             newPoint1.OutgoingEdge = lineForNew;
             newPoint2.IncomingEdge = lineForNew;
