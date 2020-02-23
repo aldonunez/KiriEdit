@@ -241,6 +241,12 @@ namespace TryFreetype.Model
             Point p = new Point(Points[0].X, Points[0].Y);
             p.Group = this;
 
+            if (IsFixed)
+            {
+                p.OriginalIncomingEdge = Points[0].OriginalIncomingEdge;
+                p.OriginalOutgoingEdge = Points[0].OriginalOutgoingEdge;
+            }
+
             return p;
         }
     }

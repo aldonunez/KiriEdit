@@ -119,14 +119,23 @@ namespace TryFreetype.Model
                 fixedPointBefore = fixedPointBefore.IncomingEdge.P1;
             }
 
-            Point fixedPointAfter = fixedPointBefore.OriginalOutgoingEdge.P2;
+            Point fixedPointAfter = pointToDelete;
+
+            while (!fixedPointAfter.Group.IsFixed)
+            {
+                fixedPointAfter = fixedPointAfter.OutgoingEdge.P2;
+            }
 
             // Collect the points between the endpoints.
 
-            Edge directEdge = (Edge) fixedPointBefore.OriginalOutgoingEdge.Clone();
             Edge firstEdgeToReplace = fixedPointBefore.OutgoingEdge;
 
             // Replace the path between the original endpoints with the original edge.
+
+            Edge directEdge = (Edge) fixedPointBefore.OriginalOutgoingEdge.Clone();
+
+            directEdge.P1 = fixedPointBefore;
+            directEdge.P2 = fixedPointAfter;
 
             fixedPointBefore.OutgoingEdge = directEdge;
             fixedPointAfter.IncomingEdge = directEdge;
