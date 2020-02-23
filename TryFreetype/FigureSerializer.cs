@@ -26,17 +26,19 @@ namespace TryFreetype
 
             _writer.WriteLine("figure");
 
+            WritePointGroups();
+            WriteContours();
+            WriteOriginalEdges();
+
+            _writer.WriteLine("end figure");
+        }
+
+        private void WritePointGroups()
+        {
             foreach (var pointGroup in _figure.PointGroups)
             {
                 WritePointGroup(pointGroup);
             }
-
-            foreach (var contour in _figure.Contours)
-            {
-                WriteContour(contour);
-            }
-
-            _writer.WriteLine("end figure");
         }
 
         private void WritePointGroup(PointGroup pointGroup)
@@ -45,6 +47,14 @@ namespace TryFreetype
             _writer.WriteLine("  {0} pointgoup", id);
             _writer.WriteLine("    isFixed {0}", pointGroup.IsFixed);
             _writer.WriteLine("  end pointgroup");
+        }
+
+        private void WriteContours()
+        {
+            foreach (var contour in _figure.Contours)
+            {
+                WriteContour(contour);
+            }
         }
 
         private void WriteContour(Contour contour)
@@ -107,14 +117,19 @@ namespace TryFreetype
                     break;
             }
 
+            _writer.WriteLine("  end contour");
+        }
+
+        private void WriteOriginalEdges()
+        {
             foreach (var pointGroup in _figure.PointGroups)
             {
                 if (!pointGroup.IsFixed)
                     continue;
 
-                _writer.WriteLine("    original-edge");
+                _writer.WriteLine("  original-edge");
 
-                edge = pointGroup.Points[0].OriginalOutgoingEdge;
+                Edge edge = pointGroup.Points[0].OriginalOutgoingEdge;
 
                 int id0, id1, id2, id3;
 
@@ -124,31 +139,28 @@ namespace TryFreetype
                 {
                     case EdgeType.Line:
                         id1 = _pointGroupToId[edge.P2.Group];
-                        _writer.WriteLine("      type line");
-                        _writer.WriteLine("      pointgroups {0} {1}", id0, id1);
+                        _writer.WriteLine("    type line");
+                        _writer.WriteLine("    pointgroups {0} {1}", id0, id1);
                         break;
 
                     case EdgeType.Conic:
                         id2 = _pointGroupToId[edge.P2.Group];
-                        _writer.WriteLine("      type conic");
-                        _writer.WriteLine("      pointgroups {0} {1}", id0, id2);
+                        _writer.WriteLine("    type conic");
+                        _writer.WriteLine("    pointgroups {0} {1}", id0, id2);
                         WritePointValue(((ConicEdge) edge).Control1);
                         break;
 
                     case EdgeType.Cubic:
                         id3 = _pointGroupToId[edge.P2.Group];
-                        _writer.WriteLine("      type cubic");
-                        _writer.WriteLine("      pointgroups {0} {1}", id0, id3);
+                        _writer.WriteLine("    type cubic");
+                        _writer.WriteLine("    pointgroups {0} {1}", id0, id3);
                         WritePointValue(((CubicEdge) edge).Control1);
                         WritePointValue(((CubicEdge) edge).Control2);
                         break;
                 }
 
-
-                _writer.WriteLine("    end original-edge");
+                _writer.WriteLine("  end original-edge");
             }
-
-            _writer.WriteLine("  end contour");
         }
 
         private void WritePoint(Point point)
