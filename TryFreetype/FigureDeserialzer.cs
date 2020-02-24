@@ -21,14 +21,14 @@ namespace TryFreetype
             [FieldOffset(0)]
             public long IntValue;
             [FieldOffset(0)]
-            public double a;
+            public double FloatValue;
         }
 
         [StructLayout(LayoutKind.Explicit)]
         private struct RefUnion
         {
             [FieldOffset(0)]
-            public string str;
+            public string String;
         }
 
         private enum TokenType
@@ -97,7 +97,7 @@ namespace TryFreetype
         {
             ReadToken();
 
-            if (IsAtEof())
+            if (IsAtEof() || _tokenType == TokenType.Eol )
             {
                 if (id >= 0)
                     throw new ApplicationException();
@@ -105,15 +105,12 @@ namespace TryFreetype
                 return;
             }
 
-            if (_tokenType == TokenType.Eol)
-                return;
-
             if (_tokenType != TokenType.Word)
                 throw new ApplicationException();
 
             if (WordMatches("end"))
             {
-                OnEndRecord();
+                OnEndRecord(null);
 
                 _nestingLevel--;
 
@@ -122,7 +119,9 @@ namespace TryFreetype
             }
             else
             {
-                OnBeginRecord(id, _tokenString.ToString());
+                string head = _tokenString.ToString();
+
+                OnBeginRecord(id, head);
 
                 ReadToken();
 
@@ -139,22 +138,7 @@ namespace TryFreetype
                     }
                     else
                     {
-                        Token token = new Token();
-                        token.Type = _tokenType;
-                        switch (_tokenType)
-                        {
-                            case TokenType.Word:
-                                token.R.str = _tokenString.ToString();
-                                break;
-
-                            case TokenType.Integer:
-                                token.V.IntValue = _intVal;
-                                break;
-
-                            case TokenType.Float:
-                                token.V.a = _floatVal;
-                                break;
-                        }
+                        var token = WrapCurrentToken();
 
                         OnAttribute(token);
 
@@ -162,8 +146,31 @@ namespace TryFreetype
                     }
                 }
 
-                //OnEndRecord();
+                OnEndRecord(head);
             }
+        }
+
+        private Token WrapCurrentToken()
+        {
+            Token token = new Token();
+            token.Type = _tokenType;
+
+            switch ( _tokenType )
+            {
+                case TokenType.Word:
+                    token.R.String = _tokenString.ToString();
+                    break;
+
+                case TokenType.Integer:
+                    token.V.IntValue = _intVal;
+                    break;
+
+                case TokenType.Float:
+                    token.V.FloatValue = _floatVal;
+                    break;
+            }
+
+            return token;
         }
 
         private bool WordMatches(string str)
@@ -290,7 +297,7 @@ namespace TryFreetype
                     dotFound = true;
                 }
 
-                _tokenString.Append((char) _iChar);
+                TokenAppendChar( _iChar );
                 ReadChar();
             }
             while (!CharIsSeparator(_iChar));
@@ -330,12 +337,17 @@ namespace TryFreetype
                 if (!CharIsLetterOrDigit(_iChar) && _iChar != '-')
                     throw new ApplicationException();
 
-                _tokenString.Append((char) _iChar);
+                TokenAppendChar(_iChar);
                 ReadChar();
             }
             while (!CharIsSeparator(_iChar));
 
             _tokenType = TokenType.Word;
+        }
+
+        private void TokenAppendChar(int iChar)
+        {
+            _tokenString.Append( (char) iChar );
         }
 
         private void SkipWhitespace()
@@ -371,14 +383,15 @@ namespace TryFreetype
             return deserializer.Figure;
         }
 
-        private void OnEndRecord()
+        private void OnEndRecord(string head)
         {
-            Console.WriteLine("end");
+            if (head == null)
+                Console.WriteLine("end");
         }
 
-        private void OnBeginRecord(long id, string v)
+        private void OnBeginRecord(long id, string head)
         {
-            Console.WriteLine("begin {0} ({1})", v, id);
+            Console.WriteLine("begin {0} ({1})", head, id);
         }
 
         private void OnAttribute(Token token)
