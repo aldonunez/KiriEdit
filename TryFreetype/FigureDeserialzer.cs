@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Text;
 using TryFreetype.Model;
 
@@ -12,25 +11,15 @@ namespace TryFreetype
         protected struct Token
         {
             public TokenType Type;
-            public ValueUnion V;
-            public RefUnion R;
+            public int IntValue;
+            public string StringValue;
 
-            public long GetInteger()
+            public int GetInteger()
             {
                 if (Type != TokenType.Integer)
                     throw new ApplicationException();
 
-                return V.IntValue;
-            }
-
-            public double GetFloat()
-            {
-                if (Type == TokenType.Float)
-                    return V.FloatValue;
-                else if (Type == TokenType.Integer)
-                    return V.IntValue;
-
-                throw new ApplicationException();
+                return IntValue;
             }
 
             public string GetWord()
@@ -38,24 +27,8 @@ namespace TryFreetype
                 if (Type != TokenType.Word)
                     throw new ApplicationException();
 
-                return R.String;
+                return StringValue;
             }
-        }
-
-        [StructLayout(LayoutKind.Explicit)]
-        protected struct ValueUnion
-        {
-            [FieldOffset(0)]
-            public long IntValue;
-            [FieldOffset(0)]
-            public double FloatValue;
-        }
-
-        [StructLayout(LayoutKind.Explicit)]
-        protected struct RefUnion
-        {
-            [FieldOffset(0)]
-            public string String;
         }
 
         protected enum TokenType
@@ -74,8 +47,7 @@ namespace TryFreetype
 
         private StringBuilder _tokenString = new StringBuilder();
         private TokenType _tokenType;
-        private long _intVal;
-        private double _floatVal;
+        private int _intVal;
 
         internal Parser(TextReader reader)
         {
@@ -104,7 +76,7 @@ namespace TryFreetype
         {
             SkipWhitespace();
 
-            long id = -1;
+            int id = -1;
 
             if (CharIsDigit(_iChar))
             {
@@ -114,7 +86,7 @@ namespace TryFreetype
             ReadRecord(id);
         }
 
-        private void ReadRecord(long id)
+        private void ReadRecord(int id)
         {
             ReadToken();
 
@@ -183,15 +155,11 @@ namespace TryFreetype
             switch (_tokenType)
             {
                 case TokenType.Word:
-                    token.R.String = _tokenString.ToString();
+                    token.StringValue = _tokenString.ToString();
                     break;
 
                 case TokenType.Integer:
-                    token.V.IntValue = _intVal;
-                    break;
-
-                case TokenType.Float:
-                    token.V.FloatValue = _floatVal;
+                    token.IntValue = _intVal;
                     break;
             }
 
@@ -299,7 +267,6 @@ namespace TryFreetype
         private void ReadNumber()
         {
             bool negate = false;
-            bool dotFound = false;
 
             _tokenString.Clear();
 
@@ -311,39 +278,21 @@ namespace TryFreetype
 
             do
             {
-                if (_iChar != '.' && !CharIsDigit(_iChar))
+                if (!CharIsDigit(_iChar))
                     throw new ApplicationException();
-
-                if (_iChar == '.')
-                {
-                    if (dotFound)
-                        throw new ApplicationException();
-
-                    dotFound = true;
-                }
 
                 TokenAppendChar(_iChar);
                 ReadChar();
             }
             while (!CharIsSeparator(_iChar));
 
-            if (dotFound)
-            {
-                _tokenType = TokenType.Float;
-                _floatVal = Convert.ToDouble(_tokenString.ToString());
-                if (negate)
-                    _floatVal = -_floatVal;
-            }
-            else
-            {
-                _tokenType = TokenType.Integer;
-                _intVal = Convert.ToInt64(_tokenString.ToString());
-                if (negate)
-                    _intVal = -_intVal;
-            }
+            _tokenType = TokenType.Integer;
+            _intVal = Convert.ToInt32(_tokenString.ToString());
+            if (negate)
+                _intVal = -_intVal;
         }
 
-        private long ReadInteger()
+        private int ReadInteger()
         {
             ReadNumber();
 
@@ -399,7 +348,7 @@ namespace TryFreetype
                 throw new ApplicationException();
         }
 
-        protected abstract void OnBeginRecord(long id, string head, IList<Token> attrs);
+        protected abstract void OnBeginRecord(int id, string head, IList<Token> attrs);
         protected abstract void OnEndRecord(string head);
     }
 
@@ -449,7 +398,7 @@ namespace TryFreetype
             _level--;
         }
 
-        protected override void OnBeginRecord(long id, string head, IList<Token> attrs)
+        protected override void OnBeginRecord(int id, string head, IList<Token> attrs)
         {
             Console.WriteLine("begin {0} ({1})", head, id);
 
@@ -472,35 +421,35 @@ namespace TryFreetype
             }
         }
 
-        private void HandleRecordInFigure(long id, string head, IList<Token> attrs)
+        private void HandleRecordInFigure(int id, string head, IList<Token> attrs)
         {
             if (head == "width")
             {
                 if (attrs.Count != 1)
                     throw new ApplicationException();
 
-                _width = (int) attrs[0].GetInteger();
+                _width = attrs[0].GetInteger();
             }
             else if (head == "height")
             {
                 if (attrs.Count != 1)
                     throw new ApplicationException();
 
-                _height = (int) attrs[0].GetInteger();
+                _height = attrs[0].GetInteger();
             }
             else if (head == "offsetx")
             {
                 if (attrs.Count != 1)
                     throw new ApplicationException();
 
-                _offsetX = (int) attrs[0].GetFloat();
+                _offsetX = attrs[0].GetInteger();
             }
             else if (head == "offsety")
             {
                 if (attrs.Count != 1)
                     throw new ApplicationException();
 
-                _offsetY = (int) attrs[0].GetFloat();
+                _offsetY = attrs[0].GetInteger();
             }
             else if (head == "pointgroup")
             {
@@ -511,7 +460,7 @@ namespace TryFreetype
 
                 var pointGroup = new PointGroup(isFixed);
 
-                _pointGroups.Add((int) id, pointGroup);
+                _pointGroups.Add(id, pointGroup);
             }
             else if (head == "contour")
             {
@@ -524,10 +473,10 @@ namespace TryFreetype
                     throw new ApplicationException();
 
                 string type = attrs[0].GetWord();
-                long id0 = attrs[1].GetInteger();
-                long id1 = attrs[2].GetInteger();
-                PointGroup pg0 = _pointGroups[(int) id0];
-                PointGroup pg1 = _pointGroups[(int) id1];
+                int id0 = attrs[1].GetInteger();
+                int id1 = attrs[2].GetInteger();
+                PointGroup pg0 = _pointGroups[id0];
+                PointGroup pg1 = _pointGroups[id1];
                 Edge edge;
 
                 switch (type)
@@ -555,14 +504,14 @@ namespace TryFreetype
                 if (attrs.Count < 4)
                     throw new ApplicationException();
 
-                long idE1P1 = attrs[0].GetInteger();
-                long idE1P2 = attrs[1].GetInteger();
-                long idE2P1 = attrs[2].GetInteger();
-                long idE2P2 = attrs[3].GetInteger();
-                Point p0 = _points[(int) idE1P1];
-                Point p1 = _points[(int) idE1P2];
-                Point p2 = _points[(int) idE2P1];
-                Point p3 = _points[(int) idE2P2];
+                int idE1P1 = attrs[0].GetInteger();
+                int idE1P2 = attrs[1].GetInteger();
+                int idE2P1 = attrs[2].GetInteger();
+                int idE2P2 = attrs[3].GetInteger();
+                Point p0 = _points[idE1P1];
+                Point p1 = _points[idE1P2];
+                Point p2 = _points[idE2P1];
+                Point p3 = _points[idE2P2];
 
                 Edge edge1 = p0.OutgoingEdge;
                 Edge edge2 = p2.OutgoingEdge;
@@ -584,20 +533,20 @@ namespace TryFreetype
             }
         }
 
-        private void HandleRecordInContour(long id, string head, IList<Token> attrs)
+        private void HandleRecordInContour(int id, string head, IList<Token> attrs)
         {
             if (head == "point")
             {
                 if (attrs.Count < 3)
                     throw new ApplicationException();
 
-                int x = (int) attrs[0].GetInteger();
-                int y = (int) attrs[1].GetInteger();
-                long groupId = attrs[2].GetInteger();
+                int x = attrs[0].GetInteger();
+                int y = attrs[1].GetInteger();
+                int groupId = attrs[2].GetInteger();
                 Point point = new Point(x, y);
-                PointGroup group = _pointGroups[(int) groupId];
+                PointGroup group = _pointGroups[groupId];
 
-                _points.Add((int) id, point);
+                _points.Add(id, point);
 
                 point.Group = group;
                 point.Contour = _curContour;
@@ -612,10 +561,10 @@ namespace TryFreetype
                     throw new ApplicationException();
 
                 string type = attrs[0].GetWord();
-                long id0 = attrs[1].GetInteger();
-                long id1 = attrs[2].GetInteger();
-                Point p0 = _points[(int) id0];
-                Point p1 = _points[(int) id1];
+                int id0 = attrs[1].GetInteger();
+                int id1 = attrs[2].GetInteger();
+                Point p0 = _points[id0];
+                Point p1 = _points[id1];
                 Edge edge;
 
                 switch (type)

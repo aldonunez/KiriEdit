@@ -1,5 +1,4 @@
 ﻿using System;
-using TryFreetype.Model;
 
 namespace TryFreetype
 {
