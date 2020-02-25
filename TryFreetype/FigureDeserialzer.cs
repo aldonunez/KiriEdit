@@ -45,7 +45,7 @@ namespace TryFreetype
         private int _iChar;
         private int _nestingLevel;
 
-        private StringBuilder _tokenString = new StringBuilder();
+        private StringBuilder _tokenChars = new StringBuilder();
         private TokenType _tokenType;
         private int _intVal;
 
@@ -68,7 +68,7 @@ namespace TryFreetype
                 ReadRecord();
             }
 
-            if (_nestingLevel > 0)
+            if (_nestingLevel != 0)
                 throw new ApplicationException();
         }
 
@@ -103,7 +103,7 @@ namespace TryFreetype
 
             if (WordMatches("end"))
             {
-                OnEndRecord(null);
+                OnEndRecord();
 
                 _nestingLevel--;
 
@@ -112,7 +112,7 @@ namespace TryFreetype
             }
             else
             {
-                string head = _tokenString.ToString();
+                string head = _tokenChars.ToString();
                 bool openRecord = false;
                 var attrs = new List<Token>();
 
@@ -152,7 +152,7 @@ namespace TryFreetype
             switch (_tokenType)
             {
                 case TokenType.Word:
-                    token.StringValue = _tokenString.ToString();
+                    token.StringValue = _tokenChars.ToString();
                     break;
 
                 case TokenType.Integer:
@@ -168,12 +168,12 @@ namespace TryFreetype
             if (_tokenType != TokenType.Word)
                 throw new ApplicationException();
 
-            if (_tokenString.Length != str.Length)
+            if (_tokenChars.Length != str.Length)
                 return false;
 
             for (int i = 0; i < str.Length; i++)
             {
-                if (_tokenString[i] != str[i])
+                if (_tokenChars[i] != str[i])
                     return false;
             }
 
@@ -242,22 +242,16 @@ namespace TryFreetype
 
         private void ReadEol()
         {
-            if (_iChar == '\n')
-            {
-                _tokenType = TokenType.Eol;
-                ReadChar();
-                return;
-            }
-
             if (_iChar == '\r')
             {
                 _tokenType = TokenType.Eol;
                 ReadChar();
+            }
 
-                if (_iChar == '\n')
-                    ReadChar();
-
-                return;
+            if (_iChar == '\n')
+            {
+                _tokenType = TokenType.Eol;
+                ReadChar();
             }
         }
 
@@ -265,7 +259,7 @@ namespace TryFreetype
         {
             bool negate = false;
 
-            _tokenString.Clear();
+            _tokenChars.Clear();
 
             if (_iChar == '-')
             {
@@ -284,7 +278,7 @@ namespace TryFreetype
             while (!CharIsSeparator(_iChar));
 
             _tokenType = TokenType.Integer;
-            _intVal = Convert.ToInt32(_tokenString.ToString());
+            _intVal = Convert.ToInt32(_tokenChars.ToString());
             if (negate)
                 _intVal = -_intVal;
         }
@@ -301,7 +295,7 @@ namespace TryFreetype
 
         private void ReadWord()
         {
-            _tokenString.Clear();
+            _tokenChars.Clear();
 
             do
             {
@@ -318,7 +312,7 @@ namespace TryFreetype
 
         private void TokenAppendChar(int iChar)
         {
-            _tokenString.Append((char) iChar);
+            _tokenChars.Append((char) iChar);
         }
 
         private void SkipWhitespace()
@@ -346,7 +340,7 @@ namespace TryFreetype
         }
 
         protected abstract void OnBeginRecord(int id, string head, IList<Token> attrs, bool open);
-        protected abstract void OnEndRecord(string head);
+        protected abstract void OnEndRecord();
     }
 
     internal class FigureParser : Parser
@@ -600,7 +594,7 @@ namespace TryFreetype
                 throw new ApplicationException();
         }
 
-        protected override void OnEndRecord(string head)
+        protected override void OnEndRecord()
         {
             Console.WriteLine("end");
 
