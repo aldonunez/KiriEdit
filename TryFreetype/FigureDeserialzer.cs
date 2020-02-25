@@ -463,175 +463,185 @@ namespace TryFreetype
                     break;
 
                 case Node.Figure:
-                    if (head == "width")
-                    {
-                        if (attrs.Count != 1)
-                            throw new ApplicationException();
-
-                        _width = (int) attrs[0].GetInteger();
-                    }
-                    else if (head == "height")
-                    {
-                        if (attrs.Count != 1)
-                            throw new ApplicationException();
-
-                        _height = (int) attrs[0].GetInteger();
-                    }
-                    else if (head == "offsetx")
-                    {
-                        if (attrs.Count != 1)
-                            throw new ApplicationException();
-
-                        _offsetX = (int) attrs[0].GetFloat();
-                    }
-                    else if (head == "offsety")
-                    {
-                        if (attrs.Count != 1)
-                            throw new ApplicationException();
-
-                        _offsetY = (int) attrs[0].GetFloat();
-                    }
-                    else if (head == "pointgroup")
-                    {
-                        if (attrs.Count < 1)
-                            throw new ApplicationException();
-
-                        bool isFixed = attrs[0].GetInteger() != 0;
-
-                        var pointGroup = new PointGroup(isFixed);
-
-                        _pointGroups.Add((int) id, pointGroup);
-                    }
-                    else if (head == "contour")
-                    {
-                        PushLevel(Node.Contour);
-                        _curContour = new Contour();
-                    }
-                    else if (head == "original-edge")
-                    {
-                        if (attrs.Count < 3)
-                            throw new ApplicationException();
-
-                        string type = attrs[0].GetWord();
-                        long id0 = attrs[1].GetInteger();
-                        long id1 = attrs[2].GetInteger();
-                        PointGroup pg0 = _pointGroups[(int) id0];
-                        PointGroup pg1 = _pointGroups[(int) id1];
-                        Edge edge;
-
-                        switch (type)
-                        {
-                            case "line":
-                                {
-                                    LineEdge lineEdge = new LineEdge(pg0.Points[0], pg1.Points[0]);
-                                    edge = lineEdge;
-                                }
-                                break;
-
-                            case "conic":
-                            case "cubic":
-                                throw new NotImplementedException();
-
-                            default:
-                                throw new ApplicationException();
-                        }
-
-                        pg0.OriginalOutgoingEdge = edge;
-                        pg1.OriginalIncomingEdge = edge;
-                    }
-                    else if (head == "cut")
-                    {
-                        if (attrs.Count < 4)
-                            throw new ApplicationException();
-
-                        long idE1P1 = attrs[0].GetInteger();
-                        long idE1P2 = attrs[1].GetInteger();
-                        long idE2P1 = attrs[2].GetInteger();
-                        long idE2P2 = attrs[3].GetInteger();
-                        Point p0 = _points[(int) idE1P1];
-                        Point p1 = _points[(int) idE1P2];
-                        Point p2 = _points[(int) idE2P1];
-                        Point p3 = _points[(int) idE2P2];
-
-                        Edge edge1 = p0.OutgoingEdge;
-                        Edge edge2 = p2.OutgoingEdge;
-
-                        if (edge1.Type != EdgeType.Line
-                            || edge2.Type != EdgeType.Line)
-                            throw new ApplicationException();
-
-                        if (edge1.P2 != p1 || edge2.P2 != p3)
-                            throw new ApplicationException();
-
-                        Cut cut = new Cut((LineEdge) edge1, (LineEdge) edge2);
-
-                        _cuts.Add(cut);
-                    }
-                    else
-                    {
-                        throw new ApplicationException();
-                    }
+                    HandleRecordInFigure(id, head, attrs);
                     break;
 
                 case Node.Contour:
-                    if (head == "point")
-                    {
-                        if (attrs.Count < 3)
-                            throw new ApplicationException();
-
-                        double x = attrs[0].GetFloat();
-                        double y = attrs[1].GetFloat();
-                        long groupId = attrs[2].GetInteger();
-                        Point point = new Point(x, y);
-                        PointGroup group = _pointGroups[(int) groupId];
-
-                        _points.Add((int) id, point);
-
-                        point.Group = group;
-                        point.Contour = _curContour;
-                        group.Points.Add(point);
-
-                        if (_curContour.FirstPoint == null)
-                            _curContour.FirstPoint = point;
-                    }
-                    else if (head == "edge")
-                    {
-                        if (attrs.Count < 4)
-                            throw new ApplicationException();
-
-                        string type = attrs[0].GetWord();
-                        long id0 = attrs[1].GetInteger();
-                        long id1 = attrs[2].GetInteger();
-                        Point p0 = _points[(int) id0];
-                        Point p1 = _points[(int) id1];
-                        Edge edge;
-
-                        switch (type)
-                        {
-                            case "line":
-                                {
-                                    bool unbreakable = attrs[3].GetInteger() != 0;
-                                    LineEdge lineEdge = new LineEdge(p0, p1, unbreakable);
-                                    edge = lineEdge;
-                                }
-                                break;
-
-                            case "conic":
-                            case "cubic":
-                                throw new NotImplementedException();
-
-                            default:
-                                throw new ApplicationException();
-                        }
-
-                        p0.OutgoingEdge = edge;
-                        p1.IncomingEdge = edge;
-                    }
-                    else
-                    {
-                        throw new ApplicationException();
-                    }
+                    HandleRecordInContour(id, head, attrs);
                     break;
+            }
+        }
+
+        private void HandleRecordInFigure(long id, string head, IList<Token> attrs)
+        {
+            if (head == "width")
+            {
+                if (attrs.Count != 1)
+                    throw new ApplicationException();
+
+                _width = (int) attrs[0].GetInteger();
+            }
+            else if (head == "height")
+            {
+                if (attrs.Count != 1)
+                    throw new ApplicationException();
+
+                _height = (int) attrs[0].GetInteger();
+            }
+            else if (head == "offsetx")
+            {
+                if (attrs.Count != 1)
+                    throw new ApplicationException();
+
+                _offsetX = (int) attrs[0].GetFloat();
+            }
+            else if (head == "offsety")
+            {
+                if (attrs.Count != 1)
+                    throw new ApplicationException();
+
+                _offsetY = (int) attrs[0].GetFloat();
+            }
+            else if (head == "pointgroup")
+            {
+                if (attrs.Count < 1)
+                    throw new ApplicationException();
+
+                bool isFixed = attrs[0].GetInteger() != 0;
+
+                var pointGroup = new PointGroup(isFixed);
+
+                _pointGroups.Add((int) id, pointGroup);
+            }
+            else if (head == "contour")
+            {
+                PushLevel(Node.Contour);
+                _curContour = new Contour();
+            }
+            else if (head == "original-edge")
+            {
+                if (attrs.Count < 3)
+                    throw new ApplicationException();
+
+                string type = attrs[0].GetWord();
+                long id0 = attrs[1].GetInteger();
+                long id1 = attrs[2].GetInteger();
+                PointGroup pg0 = _pointGroups[(int) id0];
+                PointGroup pg1 = _pointGroups[(int) id1];
+                Edge edge;
+
+                switch (type)
+                {
+                    case "line":
+                        {
+                            LineEdge lineEdge = new LineEdge(pg0.Points[0], pg1.Points[0]);
+                            edge = lineEdge;
+                        }
+                        break;
+
+                    case "conic":
+                    case "cubic":
+                        throw new NotImplementedException();
+
+                    default:
+                        throw new ApplicationException();
+                }
+
+                pg0.OriginalOutgoingEdge = edge;
+                pg1.OriginalIncomingEdge = edge;
+            }
+            else if (head == "cut")
+            {
+                if (attrs.Count < 4)
+                    throw new ApplicationException();
+
+                long idE1P1 = attrs[0].GetInteger();
+                long idE1P2 = attrs[1].GetInteger();
+                long idE2P1 = attrs[2].GetInteger();
+                long idE2P2 = attrs[3].GetInteger();
+                Point p0 = _points[(int) idE1P1];
+                Point p1 = _points[(int) idE1P2];
+                Point p2 = _points[(int) idE2P1];
+                Point p3 = _points[(int) idE2P2];
+
+                Edge edge1 = p0.OutgoingEdge;
+                Edge edge2 = p2.OutgoingEdge;
+
+                if (edge1.Type != EdgeType.Line
+                    || edge2.Type != EdgeType.Line)
+                    throw new ApplicationException();
+
+                if (edge1.P2 != p1 || edge2.P2 != p3)
+                    throw new ApplicationException();
+
+                Cut cut = new Cut((LineEdge) edge1, (LineEdge) edge2);
+
+                _cuts.Add(cut);
+            }
+            else
+            {
+                throw new ApplicationException();
+            }
+        }
+
+        private void HandleRecordInContour(long id, string head, IList<Token> attrs)
+        {
+            if (head == "point")
+            {
+                if (attrs.Count < 3)
+                    throw new ApplicationException();
+
+                double x = attrs[0].GetFloat();
+                double y = attrs[1].GetFloat();
+                long groupId = attrs[2].GetInteger();
+                Point point = new Point(x, y);
+                PointGroup group = _pointGroups[(int) groupId];
+
+                _points.Add((int) id, point);
+
+                point.Group = group;
+                point.Contour = _curContour;
+                group.Points.Add(point);
+
+                if (_curContour.FirstPoint == null)
+                    _curContour.FirstPoint = point;
+            }
+            else if (head == "edge")
+            {
+                if (attrs.Count < 4)
+                    throw new ApplicationException();
+
+                string type = attrs[0].GetWord();
+                long id0 = attrs[1].GetInteger();
+                long id1 = attrs[2].GetInteger();
+                Point p0 = _points[(int) id0];
+                Point p1 = _points[(int) id1];
+                Edge edge;
+
+                switch (type)
+                {
+                    case "line":
+                        {
+                            bool unbreakable = attrs[3].GetInteger() != 0;
+                            LineEdge lineEdge = new LineEdge(p0, p1, unbreakable);
+                            edge = lineEdge;
+                        }
+                        break;
+
+                    case "conic":
+                    case "cubic":
+                        throw new NotImplementedException();
+
+                    default:
+                        throw new ApplicationException();
+                }
+
+                p0.OutgoingEdge = edge;
+                p1.IncomingEdge = edge;
+            }
+            else
+            {
+                throw new ApplicationException();
             }
         }
 
