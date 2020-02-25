@@ -40,7 +40,7 @@ namespace TryFreetype.Sample3
 #else
                 var renderer = new OutlineRenderer(figure);
 
-                renderer.CalculateShapes();
+                var shapes = renderer.CalculateShapes();
 
                 //renderer.RenderOutline();
                 var bitmap = renderer.RenderBitmap();

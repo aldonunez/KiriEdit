@@ -333,7 +333,19 @@ namespace TryFreetype
             return rightP;
         }
 
-        public void CalculateShapes()
+        public class Shape
+        {
+            public Contour OuterContour { get; }
+            public Contour[] InnerContours { get; }
+
+            public Shape(Contour outsideContour, Contour[] insideCountours)
+            {
+                OuterContour = outsideContour;
+                InnerContours = insideCountours;
+            }
+        }
+
+        public Shape[] CalculateShapes()
         {
             var outsideContours = new List<Contour>();
             var insideContours = new List<Contour>();
@@ -358,22 +370,23 @@ namespace TryFreetype
                 }
             }
 
-            foreach (var contour in _figure.Contours)
-            {
-                if (insideContours.Contains(contour))
-                    continue;
+            var insideContourLists = new List<Contour>[outsideContours.Count];
 
-                _curContourIndex = _figure.Contours.IndexOf(contour);
+            for (int i = 0; i < outsideContours.Count; i++)
+            {
+                var contour = outsideContours[i];
+
+                _curContourIndex = i;
                 MoveTo(contour.FirstPoint);
 
                 _figureWalker.WalkContour(contour);
+                insideContourLists[i] = new List<Contour>();
             }
 
             foreach (var contour in insideContours)
             {
                 Point rightP = FindRightmostPoint(contour);
                 int y = RoundAndClampY(TransformY(rightP.Y));
-                int outerIndex = 0;
 
                 for (int x = RoundAndClampX(TransformX(rightP.X)); x < _maskWidth; x++)
                 {
@@ -385,21 +398,33 @@ namespace TryFreetype
                         {
                             if ((b & (1 << i)) != 0)
                             {
-                                outerIndex = i;
+                                insideContourLists[i].Add(contour);
+
+                                int outerIndex = _figure.Contours.IndexOf(outsideContours[i]);
                                 Console.WriteLine("Found");
+                                int innerIndex = _figure.Contours.IndexOf(contour);
+                                Console.WriteLine("{0} goes with {1}", innerIndex, outerIndex);
+
                                 goto Found;
                             }
                         }
                     }
                 }
-            Found:
-                int innerIndex = _figure.Contours.IndexOf(contour);
-                Console.WriteLine("{0} goes with {1}", innerIndex, outerIndex);
 
-                // TODO: At this point we can:
-                //      1. Match all inner contours with outer ones.
-                //      2. Serialize SVG files with matching sets of inner and outer contours.
+                Debug.Fail("");
+
+            Found:
+                ;
             }
+
+            var shapes = new Shape[outsideContours.Count];
+
+            for (int i = 0; i < shapes.Length; i++)
+            {
+                shapes[i] = new Shape(outsideContours[i], insideContourLists[i].ToArray());
+            }
+
+            return shapes;
         }
 
 #if DEBUG
