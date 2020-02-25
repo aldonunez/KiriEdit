@@ -417,6 +417,7 @@ namespace TryFreetype
 
         private Dictionary<int, PointGroup> _pointGroups = new Dictionary<int, PointGroup>();
         private Dictionary<int, Point> _points = new Dictionary<int, Point>();
+        private List<Cut> _cuts = new List<Cut>();
         private Contour _curContour;
         private int _width;
         private int _height;
@@ -538,6 +539,34 @@ namespace TryFreetype
                         pg0.OriginalOutgoingEdge = edge;
                         pg1.OriginalIncomingEdge = edge;
                     }
+                    else if (head == "cut")
+                    {
+                        if (attrs.Count < 4)
+                            throw new ApplicationException();
+
+                        long idE1P1 = attrs[0].GetInteger();
+                        long idE1P2 = attrs[1].GetInteger();
+                        long idE2P1 = attrs[2].GetInteger();
+                        long idE2P2 = attrs[3].GetInteger();
+                        Point p0 = _points[(int) idE1P1];
+                        Point p1 = _points[(int) idE1P2];
+                        Point p2 = _points[(int) idE2P1];
+                        Point p3 = _points[(int) idE2P2];
+
+                        Edge edge1 = p0.OutgoingEdge;
+                        Edge edge2 = p2.OutgoingEdge;
+
+                        if (edge1.Type != EdgeType.Line
+                            || edge2.Type != EdgeType.Line)
+                            throw new ApplicationException();
+
+                        if (edge1.P2 != p1 || edge2.P2 != p3)
+                            throw new ApplicationException();
+
+                        Cut cut = new Cut((LineEdge) edge1, (LineEdge) edge2);
+
+                        _cuts.Add(cut);
+                    }
                     else
                     {
                         throw new ApplicationException();
@@ -567,7 +596,7 @@ namespace TryFreetype
                     }
                     else if (head == "edge")
                     {
-                        if (attrs.Count < 3)
+                        if (attrs.Count < 4)
                             throw new ApplicationException();
 
                         string type = attrs[0].GetWord();
@@ -581,7 +610,8 @@ namespace TryFreetype
                         {
                             case "line":
                                 {
-                                    LineEdge lineEdge = new LineEdge(p0, p1);
+                                    bool unbreakable = attrs[3].GetInteger() != 0;
+                                    LineEdge lineEdge = new LineEdge(p0, p1, unbreakable);
                                     edge = lineEdge;
                                 }
                                 break;
@@ -618,7 +648,7 @@ namespace TryFreetype
         {
             Parse();
 
-            Figure = new Figure(_pointGroups.Values, _width, _height, _offsetX, _offsetY);
+            Figure = new Figure(_pointGroups.Values, _cuts, _width, _height, _offsetX, _offsetY);
         }
     }
 

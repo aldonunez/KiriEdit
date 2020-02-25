@@ -47,7 +47,7 @@ namespace TryFreetype
             int width = glyphSlot.Metrics.Width.Ceiling();
             int height = glyphSlot.Metrics.Height.Ceiling();
 
-            figure = new Figure(_pointGroups, width, height, bbox.Left / 64.0, bbox.Bottom / 64.0);
+            figure = new Figure(_pointGroups, new Cut[0], width, height, bbox.Left / 64.0, bbox.Bottom / 64.0);
         }
 
         private void CloseCurrentContour()

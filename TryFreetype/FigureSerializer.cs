@@ -30,6 +30,7 @@ namespace TryFreetype
             WritePointGroups();
             WriteContours();
             WriteOriginalEdges();
+            WriteCuts();
 
             _writer.WriteLine("end");
         }
@@ -87,6 +88,7 @@ namespace TryFreetype
 
                 int id0, id1;
                 Point c1, c2;
+                bool unbreakable;
 
                 id0 = _pointToId[edge.P1];
                 id1 = _pointToId[edge.P2];
@@ -94,7 +96,8 @@ namespace TryFreetype
                 switch (edge.Type)
                 {
                     case EdgeType.Line:
-                        _writer.Write(" line {0} {1}", id0, id1);
+                        unbreakable = ((LineEdge) edge).Unbreakable;
+                        _writer.Write(" line {0} {1} {2}", id0, id1, unbreakable ? 1 : 0);
                         break;
 
                     case EdgeType.Conic:
@@ -158,6 +161,19 @@ namespace TryFreetype
                 }
 
                 _writer.WriteLine();
+            }
+        }
+
+        private void WriteCuts()
+        {
+            foreach ( var cut in _figure.Cuts )
+            {
+                int idE1P1 = _pointToId[cut.PairedEdge1.P1];
+                int idE1P2 = _pointToId[cut.PairedEdge1.P2];
+                int idE2P1 = _pointToId[cut.PairedEdge2.P1];
+                int idE2P2 = _pointToId[cut.PairedEdge2.P2];
+
+                _writer.WriteLine( "  cut {0} {1} {2} {3}", idE1P1, idE1P2, idE2P1, idE2P2 );
             }
         }
 

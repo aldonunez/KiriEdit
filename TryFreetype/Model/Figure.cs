@@ -21,7 +21,7 @@ namespace TryFreetype.Model
         private List<Cut> _cuts = new List<Cut>();
         public IReadOnlyList<Cut> Cuts { get; }
 
-        public Figure(IEnumerable<PointGroup> pointGroups, int width, int height, double offsetX, double offsetY)
+        public Figure(IEnumerable<PointGroup> pointGroups, IEnumerable<Cut> cuts, int width, int height, double offsetX, double offsetY)
         {
             Width = width;
             Height = height;
@@ -29,6 +29,7 @@ namespace TryFreetype.Model
             OffsetY = offsetY;
 
             ValidatePointGroups(pointGroups);
+            ValidateCuts(cuts);
 
             var contours = new HashSet<Contour>();
 
@@ -39,6 +40,7 @@ namespace TryFreetype.Model
 
             _pointGroups.AddRange(pointGroups);
             _contours.AddRange(contours);
+            _cuts.AddRange(cuts);
 
             PointGroups = _pointGroups.AsReadOnly();
             Contours = _contours.AsReadOnly();
@@ -71,6 +73,25 @@ namespace TryFreetype.Model
                         )
                         throw new ApplicationException();
                 }
+            }
+        }
+
+        private void ValidateCuts( IEnumerable<Cut> cuts )
+        {
+            foreach (var cut in cuts)
+            {
+                if ( cut.PairedEdge1 == null
+                    || cut.PairedEdge2 == null
+                    || cut.PairedEdge1.Type != EdgeType.Line
+                    || cut.PairedEdge1.P1 == null
+                    || cut.PairedEdge1.P2 == null
+                    || cut.PairedEdge1.P1 == cut.PairedEdge1.P2
+                    || cut.PairedEdge2.Type != EdgeType.Line
+                    || cut.PairedEdge2.P1 == null
+                    || cut.PairedEdge2.P2 == null
+                    || cut.PairedEdge2.P1 == cut.PairedEdge2.P2
+                    )
+                    throw new ApplicationException();
             }
         }
 
