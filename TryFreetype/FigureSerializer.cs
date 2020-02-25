@@ -26,11 +26,20 @@ namespace TryFreetype
 
             _writer.WriteLine("figure begin");
 
+            WriteFields();
             WritePointGroups();
             WriteContours();
             WriteOriginalEdges();
 
             _writer.WriteLine("end");
+        }
+
+        private void WriteFields()
+        {
+            _writer.WriteLine("  width {0}", _figure.Width);
+            _writer.WriteLine("  height {0}", _figure.Height);
+            _writer.WriteLine("  offsetx {0}", _figure.OffsetX);
+            _writer.WriteLine("  offsety {0}", _figure.OffsetY);
         }
 
         private void WritePointGroups()
@@ -44,7 +53,7 @@ namespace TryFreetype
         private void WritePointGroup(PointGroup pointGroup)
         {
             int id = _pointGroupToId[pointGroup];
-            _writer.WriteLine("  {0} pointgoup {1}", id, pointGroup.IsFixed ? 1 : 0);
+            _writer.WriteLine("  {0} pointgroup {1}", id, pointGroup.IsFixed ? 1 : 0);
         }
 
         private void WriteContours()

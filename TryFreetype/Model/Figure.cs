@@ -49,9 +49,7 @@ namespace TryFreetype.Model
         {
             foreach (var group in pointGroups)
             {
-                if (!group.IsFixed)
-                    throw new ApplicationException("");
-                if (group.Points.Count != 1)
+                if (group.Points.Count == 0)
                     throw new ApplicationException("");
 
                 var point = group.Points[0];
@@ -66,10 +64,13 @@ namespace TryFreetype.Model
                     )
                     throw new ApplicationException("");
 
-                if (group.OriginalIncomingEdge == null
-                    || group.OriginalOutgoingEdge == null
-                    )
-                    throw new ApplicationException();
+                if (group.IsFixed)
+                {
+                    if (group.OriginalIncomingEdge == null
+                        || group.OriginalOutgoingEdge == null
+                        )
+                        throw new ApplicationException();
+                }
             }
         }
 
