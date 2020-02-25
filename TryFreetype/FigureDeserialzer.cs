@@ -140,10 +140,7 @@ namespace TryFreetype
                     }
                 }
 
-                OnBeginRecord(id, head, attrs);
-
-                if (!openRecord)
-                    OnEndRecord(head);
+                OnBeginRecord(id, head, attrs, openRecord);
             }
         }
 
@@ -348,7 +345,7 @@ namespace TryFreetype
                 throw new ApplicationException();
         }
 
-        protected abstract void OnBeginRecord(int id, string head, IList<Token> attrs);
+        protected abstract void OnBeginRecord(int id, string head, IList<Token> attrs, bool open);
         protected abstract void OnEndRecord(string head);
     }
 
@@ -398,31 +395,33 @@ namespace TryFreetype
             _level--;
         }
 
-        protected override void OnBeginRecord(int id, string head, IList<Token> attrs)
+        protected override void OnBeginRecord(int id, string head, IList<Token> attrs, bool open)
         {
-            Console.WriteLine("begin {0} ({1})", head, id);
+            Console.WriteLine("{2} {0} ({1})", head, id, open ? "begin" : "record");
 
             switch (_nodeStack[_level])
             {
                 case Node.None:
-                    if (head != "figure")
+                    if (head != "figure" || !open)
                         throw new ApplicationException();
 
                     PushLevel(Node.Figure);
                     break;
 
                 case Node.Figure:
-                    HandleRecordInFigure(id, head, attrs);
+                    HandleRecordInFigure(id, head, attrs, open);
                     break;
 
                 case Node.Contour:
-                    HandleRecordInContour(id, head, attrs);
+                    HandleRecordInContour(id, head, attrs, open);
                     break;
             }
         }
 
-        private void HandleRecordInFigure(int id, string head, IList<Token> attrs)
+        private void HandleRecordInFigure(int id, string head, IList<Token> attrs, bool open)
         {
+            bool stayOpen = false;
+
             if (head == "width")
             {
                 if (attrs.Count != 1)
@@ -466,6 +465,7 @@ namespace TryFreetype
             {
                 PushLevel(Node.Contour);
                 _curContour = new Contour();
+                stayOpen = true;
             }
             else if (head == "original-edge")
             {
@@ -531,9 +531,12 @@ namespace TryFreetype
             {
                 throw new ApplicationException();
             }
+
+            if (stayOpen != open)
+                throw new ApplicationException();
         }
 
-        private void HandleRecordInContour(int id, string head, IList<Token> attrs)
+        private void HandleRecordInContour(int id, string head, IList<Token> attrs, bool open)
         {
             if (head == "point")
             {
@@ -592,15 +595,16 @@ namespace TryFreetype
             {
                 throw new ApplicationException();
             }
+
+            if (open)
+                throw new ApplicationException();
         }
 
         protected override void OnEndRecord(string head)
         {
-            if (head == null)
-                Console.WriteLine("end");
+            Console.WriteLine("end");
 
-            if (head == null)
-                PopLevel();
+            PopLevel();
         }
 
         internal void Deserialize()
