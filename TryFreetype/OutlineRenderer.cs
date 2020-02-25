@@ -7,19 +7,6 @@ using Point = TryFreetype.Model.Point;
 
 namespace TryFreetype
 {
-    // TODO:
-    public struct PointD
-    {
-        public double X;
-        public double Y;
-
-        public PointD(double x, double y)
-        {
-            X = x;
-            Y = y;
-        }
-    }
-
     public class OutlineRenderer
     {
         private Figure _figure;
