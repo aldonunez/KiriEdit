@@ -1,4 +1,6 @@
-﻿using TryFreetype.Model;
+﻿using System;
+using System.IO;
+using TryFreetype.Model;
 
 namespace TryFreetype.Sample3
 {
@@ -46,6 +48,41 @@ namespace TryFreetype.Sample3
 
                 FigureSerializer.Serialize(figure, System.Console.Out);
 #endif
+
+
+                Console.WriteLine( "-----------------------" );
+#if false
+                const string S =
+@"
+figure begin
+  11 pointgroup 0
+  12 pointgroup 1
+  contour begin
+    9 point 43.671875 89.296875 11
+    1 point 53.671875 9.296875 12
+    edge line 9 1
+    edge line 10 11
+  end
+  original-edge line 0 1
+  original-edge line 1 2
+end";
+#else
+                var stringWriter = new StringWriter();
+
+                FigureSerializer.Serialize(figure, stringWriter);
+
+                string S = stringWriter.ToString();
+#endif
+                TextReader reader = new StringReader(S);
+                figure = FigureDeserialzer.Deserialize(reader);
+
+                renderer = new OutlineRenderer(figure);
+
+                renderer.CalculateShapes();
+
+                renderer.RenderOutline();
+                bitmap = renderer.RenderBitmap();
+                bitmap.Save(@"C:\Temp\c.bmp");
             }
         }
     }
