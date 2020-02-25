@@ -1,34 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using TryFreetype.Model;
 using Point = TryFreetype.Model.Point;
 
 namespace TryFreetype
 {
-    public class OutlineRenderer
+#if DEBUG
+    public
+#else
+    internal
+#endif
+    class OutlineRenderer
     {
-        public class Shape
-        {
-            public Contour OuterContour { get; }
-            public Contour[] InnerContours { get; }
-
-            public Shape(Contour outsideContour, Contour[] insideCountours)
-            {
-                OuterContour = outsideContour;
-                InnerContours = insideCountours;
-            }
-        }
-
         private Figure _figure;
         private FigureWalker _figureWalker;
         private int _x, _y;
 
-        private int _curContourIndex;
+        private byte _color;
         private byte[,] _maskBuf;
         private int _maskWidth;
         private int _maskHeight;
+
+        public byte[,] Mask { get => _maskBuf; }
+        public int MaskWidth { get => _maskWidth; }
+        public int MaskHeight { get => _maskHeight; }
 
         public OutlineRenderer(Figure figure)
         {
@@ -94,7 +89,7 @@ namespace TryFreetype
 
         private void SetPixel(int x, int y)
         {
-            _maskBuf[y, x] = (byte) (1 << _curContourIndex);
+            _maskBuf[y, x] = _color;
         }
 
         private void DrawLine(Point to)
@@ -139,8 +134,7 @@ namespace TryFreetype
                 }
             }
         }
-
-        private int RoundAndClampX(double x)
+        public int RoundAndClampX(double x)
         {
             int iX = (int) Math.Round(x);
             if (iX >= _maskWidth)
@@ -150,7 +144,7 @@ namespace TryFreetype
             return iX;
         }
 
-        private int RoundAndClampY(double y)
+        public int RoundAndClampY(double y)
         {
             int iY = (int) Math.Round(y);
             if (iY >= _maskHeight)
@@ -160,12 +154,12 @@ namespace TryFreetype
             return iY;
         }
 
-        private double TransformX(int x)
+        public double TransformX(int x)
         {
             return (x - _figure.OffsetX) / 64.0;
         }
 
-        private double TransformY(int y)
+        public double TransformY(int y)
         {
             return (_figure.Height - y) / 64.0 - 1 + _figure.OffsetY / 64.0;
         }
@@ -265,200 +259,20 @@ namespace TryFreetype
             SetPixel(x, y);
         }
 
-        //--------------------------------------------------------------------
-
-        private enum Orientation
+        public void DrawContour(Contour contour, byte color)
         {
-            Unknown,
-            Inside,
-            Outside
-        }
+            _color = color;
+            MoveTo(contour.FirstPoint);
 
-        private static Orientation GetOrientation(Contour contour)
-        {
-            int prevX = contour.FirstPoint.X;
-            int prevY = contour.FirstPoint.Y;
-            Point p = contour.FirstPoint;
-            long area = 0;
-
-            while (true)
-            {
-                var edge = p.OutgoingEdge;
-
-                switch (edge.Type)
-                {
-                    case EdgeType.Line:
-                        area += (edge.P2.Y - prevY) * (edge.P2.X + prevX);
-                        break;
-
-                    case EdgeType.Conic:
-                        {
-                            var conicEdge = (ConicEdge) edge;
-                            area += (conicEdge.Control1.Y - prevY) * (conicEdge.Control1.X + prevX);
-                            area += (conicEdge.P2.Y - prevY) * (conicEdge.P2.X + prevX);
-                        }
-                        break;
-
-                    case EdgeType.Cubic:
-                        {
-                            var conicEdge = (CubicEdge) edge;
-                            area += (conicEdge.Control1.Y - prevY) * (conicEdge.Control1.X + prevX);
-                            area += (conicEdge.Control2.Y - prevY) * (conicEdge.Control2.X + prevX);
-                            area += (conicEdge.P2.Y - prevY) * (conicEdge.P2.X + prevX);
-                        }
-                        break;
-                }
-
-                prevX = edge.P2.X;
-                prevY = edge.P2.Y;
-
-                p = p.OutgoingEdge.P2;
-
-                if (p == contour.FirstPoint)
-                    break;
-            }
-
-            if (area > 0)
-                return Orientation.Inside;
-            else if (area < 0)
-                return Orientation.Outside;
-            else
-                return Orientation.Unknown;
-        }
-
-        private static Point FindRightmostPoint(Contour contour)
-        {
-            Point p = contour.FirstPoint;
-            Point rightP = new Point(0, 0);
-
-            while (true)
-            {
-                if (p.X > rightP.X)
-                    rightP = p;
-
-                p = p.OutgoingEdge.P2;
-
-                if (p == contour.FirstPoint)
-                    break;
-            }
-
-            return rightP;
-        }
-
-        private (List<Contour> outsideContours, List<Contour> insideContours) PartitionContours()
-        {
-            var outsideContours = new List<Contour>();
-            var insideContours = new List<Contour>();
-
-            foreach (var contour in _figure.Contours)
-            {
-                Orientation orientation = GetOrientation(contour);
-
-                switch (orientation)
-                {
-                    case Orientation.Inside:
-                        insideContours.Add(contour);
-                        break;
-
-                    case Orientation.Outside:
-                        outsideContours.Add(contour);
-                        break;
-
-                    default:
-                        Debug.Fail("");
-                        break;
-                }
-            }
-
-            return (outsideContours, insideContours);
-        }
-
-        private void DrawOutsides(List<Contour> outsideContours)
-        {
-            for (int i = 0; i < outsideContours.Count; i++)
-            {
-                var contour = outsideContours[i];
-
-                _curContourIndex = i;
-                MoveTo(contour.FirstPoint);
-
-                _figureWalker.WalkContour(contour);
-            }
-        }
-
-        private List<Contour>[] DetermineInsides(List<Contour> outsideContours, List<Contour> insideContours)
-        {
-            var insideContourLists = new List<Contour>[outsideContours.Count];
-
-            for (int i = 0; i < outsideContours.Count; i++)
-                insideContourLists[i] = new List<Contour>();
-
-            foreach (var contour in insideContours)
-            {
-                Point rightP = FindRightmostPoint(contour);
-                int y = RoundAndClampY(TransformY(rightP.Y));
-
-                for (int x = RoundAndClampX(TransformX(rightP.X)); x < _maskWidth; x++)
-                {
-                    byte b = _maskBuf[y, x];
-
-                    if (b != 0)
-                    {
-                        for (int i = 0; i < 7; i++)
-                        {
-                            if ((b & (1 << i)) != 0)
-                            {
-                                insideContourLists[i].Add(contour);
-
-                                int outerIndex = _figure.Contours.IndexOf(outsideContours[i]);
-                                Console.WriteLine("Found");
-                                int innerIndex = _figure.Contours.IndexOf(contour);
-                                Console.WriteLine("{0} goes with {1}", innerIndex, outerIndex);
-
-                                goto Found;
-                            }
-                        }
-                    }
-                }
-
-                Debug.Fail("");
-
-            Found:
-                ;
-            }
-
-            return insideContourLists;
-        }
-
-        private Shape[] PackageShapes(List<Contour> outsideContours, List<Contour>[] insideContourLists)
-        {
-            var shapes = new Shape[outsideContours.Count];
-
-            for (int i = 0; i < shapes.Length; i++)
-            {
-                shapes[i] = new Shape(outsideContours[i], insideContourLists[i].ToArray());
-            }
-
-            return shapes;
-        }
-
-        public Shape[] CalculateShapes()
-        {
-            var (outsideContours, insideContours) = PartitionContours();
-            DrawOutsides(outsideContours);
-            var insideContourLists = DetermineInsides(outsideContours, insideContours);
-
-            return PackageShapes(outsideContours, insideContourLists);
+            _figureWalker.WalkContour(contour);
         }
 
 #if DEBUG
-        public void RenderOutline()
+        public void DrawOutline(byte color = 1)
         {
             foreach (var contour in _figure.Contours)
             {
-                MoveTo(contour.FirstPoint);
-
-                _figureWalker.WalkContour(contour);
+                DrawContour(contour, color);
             }
         }
 

@@ -38,12 +38,12 @@ namespace TryFreetype.Sample3
                 renderer.Render();
                 renderer.Bitmap.Save(@"C:\Temp\b.bmp");
 #else
-                var renderer = new OutlineRenderer(figure);
+                var outlineTool = new OutlineTool(figure);
 
-                var shapes = renderer.CalculateShapes();
+                var shapes = outlineTool.CalculateShapes();
 
-                //renderer.RenderOutline();
-                var bitmap = renderer.RenderBitmap();
+                //outlineTool.RenderOutline();
+                var bitmap = outlineTool.OutlineRenderer.RenderBitmap();
                 bitmap.Save(@"C:\Temp\b.bmp");
 
                 FigureSerializer.Serialize(figure, System.Console.Out);
@@ -76,12 +76,12 @@ end";
                 TextReader reader = new StringReader(S);
                 figure = FigureDeserialzer.Deserialize(reader);
 
-                renderer = new OutlineRenderer(figure);
+                outlineTool = new OutlineTool(figure);
 
-                renderer.CalculateShapes();
+                outlineTool.CalculateShapes();
 
-                renderer.RenderOutline();
-                bitmap = renderer.RenderBitmap();
+                outlineTool.OutlineRenderer.DrawOutline();
+                bitmap = outlineTool.OutlineRenderer.RenderBitmap();
                 bitmap.Save(@"C:\Temp\c.bmp");
             }
         }
