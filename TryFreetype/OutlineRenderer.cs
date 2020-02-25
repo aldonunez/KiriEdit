@@ -9,6 +9,18 @@ namespace TryFreetype
 {
     public class OutlineRenderer
     {
+        public class Shape
+        {
+            public Contour OuterContour { get; }
+            public Contour[] InnerContours { get; }
+
+            public Shape(Contour outsideContour, Contour[] insideCountours)
+            {
+                OuterContour = outsideContour;
+                InnerContours = insideCountours;
+            }
+        }
+
         private Figure _figure;
         private FigureWalker _figureWalker;
         private int _x, _y;
@@ -333,19 +345,7 @@ namespace TryFreetype
             return rightP;
         }
 
-        public class Shape
-        {
-            public Contour OuterContour { get; }
-            public Contour[] InnerContours { get; }
-
-            public Shape(Contour outsideContour, Contour[] insideCountours)
-            {
-                OuterContour = outsideContour;
-                InnerContours = insideCountours;
-            }
-        }
-
-        public Shape[] CalculateShapes()
+        private (List<Contour> outsideContours, List<Contour> insideContours) PartitionContours()
         {
             var outsideContours = new List<Contour>();
             var insideContours = new List<Contour>();
@@ -370,8 +370,11 @@ namespace TryFreetype
                 }
             }
 
-            var insideContourLists = new List<Contour>[outsideContours.Count];
+            return (outsideContours, insideContours);
+        }
 
+        private void DrawOutsides(List<Contour> outsideContours)
+        {
             for (int i = 0; i < outsideContours.Count; i++)
             {
                 var contour = outsideContours[i];
@@ -380,8 +383,15 @@ namespace TryFreetype
                 MoveTo(contour.FirstPoint);
 
                 _figureWalker.WalkContour(contour);
-                insideContourLists[i] = new List<Contour>();
             }
+        }
+
+        private List<Contour>[] DetermineInsides(List<Contour> outsideContours, List<Contour> insideContours)
+        {
+            var insideContourLists = new List<Contour>[outsideContours.Count];
+
+            for (int i = 0; i < outsideContours.Count; i++)
+                insideContourLists[i] = new List<Contour>();
 
             foreach (var contour in insideContours)
             {
@@ -417,6 +427,11 @@ namespace TryFreetype
                 ;
             }
 
+            return insideContourLists;
+        }
+
+        private Shape[] PackageShapes(List<Contour> outsideContours, List<Contour>[] insideContourLists)
+        {
             var shapes = new Shape[outsideContours.Count];
 
             for (int i = 0; i < shapes.Length; i++)
@@ -425,6 +440,15 @@ namespace TryFreetype
             }
 
             return shapes;
+        }
+
+        public Shape[] CalculateShapes()
+        {
+            var (outsideContours, insideContours) = PartitionContours();
+            DrawOutsides(outsideContours);
+            var insideContourLists = DetermineInsides(outsideContours, insideContours);
+
+            return PackageShapes(outsideContours, insideContourLists);
         }
 
 #if DEBUG
