@@ -7,15 +7,29 @@ using Point = TryFreetype.Model.Point;
 
 namespace TryFreetype
 {
+    // TODO:
+    public struct PointD
+    {
+        public double X;
+        public double Y;
+
+        public PointD(double x, double y)
+        {
+            X = x;
+            Y = y;
+        }
+    }
+
     public class OutlineRenderer
     {
         private Figure _figure;
         private FigureWalker _figureWalker;
-        private double _x, _y;
-        private Color _color = Color.Red;
+        private int _x, _y;
 
         private int _curContourIndex;
         private byte[,] _maskBuf;
+        private int _maskWidth;
+        private int _maskHeight;
 
         public OutlineRenderer(Figure figure)
         {
@@ -26,10 +40,12 @@ namespace TryFreetype
             _figureWalker.ConicTo += ConicTo;
             _figureWalker.CubicTo += CubicTo;
 
-            int width = figure.Width;
-            int height = figure.Height;
+            int width = figure.Width / 64;
+            int height = figure.Height / 64;
 
             _maskBuf = new byte[height, width];
+            _maskWidth = width;
+            _maskHeight = height;
 
             // Transformation:
             //g = Graphics.FromImage(bitmap);
@@ -128,8 +144,8 @@ namespace TryFreetype
         private int RoundAndClampX(double x)
         {
             int iX = (int) Math.Round(x);
-            if (iX >= _figure.Width)
-                iX = _figure.Width - 1;
+            if (iX >= _maskWidth)
+                iX = _maskWidth - 1;
             else if (iX < 0)
                 iX = 0;
             return iX;
@@ -138,40 +154,40 @@ namespace TryFreetype
         private int RoundAndClampY(double y)
         {
             int iY = (int) Math.Round(y);
-            if (iY >= _figure.Height)
-                iY = _figure.Height - 1;
+            if (iY >= _maskHeight)
+                iY = _maskHeight - 1;
             else if (iY < 0)
                 iY = 0;
             return iY;
         }
 
-        private double TransformX(double x)
+        private double TransformX(int x)
         {
-            return x - _figure.OffsetX;
+            return (x - _figure.OffsetX) / 64.0;
         }
 
-        private double TransformY(double y)
+        private double TransformY(int y)
         {
-            return _figure.Height - y - 1 + _figure.OffsetY;
+            return (_figure.Height - y) / 64.0 - 1 + _figure.OffsetY / 64.0;
         }
 
-        private Point TransformPoint(Point point)
+        private PointD TransformPoint(Point point)
         {
-            return new Point(
+            return new PointD(
                 TransformX(point.X),
                 TransformY(point.Y));
         }
 
         private void DrawConic(Point control, Point to)
         {
-            Point tFrom = new Point(
+            PointD tFrom = new PointD(
                 TransformX(_x),
                 TransformY(_y));
-            Point tControl = TransformPoint(control);
-            Point tTo = TransformPoint(to);
+            PointD tControl = TransformPoint(control);
+            PointD tTo = TransformPoint(to);
 
             double dt = Curve.CalcConicDeltaT(tFrom, tControl, tTo);
-            ValuePoint p;
+            PointD p;
             int x;
             int y;
             int prevX = RoundAndClampX(tFrom.X);
@@ -213,8 +229,6 @@ namespace TryFreetype
                 DrawLine(prevX, prevY, x, y);
             }
 
-            SetPixel(x, y);
-
             // TODO: Find a way to get rid of bunches of pixels.
             //       If the current (a) and last two pixels (b, c) fit in a 2x2 square,
             //       then we can get rid of the previous one (b).
@@ -222,15 +236,15 @@ namespace TryFreetype
 
         private void DrawCubic(Point control1, Point control2, Point to)
         {
-            Point tFrom = new Point(
+            PointD tFrom = new PointD(
                 TransformX(_x),
                 TransformY(_y));
-            Point tControl1 = TransformPoint(control1);
-            Point tControl2 = TransformPoint(control2);
-            Point tTo = TransformPoint(to);
+            PointD tControl1 = TransformPoint(control1);
+            PointD tControl2 = TransformPoint(control2);
+            PointD tTo = TransformPoint(to);
 
             double dt = Curve.CalcCubicDeltaT(tFrom, tControl1, tControl2, tTo);
-            ValuePoint p;
+            PointD p;
             int x;
             int y;
 
@@ -263,10 +277,10 @@ namespace TryFreetype
 
         private static Orientation GetOrientation(Contour contour)
         {
-            double prevX = contour.FirstPoint.X;
-            double prevY = contour.FirstPoint.Y;
+            int prevX = contour.FirstPoint.X;
+            int prevY = contour.FirstPoint.Y;
             Point p = contour.FirstPoint;
-            double area = 0;
+            long area = 0;
 
             while (true)
             {
@@ -371,10 +385,10 @@ namespace TryFreetype
             foreach (var contour in insideContours)
             {
                 Point rightP = FindRightmostPoint(contour);
-                int y = (int) Math.Round(rightP.Y);
+                int y = RoundAndClampY(TransformY(rightP.Y));
                 int outerIndex = 0;
 
-                for (int x = (int) Math.Round(rightP.X); x < _figure.Width - 1; x++)
+                for (int x = RoundAndClampX(TransformX(rightP.X)); x < _maskWidth; x++)
                 {
                     byte b = _maskBuf[y, x];
 
@@ -415,11 +429,11 @@ namespace TryFreetype
         public Bitmap RenderBitmap()
         {
             var color = Color.Red;
-            var bitmap = new Bitmap(_figure.Width, _figure.Height);
+            var bitmap = new Bitmap(_maskWidth, _maskHeight);
 
-            for (int y = 0; y < _figure.Height; y++)
+            for (int y = 0; y < _maskHeight; y++)
             {
-                for (int x = 0; x < _figure.Width; x++)
+                for (int x = 0; x < _maskWidth; x++)
                 {
                     if (_maskBuf[y, x] != 0)
                         bitmap.SetPixel(x, y, color);

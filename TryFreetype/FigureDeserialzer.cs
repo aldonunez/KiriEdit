@@ -421,8 +421,8 @@ namespace TryFreetype
         private Contour _curContour;
         private int _width;
         private int _height;
-        private double _offsetX;
-        private double _offsetY;
+        private int _offsetX;
+        private int _offsetY;
 
         public Figure Figure { get; private set; }
 
@@ -591,8 +591,8 @@ namespace TryFreetype
                 if (attrs.Count < 3)
                     throw new ApplicationException();
 
-                double x = attrs[0].GetFloat();
-                double y = attrs[1].GetFloat();
+                int x = (int) attrs[0].GetInteger();
+                int y = (int) attrs[1].GetInteger();
                 long groupId = attrs[2].GetInteger();
                 Point point = new Point(x, y);
                 PointGroup group = _pointGroups[(int) groupId];

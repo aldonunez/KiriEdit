@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using TryFreetype.Model;
 using Point = TryFreetype.Model.Point;
 
@@ -85,16 +86,17 @@ namespace TryFreetype
             _figureWalker.ConicTo += ConicTo;
             _figureWalker.CubicTo += CubicTo;
 
-            int width = figure.Width;
-            int height = figure.Height;
+            int bmpWidth = figure.Width / 64;
+            int bmpHeight = figure.Height / 64;
 
-            bitmap = new Bitmap(width, height);
+            bitmap = new Bitmap(bmpWidth, bmpHeight);
 
             g = Graphics.FromImage(bitmap);
-            g.ScaleTransform(1, -1);
+            g.ScaleTransform(1 / 64f, -1 / 64f, MatrixOrder.Append);
             g.TranslateTransform(
-                (float) -figure.OffsetX,
-                -(height - 1) - (float) figure.OffsetY);
+                (float) -figure.OffsetX / 64f,
+                (bmpHeight - 1) + (float) figure.OffsetY / 64f,
+                MatrixOrder.Append);
 
             _pens = new Pen[4]
             {
@@ -132,25 +134,22 @@ namespace TryFreetype
 
         private void EndFigure()
         {
-            Pen redPen = new Pen(Color.Red);
-            Pen orangePen = new Pen(Color.Orange);
-            Pen whitePen = new Pen(Color.White);
             int j = 0;
 
             foreach (var group in _figure.PointGroups)
             {
                 Point p = group.Points[0];
                 Pen pen = null;
-                float radius = 5f;
-                float wideRadius = radius + 2f;
+                float radius = 5f * 64f;
+                float wideRadius = radius + 2f * 64f;
 
                 if (group.IsFixed)
                 {
-                    pen = redPen;
+                    pen = Pens.Red;
                 }
                 else
                 {
-                    pen = orangePen;
+                    pen = Pens.Orange;
                 }
                 j++;
 
@@ -165,7 +164,7 @@ namespace TryFreetype
                 if (group.Points.Count > 1)
                 {
                     g.DrawEllipse(
-                        whitePen,
+                        Pens.White,
                         (float) p.X - wideRadius,
                         (float) p.Y - wideRadius,
                         wideRadius * 2,

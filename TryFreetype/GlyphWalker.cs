@@ -13,7 +13,7 @@ namespace TryFreetype
         private Contour curContour;
         private Point curPoint;
 
-        double x, y;
+        int x, y;
 
         private List<Contour> _contours = new List<Contour>();
         private List<PointGroup> _pointGroups = new List<PointGroup>();
@@ -23,10 +23,6 @@ namespace TryFreetype
         public GlyphWalker(GlyphSlot glyphSlot)
         {
             this.glyphSlot = glyphSlot;
-
-            var bbox = glyphSlot.Outline.GetBBox();
-            int width = glyphSlot.Metrics.Width.Ceiling();
-            int height = glyphSlot.Metrics.Height.Ceiling();
         }
 
         public void Decompose()
@@ -44,10 +40,10 @@ namespace TryFreetype
             CloseCurrentContour();
 
             var bbox = glyphSlot.Outline.GetBBox();
-            int width = glyphSlot.Metrics.Width.Ceiling();
-            int height = glyphSlot.Metrics.Height.Ceiling();
+            int width = glyphSlot.Metrics.Width.Ceiling() * 64;
+            int height = glyphSlot.Metrics.Height.Ceiling() * 64;
 
-            figure = new Figure(_pointGroups, new Cut[0], width, height, bbox.Left / 64.0, bbox.Bottom / 64.0);
+            figure = new Figure(_pointGroups, new Cut[0], width, height, bbox.Left, bbox.Bottom);
         }
 
         private void CloseCurrentContour()
@@ -78,8 +74,8 @@ namespace TryFreetype
         {
             CloseCurrentContour();
 
-            x = to.X.Value / 64.0;
-            y = to.Y.Value / 64.0;
+            x = to.X.Value;
+            y = to.Y.Value;
             Console.WriteLine("MoveTo: {0}, {1}", x, y);
 
             var newPoint = new Point(x, y);
@@ -103,8 +99,8 @@ namespace TryFreetype
 
         private int LineToFunc(ref FTVector to, IntPtr user)
         {
-            x = to.X.Value / 64.0;
-            y = to.Y.Value / 64.0;
+            x = to.X.Value;
+            y = to.Y.Value;
             Console.WriteLine("LineTo: {0}, {1}", x, y);
 
             var newPoint = new Point(x, y);
@@ -130,10 +126,10 @@ namespace TryFreetype
 
         private int ConicToFunc(ref FTVector control, ref FTVector to, IntPtr user)
         {
-            x = to.X.Value / 64.0;
-            y = to.Y.Value / 64.0;
-            double controlX = control.X.Value / 64.0;
-            double controlY = control.Y.Value / 64.0;
+            x = to.X.Value;
+            y = to.Y.Value;
+            int controlX = control.X.Value;
+            int controlY = control.Y.Value;
             Console.WriteLine("ConicTo: {0},{1} {2},{3}", controlX, controlY, x, y);
 
             var newPoint = new Point(x, y);
@@ -160,12 +156,12 @@ namespace TryFreetype
 
         private int CubicToFunc(ref FTVector control1, ref FTVector control2, ref FTVector to, IntPtr user)
         {
-            x = to.X.Value / 64.0;
-            y = to.Y.Value / 64.0;
-            double controlX1 = control1.X.Value / 64.0;
-            double controlY1 = control1.Y.Value / 64.0;
-            double controlX2 = control2.X.Value / 64.0;
-            double controlY2 = control2.Y.Value / 64.0;
+            x = to.X.Value;
+            y = to.Y.Value;
+            int controlX1 = control1.X.Value;
+            int controlY1 = control1.Y.Value;
+            int controlX2 = control2.X.Value;
+            int controlY2 = control2.Y.Value;
             Console.WriteLine("CubicTo: {0},{1} {2},{3} {4},{5}", controlX1, controlY1, controlX2, controlY2, x, y);
 
             var newPoint = new Point(x, y);

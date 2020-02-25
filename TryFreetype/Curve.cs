@@ -5,12 +5,14 @@ namespace TryFreetype
 {
     public class Curve
     {
-        private static double GetLineLength(Point p1, Point p2)
+        private static double GetLineLength(PointD p1, PointD p2)
         {
-            return p1.ToValuePoint().GetDistance(p2.ToValuePoint());
+            double w = p2.X - p1.X;
+            double h = p2.Y - p1.Y;
+            return Math.Sqrt(w * w + h * h);
         }
 
-        public static double CalcConicDeltaT(Point p0, Point p1, Point p2)
+        public static double CalcConicDeltaT(PointD p0, PointD p1, PointD p2)
         {
             double length =
                 GetLineLength(p0, p1)
@@ -20,7 +22,7 @@ namespace TryFreetype
             return dt;
         }
 
-        public static double CalcCubicDeltaT(Point p0, Point p1, Point p2, Point p3)
+        public static double CalcCubicDeltaT(PointD p0, PointD p1, PointD p2, PointD p3)
         {
             double length =
                 GetLineLength(p0, p1)
@@ -31,9 +33,9 @@ namespace TryFreetype
             return dt;
         }
 
-        public static ValuePoint CalcConic(double t, Point p0, Point p1, Point p2)
+        public static PointD CalcConic(double t, PointD p0, PointD p1, PointD p2)
         {
-            var result = new ValuePoint();
+            var result = new PointD();
 
             result.X =
                 p0.X * Math.Pow((1 - t), 2) +
@@ -50,9 +52,9 @@ namespace TryFreetype
             return result;
         }
 
-        public static ValuePoint CalcCubic(double t, Point p0, Point p1, Point p2, Point p3)
+        public static PointD CalcCubic(double t, PointD p0, PointD p1, PointD p2, PointD p3)
         {
-            var result = new ValuePoint();
+            var result = new PointD();
 
             result.X =
                 p0.X * Math.Pow((1 - t), 3) +

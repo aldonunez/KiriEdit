@@ -43,12 +43,12 @@ namespace TryFreetype.Model
 
     public struct BBox
     {
-        public double Left;
-        public double Top;
-        public double Right;
-        public double Bottom;
+        public int Left;
+        public int Top;
+        public int Right;
+        public int Bottom;
 
-        public bool IsPointInside(double x, double y)
+        public bool IsPointInside(int x, int y)
         {
             return (x >= Left) && (x <= Right)
                 && (y <= Top) && (y >= Bottom);
@@ -249,15 +249,15 @@ namespace TryFreetype.Model
 
     public class Point
     {
-        public double X { get; }
-        public double Y { get; }
+        public int X { get; }
+        public int Y { get; }
 
         public PointGroup Group;
         public Contour Contour;
         public Edge OutgoingEdge;
         public Edge IncomingEdge;
 
-        public Point(double x, double y)
+        public Point(int x, int y)
         {
             X = x;
             Y = y;
@@ -282,13 +282,13 @@ namespace TryFreetype.Model
 
     public struct ValuePoint
     {
-        public double X;
-        public double Y;
+        public int X;
+        public int Y;
 
         internal double GetDistance(ValuePoint otherPoint)
         {
-            double w = otherPoint.X - X;
-            double h = otherPoint.Y - Y;
+            int w = otherPoint.X - X;
+            int h = otherPoint.Y - Y;
             return Math.Sqrt(w * w + h * h);
         }
 
