@@ -120,7 +120,7 @@ namespace TryFreetype
 
                 _writer.Write("  original-edge");
 
-                Edge edge = pointGroup.Points[0].OriginalOutgoingEdge;
+                Edge edge = pointGroup.OriginalOutgoingEdge;
 
                 int id0, id1, id2, id3;
                 Point c1, c2;

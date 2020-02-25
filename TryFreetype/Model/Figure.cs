@@ -60,15 +60,16 @@ namespace TryFreetype.Model
                     || point.Group != group
                     || point.IncomingEdge == null
                     || point.OutgoingEdge == null
-                    || point.OriginalIncomingEdge == null
-                    || point.OriginalOutgoingEdge == null
-                    || point.IncomingEdge != point.OriginalIncomingEdge
-                    || point.OutgoingEdge != point.OriginalOutgoingEdge
                     || point.IncomingEdge.P2 != point
                     || point.OutgoingEdge.P1 != point
                     || point.Contour.FirstPoint == null
                     )
                     throw new ApplicationException("");
+
+                if (group.OriginalIncomingEdge == null
+                    || group.OriginalOutgoingEdge == null
+                    )
+                    throw new ApplicationException();
             }
         }
 
@@ -132,7 +133,7 @@ namespace TryFreetype.Model
 
             // Replace the path between the original endpoints with the original edge.
 
-            Edge directEdge = (Edge) fixedPointBefore.OriginalOutgoingEdge.Clone();
+            Edge directEdge = (Edge) fixedPointBefore.Group.OriginalOutgoingEdge.Clone();
 
             directEdge.P1 = fixedPointBefore;
             directEdge.P2 = fixedPointAfter;
@@ -155,6 +156,11 @@ namespace TryFreetype.Model
             }
 
             _pointGroups.Remove(pointGroup);
+
+            // We might have deleted the contour's anchor point.
+
+            if (pointToDelete.Contour.FirstPoint == pointToDelete)
+                pointToDelete.Contour.FirstPoint = fixedPointBefore;
         }
 
         // TODO: Do this in the caller.

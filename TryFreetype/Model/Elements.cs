@@ -225,6 +225,8 @@ namespace TryFreetype.Model
     public class PointGroup
     {
         public bool IsFixed { get; }
+        public Edge OriginalIncomingEdge { get; set; }
+        public Edge OriginalOutgoingEdge { get; set; }
         public List<Point> Points { get; } = new List<Point>();
 
         public PointGroup()
@@ -241,12 +243,6 @@ namespace TryFreetype.Model
             Point p = new Point(Points[0].X, Points[0].Y);
             p.Group = this;
 
-            if (IsFixed)
-            {
-                p.OriginalIncomingEdge = Points[0].OriginalIncomingEdge;
-                p.OriginalOutgoingEdge = Points[0].OriginalOutgoingEdge;
-            }
-
             return p;
         }
     }
@@ -260,8 +256,6 @@ namespace TryFreetype.Model
         public Contour Contour;
         public Edge OutgoingEdge;
         public Edge IncomingEdge;
-        public Edge OriginalOutgoingEdge;
-        public Edge OriginalIncomingEdge;
 
         public Point(double x, double y)
         {

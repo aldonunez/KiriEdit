@@ -68,7 +68,7 @@ namespace TryFreetype
 
             firstPoint.IncomingEdge = lastPoint.IncomingEdge;
             firstPoint.IncomingEdge.P2 = firstPoint;
-            firstPoint.OriginalIncomingEdge = firstPoint.IncomingEdge;
+            firstPoint.Group.OriginalIncomingEdge = firstPoint.IncomingEdge;
 
             curContour = null;
             curPoint = null;
@@ -112,13 +112,14 @@ namespace TryFreetype
             var edge = new LineEdge(curPoint, newPoint);
             curPoint.OutgoingEdge = edge;
             newPoint.IncomingEdge = edge;
-            curPoint.OriginalOutgoingEdge = edge;
-            newPoint.OriginalIncomingEdge = edge;
 
             var newGroup = new PointGroup(isFixed: true);
             newGroup.Points.Add(newPoint);
             newPoint.Group = newGroup;
             _pointGroups.Add(newGroup);
+
+            curPoint.Group.OriginalOutgoingEdge = edge;
+            newPoint.Group.OriginalIncomingEdge = edge;
 
             curPoint = newPoint;
 
@@ -141,13 +142,14 @@ namespace TryFreetype
             var edge = new ConicEdge(curPoint, controlPoint, newPoint);
             curPoint.OutgoingEdge = edge;
             newPoint.IncomingEdge = edge;
-            curPoint.OriginalOutgoingEdge = edge;
-            newPoint.OriginalIncomingEdge = edge;
 
             var newGroup = new PointGroup(isFixed: true);
             newGroup.Points.Add(newPoint);
             newPoint.Group = newGroup;
             _pointGroups.Add(newGroup);
+
+            curPoint.Group.OriginalOutgoingEdge = edge;
+            newPoint.Group.OriginalIncomingEdge = edge;
 
             curPoint = newPoint;
 
@@ -173,13 +175,14 @@ namespace TryFreetype
             var edge = new CubicEdge(curPoint, controlPoint1, controlPoint2, newPoint);
             curPoint.OutgoingEdge = edge;
             newPoint.IncomingEdge = edge;
-            curPoint.OriginalOutgoingEdge = edge;
-            newPoint.OriginalIncomingEdge = edge;
 
             var newGroup = new PointGroup(isFixed: true);
             newGroup.Points.Add(newPoint);
             newPoint.Group = newGroup;
             _pointGroups.Add(newGroup);
+
+            curPoint.Group.OriginalOutgoingEdge = edge;
+            newPoint.Group.OriginalIncomingEdge = edge;
 
             curPoint = newPoint;
 
