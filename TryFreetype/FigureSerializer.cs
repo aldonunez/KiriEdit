@@ -69,20 +69,60 @@ namespace TryFreetype
         {
             _writer.WriteLine("  contour begin");
 
+            WritePoints(contour);
+            WriteEdges(contour);
+
+            _writer.WriteLine("  end");
+        }
+
+        private void WritePoints(Contour contour)
+        {
             Edge edge = contour.FirstPoint.OutgoingEdge;
 
-            WritePoint(edge.P1);
+            // Sort points by ID.
+            var sortedTable = new SortedDictionary<int, Point>();
+
+            sortedTable.Add(_pointToId[edge.P1], edge.P1);
 
             while (edge.P2 != contour.FirstPoint)
             {
-                WritePoint(edge.P2);
+                sortedTable.Add(_pointToId[edge.P2], edge.P2);
 
                 edge = edge.P2.OutgoingEdge;
             }
 
-            edge = contour.FirstPoint.OutgoingEdge;
+            foreach (var pair in sortedTable)
+            {
+                WritePoint(pair.Key, pair.Value);
+            }
+        }
+
+        private void WritePoint(int id, Point point)
+        {
+            int groupId = _pointGroupToId[point.Group];
+            _writer.WriteLine("    {0} point {1} {2} {3}", id, point.X, point.Y, groupId);
+        }
+
+        private void WriteEdges(Contour contour)
+        {
+            Edge edge = contour.FirstPoint.OutgoingEdge;
+
+            // Sort edges by ID of P1.
+            var sortedTable = new SortedDictionary<int, Edge>();
 
             while (true)
+            {
+                int id0 = _pointToId[edge.P1];
+
+                sortedTable.Add(id0, edge);
+
+                edge = edge.P2.OutgoingEdge;
+
+                if (edge.P1 == contour.FirstPoint)
+                    break;
+            }
+
+            foreach (var pair in sortedTable)
             {
                 _writer.Write("    edge");
 
@@ -90,7 +130,8 @@ namespace TryFreetype
                 Point c1, c2;
                 bool unbreakable;
 
-                id0 = _pointToId[edge.P1];
+                edge = pair.Value;
+                id0 = pair.Key;
                 id1 = _pointToId[edge.P2];
 
                 switch (edge.Type)
@@ -113,14 +154,7 @@ namespace TryFreetype
                 }
 
                 _writer.WriteLine();
-
-                edge = edge.P2.OutgoingEdge;
-
-                if (edge.P1 == contour.FirstPoint)
-                    break;
             }
-
-            _writer.WriteLine("  end");
         }
 
         private void WriteOriginalEdges()
@@ -175,18 +209,6 @@ namespace TryFreetype
 
                 _writer.WriteLine( "  cut {0} {1} {2} {3}", idE1P1, idE1P2, idE2P1, idE2P2 );
             }
-        }
-
-        private void WritePoint(Point point)
-        {
-            int id = _pointToId[point];
-            int groupId = _pointGroupToId[point.Group];
-            _writer.WriteLine("    {0} point {1} {2} {3}", id, point.X, point.Y, groupId);
-        }
-
-        private void WritePointValue(Point point)
-        {
-            _writer.WriteLine("      point {0} {1}", point.X, point.Y);
         }
 
         private int GetIdForPointGroup(PointGroup pointGroup)
