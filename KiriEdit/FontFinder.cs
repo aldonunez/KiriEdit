@@ -141,73 +141,57 @@ namespace KiriEdit.Font
                 FontStyle fontStyle = FontStyle.Regular;
                 string styleName = face.StyleName;
 
-                // TEST:
-                if (face.FamilyName.StartsWith("Lucida"))
-                    System.Diagnostics.Debug.WriteLine(string.Format("[{0}] :: [{1}]", face.FamilyName, styleName));
-
                 // I'm not sure of the pattern. So, be cautious.
 
                 styleName = styleName.Trim();
 
-                if (styleName.EndsWith("Regular", StringComparison.OrdinalIgnoreCase))
+                bool oneWord = styleName.IndexOf(' ') < 0;
+
+                if (styleName.IndexOf("Demibold", StringComparison.OrdinalIgnoreCase) >= 0)
                 {
-                    if (styleName.Length == 7)
-                    {
-                        styleName = "";
-                        styleName = styleName.Trim();
-                        return (fontStyle, styleName);
-                    }
-                    else if (styleName[styleName.Length - 8] == ' ')
-                    {
-                        styleName = styleName.Substring(0, styleName.Length - 8);
-                        styleName = styleName.Trim();
-                        return (fontStyle, styleName);
-                    }
+                    styleName = styleName.Replace("Demibold", "");
+                    fontStyle |= FontStyle.Bold;
                 }
 
-                if (styleName.EndsWith("Bold", StringComparison.OrdinalIgnoreCase))
+                if (styleName.IndexOf("Bold", StringComparison.OrdinalIgnoreCase) >= 0)
                 {
-                    if (styleName.Length == 4)
-                    {
-                        fontStyle |= FontStyle.Bold;
-                        styleName = "";
-                    }
-                    else if (styleName[styleName.Length - 5] == ' ')
-                    {
-                        fontStyle |= FontStyle.Bold;
-                        styleName = styleName.Substring(0, styleName.Length - 5);
-                    }
+                    styleName = styleName.Replace("Bold", "");
+                    fontStyle |= FontStyle.Bold;
                 }
 
-                if (styleName.EndsWith("Italic", StringComparison.OrdinalIgnoreCase))
+                if (styleName.IndexOf("Oblique", StringComparison.OrdinalIgnoreCase) >= 0)
                 {
-                    if (styleName.Length == 6)
-                    {
-                        fontStyle |= FontStyle.Italic;
-                        styleName = "";
-                    }
-                    else if (styleName[styleName.Length - 7] == ' ')
-                    {
-                        fontStyle |= FontStyle.Italic;
-                        styleName = styleName.Substring(0, styleName.Length - 7);
-                    }
+                    styleName = styleName.Replace("Oblique", "");
+                    fontStyle |= FontStyle.Italic;
                 }
 
-                if (styleName.EndsWith("Bold", StringComparison.OrdinalIgnoreCase))
+                if (styleName.IndexOf("Italic", StringComparison.OrdinalIgnoreCase) >= 0)
                 {
-                    if (styleName.Length == 4)
-                    {
-                        fontStyle |= FontStyle.Bold;
-                        styleName = "";
-                    }
-                    else if (styleName[styleName.Length - 5] == ' ')
-                    {
-                        fontStyle |= FontStyle.Bold;
-                        styleName = styleName.Substring(0, styleName.Length - 5);
-                    }
+                    styleName = styleName.Replace("Italic", "");
+                    fontStyle |= FontStyle.Italic;
+                }
+
+                if (styleName.IndexOf("Regular", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    styleName = styleName.Replace("Regular", "");
+                }
+
+                if (styleName.IndexOf("Roman", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    styleName = styleName.Replace("Roman", "");
+                }
+
+                if (styleName.IndexOf("Black", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    fontStyle |= FontStyle.Bold;
+                    // But leave the word in the name.
                 }
 
                 styleName = styleName.Trim();
+
+                // If we started and ended with one word, then treat it as a regular style.
+                if (oneWord && styleName.Length > 0)
+                    styleName = "";
 
                 return (fontStyle, styleName);
             }

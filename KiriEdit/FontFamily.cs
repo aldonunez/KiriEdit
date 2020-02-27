@@ -19,6 +19,9 @@ namespace KiriEdit.Font
             int index = (int) style;
 
             _fontFaces[index] = face;
+
+            if (_fontFaces[0] == null || style == FontStyle.Regular)
+                _fontFaces[0] = face;
         }
 
         public FontFace GetFace(FontStyle style)
