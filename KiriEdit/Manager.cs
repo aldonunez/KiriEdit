@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace KiriEdit
 {
+#if false
     internal class Manager
     {
         public Project Project { get; private set; }
@@ -89,4 +90,5 @@ namespace KiriEdit
             }
         }
     }
+#endif
 }
