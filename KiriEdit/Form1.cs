@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,19 +12,20 @@ namespace KiriEdit
 {
     public partial class Form1 : Form
     {
-        private int SampleFontSize = 20;
+        private const string AppTitle = "";
+        private const int SampleFontSize = 20;
+
+        private Manager _manager;
 
         public Form1()
         {
             InitializeComponent();
 
-            VisibleChanged += Form1_VisibleChanged;
+            _manager = new Manager();
         }
 
-        private void Form1_VisibleChanged(object sender, EventArgs e)
+        private System.Drawing.Font ChooseFont()
         {
-            var findTask = FontFinder.FindFontsAsync();
-
             using (FontDialog dialog = new FontDialog())
             {
                 dialog.AllowSimulations = false;
@@ -36,10 +36,25 @@ namespace KiriEdit
 
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
-                    findTask.Wait();
-                    var family = findTask.Result[dialog.Font.Name];
+                    return dialog.Font;
                 }
             }
+
+            return null;
+        }
+
+        private void exitMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void newProjectMenuItem_Click(object sender, EventArgs e)
+        {
+            _manager.CloseProject();
+
+            System.Drawing.Font font = ChooseFont();
+
+            _manager.MakeProject(font.Name, (FontStyle) font.Style);
         }
     }
 }
