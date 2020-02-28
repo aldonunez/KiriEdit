@@ -9,5 +9,7 @@ namespace KiriEdit
 
         public string FontFamilyName;
         public FontStyle FontStyle;
+
+        public FontFace FontFace;
     }
 }

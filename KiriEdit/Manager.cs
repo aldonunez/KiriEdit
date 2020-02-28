@@ -52,43 +52,6 @@ namespace KiriEdit
         {
             throw new NotImplementedException();
         }
-
-        private void FindFont()
-        {
-            FontFace face = null;
-            var findTask = FontFinder.FindFontsAsync();
-
-            using (FontDialog dialog = new FontDialog())
-            {
-                dialog.AllowSimulations = false;
-                dialog.ShowEffects = false;
-                dialog.MinSize = SampleFontSize;
-                dialog.MaxSize = SampleFontSize;
-                dialog.FontMustExist = true;
-
-                if (dialog.ShowDialog() == DialogResult.OK)
-                {
-                    findTask.Wait();
-
-                    var fontCollection = findTask.Result;
-                    FontFamily family;
-
-                    if (fontCollection.TryGetValue(dialog.Font.Name, out family))
-                    {
-                        face = family.GetFace((FontStyle) dialog.Font.Style);
-                    }
-
-                    if (face == null)
-                    {
-                        string message = string.Format(
-                            "The font {0} ({1}) is not supported.",
-                            dialog.Font.Name, dialog.Font.Style);
-
-                        MessageBox.Show(message, AppTitle);
-                    }
-                }
-            }
-        }
     }
 #endif
 }

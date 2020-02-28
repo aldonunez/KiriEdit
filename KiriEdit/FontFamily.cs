@@ -7,11 +7,11 @@ namespace KiriEdit.Font
     {
         private FontFace[] _fontFaces = new FontFace[4];
 
-        public string FamilyName { get; }
+        public string Name { get; }
 
         public FontFamily(string familyName)
         {
-            FamilyName = familyName;
+            Name = familyName;
         }
 
         internal void AddFace(FontStyle style, FontFace face)
@@ -20,6 +20,7 @@ namespace KiriEdit.Font
 
             _fontFaces[index] = face;
 
+            // TODO: handle this differently.
             if (_fontFaces[0] == null || style == FontStyle.Regular)
                 _fontFaces[0] = face;
         }
@@ -38,15 +39,15 @@ namespace KiriEdit.Font
 
     internal class FontFace
     {
-        public FontFamily FontFamily { get; }
-        public FontStyle FontStyle { get; }
+        public FontFamily Family { get; }
+        public FontStyle Style { get; }
         public string Path { get; }
         public int FaceIndex { get; }
 
         public FontFace(FontFamily fontFamily, FontStyle fontStyle, string path, int faceIndex)
         {
-            FontFamily = fontFamily;
-            FontStyle = fontStyle;
+            Family = fontFamily;
+            Style = fontStyle;
             Path = path;
             FaceIndex = faceIndex;
         }

@@ -43,9 +43,9 @@ namespace KiriEdit
             NewProject();
         }
 
-        private void openProjectMenuItem_Click(object sender, EventArgs e)
+        private async void openProjectMenuItem_Click(object sender, EventArgs e)
         {
-            OpenProject();
+            await OpenProjectAsync();
         }
 
         private void closeProjectMenuItem_Click(object sender, EventArgs e)
@@ -77,30 +77,48 @@ namespace KiriEdit
 
         private void NewProject()
         {
-            //_manager.CloseProject();
-
-            //System.Drawing.Font font = ChooseFont();
-
-            //_manager.MakeProject(font.Name, (FontStyle) font.Style);
-
-            var project = MakeSampleProject();
-
-            EnterProjectMode(project);
-        }
-
-        private void OpenProject()
-        {
-            var project = MakeSampleProject();
-
-            EnterProjectMode(project);
-        }
-
-        private void CloseProject()
-        {
-            if (!ConfirmCloseProject())
+            if (!CloseProject())
                 return;
 
+            var face = ChooseFontSystemDialog();
+
+            // Canceled?
+            if (face == null)
+                return;
+
+            var project = new Project();
+
+            project.Path = @"C:\Temp\sample.kiriproj";
+            project.FontFamilyName = face.Family.Name;
+            project.FontStyle = face.Style;
+            project.FontFace = face;
+
+            EnterProjectMode(project);
+        }
+
+        private async Task OpenProjectAsync()
+        {
+            if (!CloseProject())
+                return;
+
+            var path = ChooseProject();
+            if (path == null)
+                return;
+
+            var project = LoadProject(path);
+
+            await ValidateProjectAsync(project);
+
+            EnterProjectMode(project);
+        }
+
+        private bool CloseProject()
+        {
+            if (!ConfirmCloseProject())
+                return false;
+
             EnterNothingMode();
+            return true;
         }
 
         private void EnterNothingMode()
@@ -187,7 +205,92 @@ namespace KiriEdit
             // TODO: Save the project.
         }
 
-        private System.Drawing.Font ChooseFont()
+        private string ChooseProject()
+        {
+            using (var dialog = new OpenFileDialog())
+            {
+                if (dialog.ShowDialog() == DialogResult.OK)
+                    return dialog.FileName;
+            }
+
+            return null;
+        }
+
+        private Project LoadProject(string path)
+        {
+            var project = MakeSampleProject();
+
+            return project;
+        }
+
+        private async Task<bool> ValidateProjectAsync(Project project)
+        {
+            var findTask = FontFinder.FindFontsAsync();
+
+            await findTask;
+
+            FontFamilyCollection collection = findTask.Result;
+            FontFace face = null;
+            FontFamily family;
+
+            if (collection.TryGetValue(project.FontFamilyName, out family))
+            {
+                face = family.GetFace(project.FontStyle);
+            }
+
+            if (face == null)
+            {
+                string message = string.Format(
+                    "The font {0} ({1}) is not supported.",
+                    project.FontFamilyName, project.FontStyle);
+
+                MessageBox.Show(message, AppTitle);
+                return false;
+            }
+
+            project.FontFace = face;
+
+            return true;
+        }
+
+        private FontFace ChooseFont()
+        {
+            return ChooseFontSystemDialog();
+        }
+
+        private FontFace ChooseFontSystemDialog()
+        {
+            var findTask = FontFinder.FindFontsAsync();
+
+            var systemFont = OpenSystemFontDialog();
+
+            if (systemFont == null)
+                return null;
+
+            findTask.Wait();
+
+            FontFamilyCollection collection = findTask.Result;
+            FontFace face = null;
+            FontFamily family;
+
+            if (collection.TryGetValue(systemFont.Name, out family))
+            {
+                face = family.GetFace((FontStyle) systemFont.Style);
+            }
+
+            if (face == null)
+            {
+                string message = string.Format(
+                    "The font {0} ({1}) is not supported.",
+                    systemFont.Name, systemFont.Style);
+
+                MessageBox.Show(message, AppTitle);
+            }
+
+            return face;
+        }
+
+        private System.Drawing.Font OpenSystemFontDialog()
         {
             using (FontDialog dialog = new FontDialog())
             {
@@ -198,9 +301,7 @@ namespace KiriEdit
                 dialog.FontMustExist = true;
 
                 if (dialog.ShowDialog() == DialogResult.OK)
-                {
                     return dialog.Font;
-                }
             }
 
             return null;

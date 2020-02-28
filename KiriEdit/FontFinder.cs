@@ -141,6 +141,9 @@ namespace KiriEdit.Font
                 FontStyle fontStyle = FontStyle.Regular;
                 string styleName = face.StyleName;
 
+                if (face.FamilyName.Contains("Arial"))
+                    System.Diagnostics.Debug.WriteLine(string.Format("[{0}] :: [{1}]", face.FamilyName, face.StyleName));
+
                 // I'm not sure of the pattern. So, be cautious.
 
                 styleName = styleName.Trim();
@@ -190,7 +193,7 @@ namespace KiriEdit.Font
                 styleName = styleName.Trim();
 
                 // If we started and ended with one word, then treat it as a regular style.
-                if (oneWord && styleName.Length > 0)
+                if (oneWord && styleName.Length > 0 && styleName != "Black")
                     styleName = "";
 
                 return (fontStyle, styleName);
