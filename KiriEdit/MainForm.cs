@@ -1,11 +1,7 @@
 ﻿using KiriEdit.Font;
+using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -19,12 +15,22 @@ namespace KiriEdit
         private Project _project;
         private IView _view;
 
+        private FontListLoader _fontListLoader = new FontListLoader();
+
         public MainForm()
         {
             InitializeComponent();
             EnterNothingMode();
             Text = AppTitle;
             this.FormClosing += MainForm_FormClosing;
+
+            SystemEvents.InstalledFontsChanged += SystemEvents_InstalledFontsChanged;
+            _fontListLoader.Reload();
+        }
+
+        private void SystemEvents_InstalledFontsChanged(object sender, EventArgs e)
+        {
+            _fontListLoader.Reload();
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -43,9 +49,9 @@ namespace KiriEdit
             NewProject();
         }
 
-        private async void openProjectMenuItem_Click(object sender, EventArgs e)
+        private void openProjectMenuItem_Click(object sender, EventArgs e)
         {
-            await OpenProjectAsync();
+            OpenProject();
         }
 
         private void closeProjectMenuItem_Click(object sender, EventArgs e)
@@ -96,7 +102,7 @@ namespace KiriEdit
             EnterProjectMode(project);
         }
 
-        private async Task OpenProjectAsync()
+        private void OpenProject()
         {
             if (!CloseProject())
                 return;
@@ -107,7 +113,7 @@ namespace KiriEdit
 
             var project = LoadProject(path);
 
-            await ValidateProjectAsync(project);
+            ValidateProject(project);
 
             EnterProjectMode(project);
         }
@@ -223,13 +229,11 @@ namespace KiriEdit
             return project;
         }
 
-        private async Task<bool> ValidateProjectAsync(Project project)
+        private bool ValidateProject(Project project)
         {
-            var findTask = FontFinder.FindFontsAsync();
+            // TODO: for now assume it's loaded
 
-            await findTask;
-
-            FontFamilyCollection collection = findTask.Result;
+            FontFamilyCollection collection = _fontListLoader.FontFamilies;
             FontFace face = null;
             FontFamily family;
 
@@ -260,16 +264,14 @@ namespace KiriEdit
 
         private FontFace ChooseFontSystemDialog()
         {
-            var findTask = FontFinder.FindFontsAsync();
+            // TODO: for now assume it's loaded
 
             var systemFont = OpenSystemFontDialog();
 
             if (systemFont == null)
                 return null;
 
-            findTask.Wait();
-
-            FontFamilyCollection collection = findTask.Result;
+            FontFamilyCollection collection = _fontListLoader.FontFamilies;
             FontFace face = null;
             FontFamily family;
 

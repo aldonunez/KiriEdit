@@ -77,6 +77,7 @@
   <ItemGroup>
     <Compile Include="FontFinder.cs" />
     <Compile Include="FontFamily.cs" />
+    <Compile Include="FontListLoader.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

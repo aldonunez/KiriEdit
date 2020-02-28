@@ -2,24 +2,18 @@
 using SharpFont;
 using System;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace KiriEdit.Font
 {
     internal static class FontFinder
     {
-        public static async Task<FontFamilyCollection> FindFontsAsync()
+        public static FontFamilyCollection FindFonts()
         {
-            var result = await Task.Run(() =>
+            using (var finder = new Finder())
             {
-                using (var finder = new Finder())
-                {
-                    finder.Find();
-                    return finder.FontFamilyCollection;
-                }
-            });
-
-            return result;
+                finder.Find();
+                return finder.FontFamilyCollection;
+            }
         }
 
         private class Finder : IDisposable
