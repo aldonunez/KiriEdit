@@ -43,6 +43,11 @@ namespace KiriFT
 
     Face^ Library::OpenFace(String^ path, Int32 index)
     {
+        return OpenFace(path, index, false);
+    }
+
+    Face^ Library::OpenFace(String^ path, Int32 index, bool ignoreTypographicNames)
+    {
         FT_Error error;
         FT_Parameter params[] =
         {
@@ -55,10 +60,13 @@ namespace KiriFT
         msclr::interop::marshal_context context;
         const char* nativePath = context.marshal_as<const char*>(path);
 
-        args.flags = FT_OPEN_PATHNAME | FT_OPEN_PARAMS;
+        args.flags = FT_OPEN_PATHNAME;
         args.pathname = (char*) nativePath;
         args.params = params;
         args.num_params = _countof(params);
+
+        if (ignoreTypographicNames)
+            args.flags |= FT_OPEN_PARAMS;
 
         error = FT_Open_Face(m_lib, &args, index, &face);
         if (error)

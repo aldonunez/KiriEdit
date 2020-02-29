@@ -93,6 +93,7 @@ namespace KiriFT
 		!Library();
 
 		Face^ OpenFace(String^ path, Int32 index);
+		Face^ OpenFace(String^ path, Int32 index, bool ignoreTypoNames);
 	};
 
 	public ref class FreeTypeException : Exception
