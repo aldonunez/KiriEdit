@@ -8,7 +8,8 @@ namespace TryFreetype.Sample3
     {
         public static void Run()
         {
-            using (var face = new FontFace(@"C:\Windows\Fonts\consola.ttf"))
+            using (var lib = new FontLibrary())
+            using (var face = lib.OpenFace(@"C:\Windows\Fonts\consola.ttf", 0))
             {
                 Figure figure = face.DecomposeGlyph('A', 160);
 
@@ -50,7 +51,7 @@ namespace TryFreetype.Sample3
 #endif
 
 
-                Console.WriteLine( "-----------------------" );
+                Console.WriteLine("-----------------------");
 #if false
                 const string S =
 @"

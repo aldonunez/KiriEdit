@@ -3,16 +3,36 @@ using System;
 
 namespace TryFreetype
 {
+    public class FontLibrary : IDisposable
+    {
+        private Library _library = new Library();
+
+        public FontFace OpenFace(string path, int index, bool ignoreTypographicNames = false)
+        {
+            Face face = _library.OpenFace(path, index, ignoreTypographicNames);
+
+            FontFace fontFace = new FontFace(face);
+
+            return fontFace;
+        }
+
+        public void Dispose()
+        {
+            if (_library != null)
+            {
+                _library.Dispose();
+                _library = null;
+            }
+        }
+    }
+
     public class FontFace : IDisposable
     {
-        private Library _library;
         private Face _face;
 
-        public FontFace(string path)
+        internal FontFace(Face face)
         {
-            _library = new Library();
-            // TODO: Get the index from the user.
-            _face = _library.OpenFace(path, 0);
+            _face = face;
         }
 
         public Model.Figure DecomposeGlyph(uint character, int size)
@@ -37,12 +57,6 @@ namespace TryFreetype
             {
                 _face.Dispose();
                 _face = null;
-            }
-
-            if (_library != null)
-            {
-                _library.Dispose();
-                _library = null;
             }
         }
     }
