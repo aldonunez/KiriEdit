@@ -1,4 +1,4 @@
-﻿using SharpFont;
+﻿using KiriFT;
 using System;
 using System.Collections.Generic;
 using TryFreetype.Model;
@@ -8,7 +8,7 @@ namespace TryFreetype
     // TODO: Make this internal.
     public class GlyphWalker
     {
-        private GlyphSlot glyphSlot;
+        private Face face;
         private Figure figure;
         private Contour curContour;
         private Point curPoint;
@@ -20,28 +20,29 @@ namespace TryFreetype
 
         public Figure Figure { get { return figure; } }
 
-        public GlyphWalker(GlyphSlot glyphSlot)
+        public GlyphWalker(Face face)
         {
-            this.glyphSlot = glyphSlot;
+            this.face = face;
         }
 
         public void Decompose()
         {
-            var outlineFuncs = new OutlineFuncs
+            var outlineFuncs = new OutlineHandlers
             {
-                MoveFunction = MoveToFunc,
-                LineFunction = LineToFunc,
-                ConicFunction = ConicToFunc,
-                CubicFunction = CubicToFunc,
+                MoveTo = MoveToFunc,
+                LineTo = LineToFunc,
+                ConicTo = ConicToFunc,
+                CubicTo = CubicToFunc,
             };
-            var o = glyphSlot.Outline;
-            o.Decompose(outlineFuncs, IntPtr.Zero);
+            face.Decompose(outlineFuncs);
 
             CloseCurrentContour();
 
-            var bbox = glyphSlot.Outline.GetBBox();
-            int width = glyphSlot.Metrics.Width.Ceiling() * 64;
-            int height = glyphSlot.Metrics.Height.Ceiling() * 64;
+            var bbox = face.GetBBox();
+            var metrics = face.GetMetrics();
+
+            int width = ((metrics.Width + 63) / 64) * 64;
+            int height = ((metrics.Height + 63) / 64) * 64;
 
             figure = new Figure(_pointGroups, new Cut[0], width, height, bbox.Left, bbox.Bottom);
         }
@@ -74,8 +75,8 @@ namespace TryFreetype
         {
             CloseCurrentContour();
 
-            x = to.X.Value;
-            y = to.Y.Value;
+            x = to.X;
+            y = to.Y;
             Console.WriteLine("MoveTo: {0}, {1}", x, y);
 
             var newPoint = new Point(x, y);
@@ -99,8 +100,8 @@ namespace TryFreetype
 
         private int LineToFunc(ref FTVector to, IntPtr user)
         {
-            x = to.X.Value;
-            y = to.Y.Value;
+            x = to.X;
+            y = to.Y;
             Console.WriteLine("LineTo: {0}, {1}", x, y);
 
             var newPoint = new Point(x, y);
@@ -126,10 +127,10 @@ namespace TryFreetype
 
         private int ConicToFunc(ref FTVector control, ref FTVector to, IntPtr user)
         {
-            x = to.X.Value;
-            y = to.Y.Value;
-            int controlX = control.X.Value;
-            int controlY = control.Y.Value;
+            x = to.X;
+            y = to.Y;
+            int controlX = control.X;
+            int controlY = control.Y;
             Console.WriteLine("ConicTo: {0},{1} {2},{3}", controlX, controlY, x, y);
 
             var newPoint = new Point(x, y);
@@ -156,12 +157,12 @@ namespace TryFreetype
 
         private int CubicToFunc(ref FTVector control1, ref FTVector control2, ref FTVector to, IntPtr user)
         {
-            x = to.X.Value;
-            y = to.Y.Value;
-            int controlX1 = control1.X.Value;
-            int controlY1 = control1.Y.Value;
-            int controlX2 = control2.X.Value;
-            int controlY2 = control2.Y.Value;
+            x = to.X;
+            y = to.Y;
+            int controlX1 = control1.X;
+            int controlY1 = control1.Y;
+            int controlX2 = control2.X;
+            int controlY2 = control2.Y;
             Console.WriteLine("CubicTo: {0},{1} {2},{3} {4},{5}", controlX1, controlY1, controlX2, controlY2, x, y);
 
             var newPoint = new Point(x, y);

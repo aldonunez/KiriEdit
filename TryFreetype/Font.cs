@@ -1,4 +1,4 @@
-﻿using SharpFont;
+﻿using KiriFT;
 using System;
 
 namespace TryFreetype
@@ -11,20 +11,20 @@ namespace TryFreetype
         public FontFace(string path)
         {
             _library = new Library();
-
-            _face = new Face(_library, path);
+            // TODO: Get the index from the user.
+            _face = _library.OpenFace(path, 0);
         }
 
-        public Model.Figure DecomposeGlyph(char character, int size)
+        public Model.Figure DecomposeGlyph(uint character, int size)
         {
             if (size <= 0)
                 throw new ArgumentOutOfRangeException(nameof(size));
 
             _face.SetPixelSizes(0, (uint) size);
 
-            _face.LoadChar(character, LoadFlags.NoBitmap, LoadTarget.Normal);
+            _face.LoadChar(character);
 
-            var walker = new GlyphWalker(_face.Glyph);
+            var walker = new GlyphWalker(_face);
 
             walker.Decompose();
 

@@ -4,6 +4,7 @@ using TryFreetype.Model;
 
 namespace TryFreetype.Sample2
 {
+#if false
     static class Sample
     {
         public static void Run()
@@ -82,4 +83,5 @@ namespace TryFreetype.Sample2
             }
         }
     }
+#endif
 }

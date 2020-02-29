@@ -4,21 +4,48 @@ using namespace System;
 
 namespace KiriFT
 {
-	public value struct Point
+	using namespace System::Runtime::InteropServices;
+
+	public value struct FTVector
 	{
 	public:
 		Int32 X;
 		Int32 Y;
 	};
 
-	public delegate void MoveToHandler(Point to);
-	public delegate void LineToHandler(Point to);
-	public delegate void ConicToHandler(Point control, Point to);
-	public delegate void CubicToHandler(Point control1, Point control2, Point to);
+	public ref struct FTBBox
+	{
+	public:
+		Int32  Left, Bottom;
+		Int32  Right, Top;
+	};
+
+	public ref struct FTGlyphMetrics
+	{
+	public:
+		Int32 Width;
+		Int32 Height;
+
+		// There's a lot more to metrics. But we don't need it all.
+	};
+
+	[UnmanagedFunctionPointerAttribute(CallingConvention::Cdecl)]
+	public delegate int MoveToHandler(FTVector% to, IntPtr user);
+
+	[UnmanagedFunctionPointerAttribute(CallingConvention::Cdecl)]
+	public delegate int LineToHandler(FTVector% to, IntPtr user);
+
+	[UnmanagedFunctionPointerAttribute(CallingConvention::Cdecl)]
+	public delegate int ConicToHandler(FTVector% control, FTVector% to, IntPtr user);
+
+	[UnmanagedFunctionPointerAttribute(CallingConvention::Cdecl)]
+	public delegate int CubicToHandler(FTVector% control1, FTVector% control2, FTVector% to, IntPtr user);
 
 	public ref class OutlineHandlers
 	{
 	public:
+		OutlineHandlers() { }
+
 		OutlineHandlers(
 			MoveToHandler^ MoveTo,
 			LineToHandler^ LineTo,
@@ -32,16 +59,16 @@ namespace KiriFT
 		CubicToHandler^ CubicTo;
 	};
 
-	public ref class FontFace
+	public ref class Face
 	{
 		FT_Face m_face = nullptr;
 
 	internal:
-		FontFace(FT_Face face);
+		Face(FT_Face face);
 
 	public:
-		~FontFace();
-		!FontFace();
+		~Face();
+		!Face();
 
 		property UInt32 FaceIndex { UInt32 get(); }
 		property UInt32 FaceCount { UInt32 get(); }
@@ -49,6 +76,8 @@ namespace KiriFT
 		property String^ StyleName { String^ get(); }
 
 		void SetPixelSizes(UInt32 width, UInt32 height);
+		FTBBox^ GetBBox();
+		FTGlyphMetrics^ GetMetrics();
 
 		void LoadChar(UInt32 ch);
 		void Decompose(OutlineHandlers^ handlers);
@@ -63,7 +92,7 @@ namespace KiriFT
 		~Library();
 		!Library();
 
-		FontFace^ OpenFace(String^ path, Int32 index);
+		Face^ OpenFace(String^ path, Int32 index);
 	};
 
 	public ref class FreeTypeException : Exception

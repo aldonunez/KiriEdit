@@ -41,7 +41,7 @@ namespace KiriFT
         }
     }
 
-    FontFace^ Library::OpenFace(String^ path, Int32 index)
+    Face^ Library::OpenFace(String^ path, Int32 index)
     {
         FT_Error error;
         FT_Parameter params[] =
@@ -57,28 +57,29 @@ namespace KiriFT
 
         args.flags = FT_OPEN_PATHNAME | FT_OPEN_PARAMS;
         args.pathname = (char*) nativePath;
+        args.params = params;
         args.num_params = _countof(params);
 
         error = FT_Open_Face(m_lib, &args, index, &face);
         if (error)
             throw gcnew FreeTypeException();
 
-        FontFace^ fontFace = gcnew FontFace(face);
+        Face^ fontFace = gcnew Face(face);
 
         return fontFace;
     }
 
-    FontFace::FontFace(FT_Face face) :
+    Face::Face(FT_Face face) :
         m_face(face)
     {
     }
 
-    FontFace::~FontFace()
+    Face::~Face()
     {
-        this->!FontFace();
+        this->!Face();
     }
 
-    FontFace::!FontFace()
+    Face::!Face()
     {
         if (m_face != nullptr)
         {
@@ -87,27 +88,27 @@ namespace KiriFT
         }
     }
 
-    UInt32 FontFace::FaceIndex::get()
+    UInt32 Face::FaceIndex::get()
     {
         return m_face->face_index;
     }
 
-    UInt32 FontFace::FaceCount::get()
+    UInt32 Face::FaceCount::get()
     {
         return m_face->num_faces;
     }
 
-    String^ FontFace::FamilyName::get()
+    String^ Face::FamilyName::get()
     {
-        return nullptr;
+        return gcnew String(m_face->family_name);
     }
 
-    String^ FontFace::StyleName::get()
+    String^ Face::StyleName::get()
     {
-        return nullptr;
+        return gcnew String(m_face->style_name);
     }
 
-    void FontFace::SetPixelSizes(UInt32 width, UInt32 height)
+    void Face::SetPixelSizes(UInt32 width, UInt32 height)
     {
         FT_Error error;
 
@@ -116,7 +117,36 @@ namespace KiriFT
             throw gcnew FreeTypeException();
     }
 
-    void FontFace::LoadChar(UInt32 ch)
+    FTBBox^ Face::GetBBox()
+    {
+        FT_Error error;
+        FT_BBox bbox;
+
+        error = FT_Outline_Get_BBox(&m_face->glyph->outline, &bbox);
+        if (error)
+            throw gcnew FreeTypeException();
+
+        FTBBox^ bboxFT = gcnew FTBBox();
+
+        bboxFT->Left = bbox.xMin;
+        bboxFT->Bottom = bbox.yMin;
+        bboxFT->Right = bbox.xMax;
+        bboxFT->Top = bbox.yMax;
+
+        return bboxFT;
+    }
+
+    FTGlyphMetrics^ Face::GetMetrics()
+    {
+        FTGlyphMetrics^ metrics = gcnew FTGlyphMetrics();
+
+        metrics->Width = m_face->glyph->metrics.width;
+        metrics->Height = m_face->glyph->metrics.height;
+
+        return metrics;
+    }
+
+    void Face::LoadChar(UInt32 ch)
     {
         FT_Error error;
 
@@ -125,7 +155,7 @@ namespace KiriFT
             throw gcnew FreeTypeException();
     }
 
-    void FontFace::Decompose(OutlineHandlers^ handlers)
+    void Face::Decompose(OutlineHandlers^ handlers)
     {
         FT_Error error;
         FT_Outline_Funcs funcs = { 0 };

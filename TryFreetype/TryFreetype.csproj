@@ -95,6 +95,12 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\KiriFT\KiriFT.vcxproj">
+      <Project>{01868f96-b1f9-4a0d-8991-cd3f52039b43}</Project>
+      <Name>KiriFT</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
