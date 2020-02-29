@@ -82,6 +82,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\KiriFT\KiriFT.vcxproj">
+      <Project>{01868f96-b1f9-4a0d-8991-cd3f52039b43}</Project>
+      <Name>KiriFT</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TryFreetype\TryFreetype.csproj">
       <Project>{c098da70-c98b-4267-be80-31c147545cf2}</Project>
       <Name>TryFreetype</Name>
