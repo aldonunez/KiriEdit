@@ -22,7 +22,7 @@ namespace KiriFT
 
         error = FT_Init_FreeType(&lib);
         if (error)
-            throw gcnew FreeTypeException();
+            throw gcnew FreeTypeException(error);
 
         m_lib = lib;
     }
@@ -43,16 +43,16 @@ namespace KiriFT
 
     Face^ Library::OpenFace(String^ path, Int32 index)
     {
-        return OpenFace(path, index, false);
+        return OpenFace(path, index, OpenParams::None);
     }
 
-    Face^ Library::OpenFace(String^ path, Int32 index, bool ignoreTypographicNames)
+    Face^ Library::OpenFace(String^ path, Int32 index, OpenParams openParams)
     {
         FT_Error error;
         FT_Parameter params[] =
         {
-            { FT_PARAM_TAG_IGNORE_TYPOGRAPHIC_FAMILY, NULL },
-            { FT_PARAM_TAG_IGNORE_TYPOGRAPHIC_SUBFAMILY, NULL },
+            { 0, NULL },
+            { 0, NULL },
         };
         FT_Open_Args args;
         FT_Face face;
@@ -60,17 +60,26 @@ namespace KiriFT
         msclr::interop::marshal_context context;
         const char* nativePath = context.marshal_as<const char*>(path);
 
-        args.flags = FT_OPEN_PATHNAME;
+        args.flags = FT_OPEN_PATHNAME | FT_OPEN_PARAMS;
         args.pathname = (char*) nativePath;
         args.params = params;
-        args.num_params = _countof(params);
+        args.num_params = 0;
 
-        if (ignoreTypographicNames)
-            args.flags |= FT_OPEN_PARAMS;
+        if ((openParams & OpenParams::IgnoreTypographicFamily) == OpenParams::IgnoreTypographicFamily)
+        {
+            params[args.num_params].tag = FT_PARAM_TAG_IGNORE_TYPOGRAPHIC_FAMILY;
+            args.num_params++;
+        }
+
+        if ((openParams & OpenParams::IgnoreTypographicSubfamily) == OpenParams::IgnoreTypographicSubfamily)
+        {
+            params[args.num_params].tag = FT_PARAM_TAG_IGNORE_TYPOGRAPHIC_SUBFAMILY;
+            args.num_params++;
+        }
 
         error = FT_Open_Face(m_lib, &args, index, &face);
         if (error)
-            throw gcnew FreeTypeException();
+            throw gcnew FreeTypeException(error);
 
         Face^ fontFace = gcnew Face(face);
 
@@ -96,12 +105,12 @@ namespace KiriFT
         }
     }
 
-    UInt32 Face::FaceIndex::get()
+    Int32 Face::FaceIndex::get()
     {
         return m_face->face_index;
     }
 
-    UInt32 Face::FaceCount::get()
+    Int32 Face::FaceCount::get()
     {
         return m_face->num_faces;
     }
@@ -116,13 +125,18 @@ namespace KiriFT
         return gcnew String(m_face->style_name);
     }
 
+    FaceFlags Face::Flags::get()
+    {
+        return (FaceFlags) m_face->face_flags;
+    }
+
     void Face::SetPixelSizes(UInt32 width, UInt32 height)
     {
         FT_Error error;
 
         error = FT_Set_Pixel_Sizes(m_face, width, height);
         if (error)
-            throw gcnew FreeTypeException();
+            throw gcnew FreeTypeException(error);
     }
 
     FTBBox^ Face::GetBBox()
@@ -132,7 +146,7 @@ namespace KiriFT
 
         error = FT_Outline_Get_BBox(&m_face->glyph->outline, &bbox);
         if (error)
-            throw gcnew FreeTypeException();
+            throw gcnew FreeTypeException(error);
 
         FTBBox^ bboxFT = gcnew FTBBox();
 
@@ -160,7 +174,7 @@ namespace KiriFT
 
         error = FT_Load_Char(m_face, ch, FT_LOAD_NO_BITMAP);
         if (error)
-            throw gcnew FreeTypeException();
+            throw gcnew FreeTypeException(error);
     }
 
     void Face::Decompose(OutlineHandlers^ handlers)
@@ -179,13 +193,14 @@ namespace KiriFT
         funcs.cubic_to = (FT_Outline_CubicTo_Func) Marshal::GetFunctionPointerForDelegate(handlers->CubicTo).ToPointer();
 
         error = FT_Outline_Decompose(&m_face->glyph->outline, &funcs, NULL);
-        if (error)
-            throw gcnew FreeTypeException();
 
         m.Free();
         l.Free();
         o.Free();
         u.Free();
+
+        if (error)
+            throw gcnew FreeTypeException(error);
     }
 
     OutlineHandlers::OutlineHandlers(MoveToHandler^ moveTo, LineToHandler^ lineTo, ConicToHandler^ conicTo, CubicToHandler^ cubicTo) :
@@ -194,5 +209,10 @@ namespace KiriFT
         ConicTo(conicTo),
         CubicTo(cubicTo)
     {
+    }
+
+    Int32 FreeTypeException::Error::get()
+    {
+        return m_error;
     }
 }

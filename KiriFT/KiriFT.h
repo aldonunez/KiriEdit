@@ -59,6 +59,12 @@ namespace KiriFT
 		CubicToHandler^ CubicTo;
 	};
 
+    [Flags]
+    public enum class FaceFlags
+    {
+        Scalable = 1 << 0,
+    };
+
 	public ref class Face
 	{
 		FT_Face m_face = nullptr;
@@ -70,10 +76,11 @@ namespace KiriFT
 		~Face();
 		!Face();
 
-		property UInt32 FaceIndex { UInt32 get(); }
-		property UInt32 FaceCount { UInt32 get(); }
+		property Int32 FaceIndex { Int32 get(); }
+		property Int32 FaceCount { Int32 get(); }
 		property String^ FamilyName { String^ get(); }
 		property String^ StyleName { String^ get(); }
+        property FaceFlags Flags { FaceFlags get(); }
 
 		void SetPixelSizes(UInt32 width, UInt32 height);
 		FTBBox^ GetBBox();
@@ -82,6 +89,14 @@ namespace KiriFT
 		void LoadChar(UInt32 ch);
 		void Decompose(OutlineHandlers^ handlers);
 	};
+
+    [Flags]
+    public enum class OpenParams
+    {
+        None,
+        IgnoreTypographicFamily,
+        IgnoreTypographicSubfamily,
+    };
 
 	public ref class Library
 	{
@@ -93,10 +108,17 @@ namespace KiriFT
 		!Library();
 
 		Face^ OpenFace(String^ path, Int32 index);
-		Face^ OpenFace(String^ path, Int32 index, bool ignoreTypoNames);
+        Face^ OpenFace( String^ path, Int32 index, OpenParams openParams );
 	};
 
 	public ref class FreeTypeException : Exception
 	{
+        FT_Error m_error;
+
+    internal:
+        FreeTypeException(FT_Error error) : m_error(error) { }
+
+    public:
+        property Int32 Error { Int32 get(); }
 	};
 }

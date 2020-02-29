@@ -9,7 +9,10 @@ namespace TryFreetype
 
         public FontFace OpenFace(string path, int index, bool ignoreTypographicNames = false)
         {
-            Face face = _library.OpenFace(path, index, ignoreTypographicNames);
+            OpenParams @params =
+                ignoreTypographicNames ? OpenParams.IgnoreTypographicFamily : OpenParams.None;
+
+            Face face = _library.OpenFace(path, index, @params);
 
             FontFace fontFace = new FontFace(face);
 

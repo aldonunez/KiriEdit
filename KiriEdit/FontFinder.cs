@@ -1,5 +1,5 @@
 ﻿using Microsoft.Win32;
-using SharpFont;
+using KiriFT;
 using System;
 using System.IO;
 
@@ -54,15 +54,17 @@ namespace KiriEdit.Font
                 {
                     foreach (string valName in fontsKey.GetValueNames())
                     {
-                        string val = fontsKey.GetValue(valName) as string;
+                        string path = fontsKey.GetValue(valName) as string;
 
-                        if (val == null)
+                        if (path == null)
                             continue;
 
-                        string path = val;
-                        string fontsPath = Environment.GetFolderPath(Environment.SpecialFolder.Fonts);
+                        if (!Path.IsPathRooted(path))
+                        {
+                            string fontsPath = Environment.GetFolderPath(Environment.SpecialFolder.Fonts);
 
-                        path = Path.Combine(fontsPath, path);
+                            path = Path.Combine(fontsPath, path);
+                        }
 
                         ProcessFontFile(path);
                     }
@@ -71,28 +73,17 @@ namespace KiriEdit.Font
 
             private void ProcessFontFile(string path)
             {
-                int faceCount = 0;
-
-                try
-                {
-                    // Look up a face with a negative index to find out how many faces there are.
-                    var dummyFace = new Face(_library, path, -1);
-                    faceCount = dummyFace.FaceCount;
-                    dummyFace.Dispose();
-                }
-                catch
-                {
-                    // Can't handle the file. So there's nothing to do.
-                    return;
-                }
+                int faceCount = 1;
 
                 for (int i = 0; i < faceCount; i++)
                 {
                     Face face = null;
                     try
                     {
-                        face = new Face(_library, path, i);
-                        if (face.GetX11FontFormat() == "TrueType")
+                        face = _library.OpenFace(path, i, OpenParams.IgnoreTypographicFamily);
+                        faceCount = face.FaceCount;
+
+                        if ((face.Flags & FaceFlags.Scalable) == FaceFlags.Scalable)
                             ProcessFace(path, face);
                     }
                     catch
@@ -109,20 +100,14 @@ namespace KiriEdit.Font
 
             private void ProcessFace(string path, Face face)
             {
-                var (fontStyle, styleName) = ProcessStyleName(face);
-                string gdipFamilyName;
-
-                if (styleName.Length == 0)
-                    gdipFamilyName = face.FamilyName;
-                else
-                    gdipFamilyName = face.FamilyName + " " + styleName;
-
                 FontFamily family;
 
-                if (!_nameToFamily.TryGetValue(gdipFamilyName, out family))
+                var fontStyle = ProcessStyleName(face);
+
+                if (!_nameToFamily.TryGetValue(face.FamilyName, out family))
                 {
-                    family = new FontFamily(gdipFamilyName);
-                    _nameToFamily.Add(gdipFamilyName, family);
+                    family = new FontFamily(face.FamilyName);
+                    _nameToFamily.Add(face.FamilyName, family);
                 }
 
                 FontFace fontFace = new FontFace(family, fontStyle, path, face.FaceIndex);
@@ -130,67 +115,44 @@ namespace KiriEdit.Font
                 family.AddFace(fontStyle, fontFace);
             }
 
-            private (FontStyle fontStyle, string styleName) ProcessStyleName(Face face)
+            private FontStyle ProcessStyleName(Face face)
             {
                 FontStyle fontStyle = FontStyle.Regular;
                 string styleName = face.StyleName;
 
-                if (face.FamilyName.Contains("Arial"))
-                    System.Diagnostics.Debug.WriteLine(string.Format("[{0}] :: [{1}]", face.FamilyName, face.StyleName));
-
                 // I'm not sure of the pattern. So, be cautious.
 
-                styleName = styleName.Trim();
-
-                bool oneWord = styleName.IndexOf(' ') < 0;
-
-                if (styleName.IndexOf("Demibold", StringComparison.OrdinalIgnoreCase) >= 0)
+                if (styleName.IndexOf("Fat", StringComparison.OrdinalIgnoreCase) >= 0)
                 {
-                    styleName = styleName.Replace("Demibold", "");
                     fontStyle |= FontStyle.Bold;
                 }
-
-                if (styleName.IndexOf("Bold", StringComparison.OrdinalIgnoreCase) >= 0)
+                else if (styleName.IndexOf("Heavy", StringComparison.OrdinalIgnoreCase) >= 0)
                 {
-                    styleName = styleName.Replace("Bold", "");
+                    fontStyle |= FontStyle.Bold;
+                }
+                else if (styleName.IndexOf("Thick", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    fontStyle |= FontStyle.Bold;
+                }
+                else if (styleName.IndexOf("Bold", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    fontStyle |= FontStyle.Bold;
+                }
+                else if (styleName.IndexOf("Black", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
                     fontStyle |= FontStyle.Bold;
                 }
 
                 if (styleName.IndexOf("Oblique", StringComparison.OrdinalIgnoreCase) >= 0)
                 {
-                    styleName = styleName.Replace("Oblique", "");
+                    fontStyle |= FontStyle.Italic;
+                }
+                else if (styleName.IndexOf("Italic", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
                     fontStyle |= FontStyle.Italic;
                 }
 
-                if (styleName.IndexOf("Italic", StringComparison.OrdinalIgnoreCase) >= 0)
-                {
-                    styleName = styleName.Replace("Italic", "");
-                    fontStyle |= FontStyle.Italic;
-                }
-
-                if (styleName.IndexOf("Regular", StringComparison.OrdinalIgnoreCase) >= 0)
-                {
-                    styleName = styleName.Replace("Regular", "");
-                }
-
-                if (styleName.IndexOf("Roman", StringComparison.OrdinalIgnoreCase) >= 0)
-                {
-                    styleName = styleName.Replace("Roman", "");
-                }
-
-                if (styleName.IndexOf("Black", StringComparison.OrdinalIgnoreCase) >= 0)
-                {
-                    fontStyle |= FontStyle.Bold;
-                    // But leave the word in the name.
-                }
-
-                styleName = styleName.Trim();
-
-                // If we started and ended with one word, then treat it as a regular style.
-                if (oneWord && styleName.Length > 0 && styleName != "Black")
-                    styleName = "";
-
-                return (fontStyle, styleName);
+                return fontStyle;
             }
         }
     }
