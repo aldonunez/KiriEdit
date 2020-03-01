@@ -45,13 +45,13 @@
             // 
             // mainMenuStrip
             // 
-            this.mainMenuStrip.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
             this.mainMenuStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.mainMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileMenuItem});
             this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.mainMenuStrip.Name = "mainMenuStrip";
-            this.mainMenuStrip.Size = new System.Drawing.Size(800, 33);
+            this.mainMenuStrip.Padding = new System.Windows.Forms.Padding(11, 3, 0, 3);
+            this.mainMenuStrip.Size = new System.Drawing.Size(1422, 51);
             this.mainMenuStrip.TabIndex = 0;
             this.mainMenuStrip.Text = "menuStrip1";
             // 
@@ -67,87 +67,90 @@
             this.toolStripSeparator1,
             this.exitMenuItem});
             this.fileMenuItem.Name = "fileMenuItem";
-            this.fileMenuItem.Size = new System.Drawing.Size(54, 29);
+            this.fileMenuItem.Size = new System.Drawing.Size(75, 45);
             this.fileMenuItem.Text = "&File";
             // 
             // newProjectMenuItem
             // 
             this.newProjectMenuItem.Name = "newProjectMenuItem";
-            this.newProjectMenuItem.Size = new System.Drawing.Size(234, 34);
+            this.newProjectMenuItem.Size = new System.Drawing.Size(396, 46);
             this.newProjectMenuItem.Text = "&New Project ...";
             this.newProjectMenuItem.Click += new System.EventHandler(this.newProjectMenuItem_Click);
             // 
             // openProjectMenuItem
             // 
             this.openProjectMenuItem.Name = "openProjectMenuItem";
-            this.openProjectMenuItem.Size = new System.Drawing.Size(234, 34);
+            this.openProjectMenuItem.Size = new System.Drawing.Size(396, 46);
             this.openProjectMenuItem.Text = "&Open Project ...";
             this.openProjectMenuItem.Click += new System.EventHandler(this.openProjectMenuItem_Click);
             // 
             // closeProjectMenuItem
             // 
             this.closeProjectMenuItem.Name = "closeProjectMenuItem";
-            this.closeProjectMenuItem.Size = new System.Drawing.Size(234, 34);
+            this.closeProjectMenuItem.Size = new System.Drawing.Size(396, 46);
             this.closeProjectMenuItem.Text = "&Close Project";
             this.closeProjectMenuItem.Click += new System.EventHandler(this.closeProjectMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(231, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(393, 6);
             // 
             // saveItemMenuItem
             // 
             this.saveItemMenuItem.Name = "saveItemMenuItem";
-            this.saveItemMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.saveItemMenuItem.Size = new System.Drawing.Size(396, 46);
             this.saveItemMenuItem.Text = "&Save Item";
             this.saveItemMenuItem.Click += new System.EventHandler(this.saveItemMenuItem_Click);
             // 
             // saveAllMenuItem
             // 
             this.saveAllMenuItem.Name = "saveAllMenuItem";
-            this.saveAllMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.saveAllMenuItem.Size = new System.Drawing.Size(396, 46);
             this.saveAllMenuItem.Text = "Save A&ll";
             this.saveAllMenuItem.Click += new System.EventHandler(this.saveAllMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(231, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(393, 6);
             // 
             // exitMenuItem
             // 
             this.exitMenuItem.Name = "exitMenuItem";
-            this.exitMenuItem.Size = new System.Drawing.Size(234, 34);
+            this.exitMenuItem.Size = new System.Drawing.Size(396, 46);
             this.exitMenuItem.Text = "E&xit";
             this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
             // 
             // statusStrip1
             // 
             this.statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
-            this.statusStrip1.Location = new System.Drawing.Point(0, 428);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 675);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(800, 22);
+            this.statusStrip1.Padding = new System.Windows.Forms.Padding(2, 0, 25, 0);
+            this.statusStrip1.Size = new System.Drawing.Size(1422, 22);
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
             // 
             // hostPanel
             // 
             this.hostPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.hostPanel.Location = new System.Drawing.Point(0, 33);
+            this.hostPanel.Location = new System.Drawing.Point(0, 51);
+            this.hostPanel.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.hostPanel.Name = "hostPanel";
-            this.hostPanel.Size = new System.Drawing.Size(800, 395);
+            this.hostPanel.Size = new System.Drawing.Size(1422, 624);
             this.hostPanel.TabIndex = 2;
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(16F, 31F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1422, 697);
             this.Controls.Add(this.hostPanel);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.mainMenuStrip);
             this.MainMenuStrip = this.mainMenuStrip;
+            this.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.Name = "MainForm";
             this.Text = "Form1";
             this.mainMenuStrip.ResumeLayout(false);

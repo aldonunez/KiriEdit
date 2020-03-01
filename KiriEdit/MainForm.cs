@@ -86,7 +86,13 @@ namespace KiriEdit
             if (!CloseProject())
                 return;
 
-            var face = ChooseFontSystemDialog();
+            using (var dialog = new NewProjectForm())
+            {
+                if (dialog.ShowDialog() != DialogResult.OK)
+                    return;
+            }
+            FontFace face = null;
+            return;
 
             // Canceled?
             if (face == null)
