@@ -56,15 +56,13 @@ namespace KiriEdit
         private void FaceIndexComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             // Includes the empty entry (0)
-            if (faceIndexComboBox.SelectedIndex < 1)
+            if (typefaceComboBox.SelectedIndex < 1)
             {
-                fontFamilyTextBox.Text = "";
                 copyrightTextBox.Text = "";
             }
             else
             {
-                var item = (FontListItem) faceIndexComboBox.SelectedItem;
-                fontFamilyTextBox.Text = item.ToString();
+                var item = (FontListItem) typefaceComboBox.SelectedItem;
                 copyrightTextBox.Text = item.Copyright;
             }
         }
@@ -85,7 +83,6 @@ namespace KiriEdit
 
             projectSpec.ProjectName = projNameTextBox.Text;
             projectSpec.ProjectPath = projPathTextBox.Text;
-            projectSpec.FontPath = fontFamilyTextBox.Text;
             // TODO: face index
 
             return projectSpec;
@@ -210,11 +207,11 @@ namespace KiriEdit
                     {
                         string message = "The font contains more than one typeface. Choose a typeface.";
                         MessageBox.Show(message, MainForm.AppTitle);
-                        faceIndexComboBox.SelectedIndex = 0;
+                        typefaceComboBox.SelectedIndex = 0;
                     }
                     else
                     {
-                        faceIndexComboBox.SelectedIndex = 1;
+                        typefaceComboBox.SelectedIndex = 1;
                     }
                 }
             }
@@ -222,13 +219,13 @@ namespace KiriEdit
 
         private void UpdateFaceList(FontListItem[] items)
         {
-            faceIndexComboBox.Enabled = true;
-            faceIndexComboBox.Items.Clear();
-            faceIndexComboBox.Items.Add("");
-            faceIndexComboBox.Items.AddRange(items);
+            typefaceComboBox.Enabled = true;
+            typefaceComboBox.Items.Clear();
+            typefaceComboBox.Items.Add("");
+            typefaceComboBox.Items.AddRange(items);
 
             if (items.Length <= 1)
-                faceIndexComboBox.Enabled = false;
+                typefaceComboBox.Enabled = false;
         }
 
         private void fontPathTextBox_TextChanged(object sender, EventArgs e)
@@ -239,6 +236,7 @@ namespace KiriEdit
         private void UpdateOKButton()
         {
             if (fontPathTextBox.TextLength > 0
+                && typefaceComboBox.SelectedIndex > 0
                 && projNameTextBox.TextLength > 0
                 && projPathTextBox.TextLength > 0)
             {
