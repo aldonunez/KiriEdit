@@ -8,6 +8,8 @@ namespace KiriEdit
 {
     public partial class NewProjectForm : Form
     {
+        #region Inner classes
+
         private class FontListItem
         {
             private string _itemText;
@@ -41,6 +43,8 @@ namespace KiriEdit
             }
         }
 
+        #endregion
+
         private const string FontFilter = 
             "TrueType files (*.ttf;*.ttc)|*.ttf;*.ttc|OpenType files (*.otf;*.otc)|*.otf;*.otc";
 
@@ -72,18 +76,19 @@ namespace KiriEdit
             if (!ValidateOK())
                 return;
 
-            ProjectSpec = PrepareProject();
+            ProjectSpec = PrepareProjectSpec();
 
             DialogResult = DialogResult.OK;
         }
 
-        private ProjectSpec PrepareProject()
+        private ProjectSpec PrepareProjectSpec()
         {
             var projectSpec = new ProjectSpec();
 
             projectSpec.ProjectName = projNameTextBox.Text;
-            projectSpec.ProjectPath = projPathTextBox.Text;
-            // TODO: face index
+            projectSpec.ProjectLocation = projPathTextBox.Text;
+            projectSpec.FontPath = fontPathTextBox.Text;
+            projectSpec.FaceIndex = ((FontListItem) typefaceComboBox.SelectedItem).FaceIndex;
 
             return projectSpec;
         }
@@ -249,13 +254,5 @@ namespace KiriEdit
                 okButton.Enabled = false;
             }
         }
-    }
-
-    public class ProjectSpec
-    {
-        public string ProjectName;
-        public string ProjectPath;
-        public string FontPath;
-        public int FaceIndex;
     }
 }

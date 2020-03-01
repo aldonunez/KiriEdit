@@ -12,4 +12,12 @@ namespace KiriEdit
 
         public FontFace FontFace;
     }
+
+    public class ProjectSpec
+    {
+        public string ProjectName;
+        public string ProjectLocation;
+        public string FontPath;
+        public int FaceIndex;
+    }
 }
