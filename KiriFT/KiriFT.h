@@ -65,9 +65,30 @@ namespace KiriFT
         Scalable = 1 << 0,
     };
 
+    public value struct SfntName
+    {
+    public:
+        UInt16 LanguageId;
+        UInt16 NameId;
+        String^ String;
+    };
+
 	public ref class Face
 	{
-		FT_Face m_face = nullptr;
+        value struct SfntNameRef
+        {
+        public:
+            UInt32 Index;
+            UInt16 LanguageId;
+            UInt16 NameId;
+            String^ Name;
+        };
+
+        FT_Face m_face = nullptr;
+        System::Collections::Generic::List<SfntNameRef>^ m_filteredSfntNames;
+
+    private:
+        void LoadSfntNames();
 
 	internal:
 		Face(FT_Face face);
@@ -85,6 +106,8 @@ namespace KiriFT
 		void SetPixelSizes(UInt32 width, UInt32 height);
 		FTBBox^ GetBBox();
 		FTGlyphMetrics^ GetMetrics();
+        UInt32 GetSfntNameCount();
+        SfntName GetSfntName( UInt32 index );
 
 		void LoadChar(UInt32 ch);
 		void Decompose(OutlineHandlers^ handlers);

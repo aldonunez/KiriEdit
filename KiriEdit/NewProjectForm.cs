@@ -182,6 +182,22 @@ namespace KiriEdit
         private void UpdateFaceInfo(string path, Face face)
         {
             fontFamilyTextBox.Text = face.FamilyName + " (" + face.StyleName + ")";
+            copyrightTextBox.Text = "";
+
+            uint count = face.GetSfntNameCount();
+
+            for (uint i = 0; i < count; i++)
+            {
+                SfntName sfntName = face.GetSfntName(i);
+
+                // TODO: what about the language ID?
+                if (sfntName.NameId == 0)
+                {
+                    copyrightTextBox.Text = sfntName.String;
+                    break;
+                }
+            }
+
             _faceIndex = face.FaceIndex;
             UpdateFaceList(path, face);
         }

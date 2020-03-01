@@ -8,6 +8,8 @@
 #include FT_OUTLINE_H
 #include FT_BBOX_H
 #include FT_PARAMETER_TAGS_H
+#include FT_SFNT_NAMES_H
+#include FT_TRUETYPE_IDS_H
 #undef generic
 
 using namespace System;
@@ -84,6 +86,34 @@ namespace KiriFT
         Face^ fontFace = gcnew Face(face);
 
         return fontFace;
+    }
+
+    void Face::LoadSfntNames()
+    {
+        if (m_filteredSfntNames != nullptr)
+            return;
+
+        UInt32 grossCount = FT_Get_Sfnt_Name_Count(m_face);
+
+        m_filteredSfntNames = gcnew System::Collections::Generic::List<SfntNameRef>();
+
+        for (UInt32 i = 0; i < grossCount; i++)
+        {
+            FT_Error error;
+            FT_SfntName ftName;
+            SfntNameRef managedName;
+
+            error = FT_Get_Sfnt_Name(m_face, i, &ftName);
+            if (error)
+                throw gcnew FreeTypeException(error);
+
+            if (   ftName.platform_id == TT_PLATFORM_MICROSOFT
+                && ftName.encoding_id == TT_MS_ID_UNICODE_CS)
+            {
+                managedName.Index = i;
+                m_filteredSfntNames->Add( managedName );
+            }
+        }
     }
 
     Face::Face(FT_Face face) :
@@ -166,6 +196,53 @@ namespace KiriFT
         metrics->Height = m_face->glyph->metrics.height;
 
         return metrics;
+    }
+
+    UInt32 Face::GetSfntNameCount()
+    {
+        if (m_filteredSfntNames == nullptr)
+        {
+            LoadSfntNames();
+        }
+
+        return m_filteredSfntNames->Count;
+    }
+
+    SfntName Face::GetSfntName(UInt32 index)
+    {
+        if (m_filteredSfntNames == nullptr || index >= (UInt32) m_filteredSfntNames->Count)
+            throw gcnew ArgumentException();
+
+        SfntNameRef nameRef = m_filteredSfntNames[index];
+
+        if (nameRef.Name == nullptr)
+        {
+            FT_Error error;
+            FT_SfntName ftName;
+
+            error = FT_Get_Sfnt_Name(m_face, nameRef.Index, &ftName);
+            if (error)
+                throw gcnew FreeTypeException(error);
+
+            array<Char>^ charArray = gcnew array<Char>(ftName.string_len / 2);
+
+            for (UInt32 i = 0; i < ftName.string_len; i += 2)
+            {
+                Char ch = (ftName.string[i] << 8) | ftName.string[i + 1];
+                charArray[i / 2] = ch;
+            }
+
+            nameRef.Name = gcnew String(charArray);
+            nameRef.LanguageId = ftName.language_id;
+            nameRef.NameId = ftName.name_id;
+            m_filteredSfntNames[index] = nameRef;
+        }
+
+        SfntName name;
+        name.LanguageId = nameRef.LanguageId;
+        name.NameId = nameRef.NameId;
+        name.String = nameRef.Name;
+        return name;
     }
 
     void Face::LoadChar(UInt32 ch)
