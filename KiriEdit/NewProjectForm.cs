@@ -127,7 +127,7 @@ namespace KiriEdit
                         MessageBox.Show(message, MainForm.AppTitle);
                         fontPathTextBox.Text = dialog.FileName;
                         _faceIndex = -1;
-                        UpdateFaceCount(face.FaceCount);
+                        UpdateFaceList(dialog.FileName, face);
                         return;
                     }
 
@@ -135,7 +135,7 @@ namespace KiriEdit
                         return;
 
                     fontPathTextBox.Text = dialog.FileName;
-                    UpdateFaceInfo(face);
+                    UpdateFaceInfo(dialog.FileName, face);
                 }
                 catch (FreeTypeException)
                 {
@@ -151,24 +151,39 @@ namespace KiriEdit
             }
         }
 
-        private void UpdateFaceCount(int faceCount)
+        private void UpdateFaceList(string path, Face firstFace)
         {
             faceIndexComboBox.Items.Clear();
             faceIndexComboBox.Items.Add("");
 
+            int faceCount = firstFace.FaceCount;
+
             for (int i = 0; i < faceCount; i++)
             {
-                faceIndexComboBox.Items.Add(i);
+                string familyName = firstFace.FamilyName;
+                string styleName = firstFace.StyleName;
+
+                if (i > 0)
+                {
+                    using (var face = _library.OpenFace(path, i))
+                    {
+                        familyName = face.FamilyName;
+                        styleName = face.StyleName;
+                    }
+                }
+
+                string item = string.Format("{0} - {1} ({2})", i, familyName, styleName);
+                faceIndexComboBox.Items.Add(item);
             }
 
             faceIndexComboBox.SelectedIndex = _faceIndex + 1;
         }
 
-        private void UpdateFaceInfo(Face face)
+        private void UpdateFaceInfo(string path, Face face)
         {
             fontFamilyTextBox.Text = face.FamilyName + " (" + face.StyleName + ")";
             _faceIndex = face.FaceIndex;
-            UpdateFaceCount(1);
+            UpdateFaceList(path, face);
         }
 
         private void fontPathTextBox_TextChanged(object sender, EventArgs e)

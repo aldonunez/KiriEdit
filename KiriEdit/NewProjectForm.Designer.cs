@@ -174,6 +174,8 @@
             // 
             // copyrightTextBox
             // 
+            this.copyrightTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.copyrightTextBox.Location = new System.Drawing.Point(226, 226);
             this.copyrightTextBox.Margin = new System.Windows.Forms.Padding(10);
             this.copyrightTextBox.Name = "copyrightTextBox";
@@ -183,6 +185,8 @@
             // 
             // faceIndexComboBox
             // 
+            this.faceIndexComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.faceIndexComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.faceIndexComboBox.FormattingEnabled = true;
             this.faceIndexComboBox.Location = new System.Drawing.Point(226, 109);
