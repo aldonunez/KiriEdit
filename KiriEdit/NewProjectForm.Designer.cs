@@ -13,9 +13,16 @@
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
+            if (disposing)
             {
-                components.Dispose();
+                if (components != null)
+                    components.Dispose();
+
+                if (_library != null)
+                {
+                    _library.Dispose();
+                    _library = null;
+                }
             }
             base.Dispose(disposing);
         }
@@ -36,11 +43,11 @@
             this.okButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
             this.fontGroupBox = new System.Windows.Forms.GroupBox();
-            this.fontNameTextBox = new System.Windows.Forms.TextBox();
-            this.fontPathTextBox = new System.Windows.Forms.TextBox();
-            this.fontNameLabel = new System.Windows.Forms.Label();
-            this.fontPathLabel = new System.Windows.Forms.Label();
             this.fontPathButton = new System.Windows.Forms.Button();
+            this.fontPathLabel = new System.Windows.Forms.Label();
+            this.fontNameLabel = new System.Windows.Forms.Label();
+            this.fontPathTextBox = new System.Windows.Forms.TextBox();
+            this.fontNameTextBox = new System.Windows.Forms.TextBox();
             this.fontGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -88,7 +95,7 @@
             // 
             // projPathButton
             // 
-            this.projPathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.projPathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.projPathButton.Location = new System.Drawing.Point(541, 353);
             this.projPathButton.Name = "projPathButton";
             this.projPathButton.Size = new System.Drawing.Size(172, 58);
@@ -139,16 +146,34 @@
             this.fontGroupBox.TabStop = false;
             this.fontGroupBox.Text = "Font";
             // 
-            // fontNameTextBox
+            // fontPathButton
             // 
-            this.fontNameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.fontNameTextBox.Location = new System.Drawing.Point(230, 51);
-            this.fontNameTextBox.Margin = new System.Windows.Forms.Padding(10);
-            this.fontNameTextBox.Name = "fontNameTextBox";
-            this.fontNameTextBox.ReadOnly = true;
-            this.fontNameTextBox.Size = new System.Drawing.Size(261, 38);
-            this.fontNameTextBox.TabIndex = 3;
+            this.fontPathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.fontPathButton.Location = new System.Drawing.Point(519, 98);
+            this.fontPathButton.Name = "fontPathButton";
+            this.fontPathButton.Size = new System.Drawing.Size(172, 58);
+            this.fontPathButton.TabIndex = 8;
+            this.fontPathButton.Text = "Browse ...";
+            this.fontPathButton.UseVisualStyleBackColor = true;
+            this.fontPathButton.Click += new System.EventHandler(this.fontPathButton_Click);
+            // 
+            // fontPathLabel
+            // 
+            this.fontPathLabel.AutoSize = true;
+            this.fontPathLabel.Location = new System.Drawing.Point(13, 109);
+            this.fontPathLabel.Name = "fontPathLabel";
+            this.fontPathLabel.Size = new System.Drawing.Size(132, 32);
+            this.fontPathLabel.TabIndex = 6;
+            this.fontPathLabel.Text = "Location:";
+            // 
+            // fontNameLabel
+            // 
+            this.fontNameLabel.AutoSize = true;
+            this.fontNameLabel.Location = new System.Drawing.Point(13, 51);
+            this.fontNameLabel.Name = "fontNameLabel";
+            this.fontNameLabel.Size = new System.Drawing.Size(98, 32);
+            this.fontNameLabel.TabIndex = 5;
+            this.fontNameLabel.Text = "Name:";
             // 
             // fontPathTextBox
             // 
@@ -161,34 +186,16 @@
             this.fontPathTextBox.TabIndex = 4;
             this.fontPathTextBox.TextChanged += new System.EventHandler(this.fontPathTextBox_TextChanged);
             // 
-            // fontNameLabel
+            // fontNameTextBox
             // 
-            this.fontNameLabel.AutoSize = true;
-            this.fontNameLabel.Location = new System.Drawing.Point(13, 51);
-            this.fontNameLabel.Name = "fontNameLabel";
-            this.fontNameLabel.Size = new System.Drawing.Size(98, 32);
-            this.fontNameLabel.TabIndex = 5;
-            this.fontNameLabel.Text = "Name:";
-            // 
-            // fontPathLabel
-            // 
-            this.fontPathLabel.AutoSize = true;
-            this.fontPathLabel.Location = new System.Drawing.Point(13, 109);
-            this.fontPathLabel.Name = "fontPathLabel";
-            this.fontPathLabel.Size = new System.Drawing.Size(132, 32);
-            this.fontPathLabel.TabIndex = 6;
-            this.fontPathLabel.Text = "Location:";
-            // 
-            // fontPathButton
-            // 
-            this.fontPathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.fontPathButton.Location = new System.Drawing.Point(519, 98);
-            this.fontPathButton.Name = "fontPathButton";
-            this.fontPathButton.Size = new System.Drawing.Size(172, 58);
-            this.fontPathButton.TabIndex = 8;
-            this.fontPathButton.Text = "Browse ...";
-            this.fontPathButton.UseVisualStyleBackColor = true;
-            this.fontPathButton.Click += new System.EventHandler(this.fontPathButton_Click);
+            this.fontNameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.fontNameTextBox.Location = new System.Drawing.Point(230, 51);
+            this.fontNameTextBox.Margin = new System.Windows.Forms.Padding(10);
+            this.fontNameTextBox.Name = "fontNameTextBox";
+            this.fontNameTextBox.ReadOnly = true;
+            this.fontNameTextBox.Size = new System.Drawing.Size(261, 38);
+            this.fontNameTextBox.TabIndex = 3;
             // 
             // NewProjectForm
             // 

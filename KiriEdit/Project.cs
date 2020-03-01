@@ -2,7 +2,7 @@
 
 namespace KiriEdit
 {
-    internal class Project
+    public class Project
     {
         public string Path;
         public bool IsDirty;

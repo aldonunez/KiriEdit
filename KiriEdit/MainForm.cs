@@ -9,7 +9,9 @@ namespace KiriEdit
 {
     public partial class MainForm : Form
     {
-        private const string AppTitle = "KiriEdit";
+        // TODO: put this some where else
+        public const string AppTitle = "KiriEdit";
+
         private const int SampleFontSize = 20;
 
         private Project _project;

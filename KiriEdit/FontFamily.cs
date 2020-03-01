@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace KiriEdit.Font
 {
-    internal class FontFamily
+    public class FontFamily
     {
         private FontFace[] _fontFaces = new FontFace[4];
 
@@ -37,7 +37,7 @@ namespace KiriEdit.Font
     {
     }
 
-    internal class FontFace
+    public class FontFace
     {
         public FontFamily Family { get; }
         public FontStyle Style { get; }
@@ -54,7 +54,7 @@ namespace KiriEdit.Font
     }
 
     [Flags]
-    internal enum FontStyle
+    public enum FontStyle
     {
         Regular = 0,
         Bold = 1,
