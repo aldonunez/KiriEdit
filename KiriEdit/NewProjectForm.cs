@@ -36,7 +36,7 @@ namespace KiriEdit
 
             projectSpec.ProjectName = projNameTextBox.Text;
             projectSpec.ProjectPath = projPathTextBox.Text;
-            projectSpec.FontPath = fontNameTextBox.Text;
+            projectSpec.FontPath = fontFamilyTextBox.Text;
             // TODO: face index
 
             return projectSpec;
@@ -127,6 +127,7 @@ namespace KiriEdit
                         MessageBox.Show(message, MainForm.AppTitle);
                         fontPathTextBox.Text = dialog.FileName;
                         _faceIndex = -1;
+                        UpdateFaceCount(face.FaceCount);
                         return;
                     }
 
@@ -150,10 +151,24 @@ namespace KiriEdit
             }
         }
 
+        private void UpdateFaceCount(int faceCount)
+        {
+            faceIndexComboBox.Items.Clear();
+            faceIndexComboBox.Items.Add("");
+
+            for (int i = 0; i < faceCount; i++)
+            {
+                faceIndexComboBox.Items.Add(i);
+            }
+
+            faceIndexComboBox.SelectedIndex = _faceIndex + 1;
+        }
+
         private void UpdateFaceInfo(Face face)
         {
+            fontFamilyTextBox.Text = face.FamilyName + " (" + face.StyleName + ")";
             _faceIndex = face.FaceIndex;
-            fontNameTextBox.Text = face.FamilyName + " - " + face.StyleName;
+            UpdateFaceCount(1);
         }
 
         private void fontPathTextBox_TextChanged(object sender, EventArgs e)
