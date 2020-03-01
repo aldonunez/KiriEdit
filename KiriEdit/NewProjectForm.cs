@@ -27,9 +27,11 @@ namespace KiriEdit
 
         private void projPathButton_Click(object sender, EventArgs e)
         {
-            using (var dialog = new SaveFileDialog())
+            using (var dialog = new FolderSelect.FolderSelectDialog())
             {
-                if (dialog.ShowDialog() != DialogResult.OK)
+                dialog.Title = "Project Location";
+
+                if (!dialog.ShowDialog())
                     return;
 
                 projPathTextBox.Text = dialog.FileName;
