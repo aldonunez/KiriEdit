@@ -55,7 +55,7 @@ namespace KiriEdit
 
         private void FaceIndexComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Includes the empty entry (0)
+            // Includes the empty entry (0).
             if (typefaceComboBox.SelectedIndex < 1)
             {
                 copyrightTextBox.Text = "";
@@ -238,7 +238,9 @@ namespace KiriEdit
             if (fontPathTextBox.TextLength > 0
                 && typefaceComboBox.SelectedIndex > 0
                 && projNameTextBox.TextLength > 0
-                && projPathTextBox.TextLength > 0)
+                && projPathTextBox.TextLength > 0
+                && Path.IsPathRooted(projPathTextBox.Text)
+                )
             {
                 okButton.Enabled = true;
             }
