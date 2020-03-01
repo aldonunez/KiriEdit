@@ -1,5 +1,6 @@
 ﻿using KiriFT;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 
@@ -7,17 +8,65 @@ namespace KiriEdit
 {
     public partial class NewProjectForm : Form
     {
+        private class FontListItem
+        {
+            private string _itemText;
+
+            public int FaceIndex { get; }
+            public string Copyright { get; }
+
+            public FontListItem(Face face)
+            {
+                FaceIndex = face.FaceIndex;
+                _itemText = string.Format("{0} ({1})", face.FamilyName, face.StyleName);
+
+                uint count = face.GetSfntNameCount();
+
+                for (uint i = 0; i < count; i++)
+                {
+                    SfntName sfntName = face.GetSfntName(i);
+
+                    // TODO: what about the language ID?
+                    if (sfntName.NameId == 0)
+                    {
+                        Copyright = sfntName.String;
+                        break;
+                    }
+                }
+            }
+
+            public override string ToString()
+            {
+                return _itemText;
+            }
+        }
+
         private const string FontFilter = 
             "TrueType files (*.ttf;*.ttc)|*.ttf;*.ttc|OpenType files (*.otf;*.otc)|*.otf;*.otc";
 
         private Library _library = new Library();
-        private int _faceIndex;
 
         public ProjectSpec ProjectSpec { get; private set; }
 
         public NewProjectForm()
         {
             InitializeComponent();
+        }
+
+        private void FaceIndexComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Includes the empty entry (0)
+            if (faceIndexComboBox.SelectedIndex < 1)
+            {
+                fontFamilyTextBox.Text = "";
+                copyrightTextBox.Text = "";
+            }
+            else
+            {
+                var item = (FontListItem) faceIndexComboBox.SelectedItem;
+                fontFamilyTextBox.Text = item.ToString();
+                copyrightTextBox.Text = item.Copyright;
+            }
         }
 
         private void okButton_Click(object sender, EventArgs e)
@@ -57,24 +106,53 @@ namespace KiriEdit
             return true;
         }
 
-        private Face GetFace(string path, int index)
+        private int GetFaceCount(string path)
         {
-            return _library.OpenFace(path, index);
+            Face face = null;
+
+            try
+            {
+                face = _library.OpenFace(path, -1);
+                return face.FaceCount;
+            }
+            catch (FreeTypeException)
+            {
+                return 0;
+            }
+            finally
+            {
+                if (face != null)
+                    face.Dispose();
+            }
         }
 
-        private bool ValidateFont(Face face)
+        private FontListItem[] GetFaces(string path)
         {
-            if ((face.Flags & FaceFlags.Scalable) != FaceFlags.Scalable)
-            {
-                string message = string.Format(
-                    "The font \"{0}\" is not supported.",
-                    face.FamilyName);
+            int faceCount = GetFaceCount(path);
+            var items = new List<FontListItem>();
 
-                MessageBox.Show(message, MainForm.AppTitle);
-                return false;
+            for (int i = 0; i < faceCount; i++)
+            {
+                try
+                {
+                    using (var face = _library.OpenFace(path, i))
+                    {
+                        if (RawValidateFont(face))
+                            items.Add(new FontListItem(face));
+                    }
+                }
+                catch (FreeTypeException)
+                {
+                    // Ignore the exception, sowe can get the next face.
+                }
             }
 
-            return true;
+            return items.ToArray();
+        }
+
+        private bool RawValidateFont(Face face)
+        {
+            return (face.Flags & FaceFlags.Scalable) == FaceFlags.Scalable;
         }
 
         private void cancelButton_Click(object sender, EventArgs e)
@@ -109,97 +187,48 @@ namespace KiriEdit
         {
             using (var dialog = new OpenFileDialog())
             {
+                dialog.Title = "Font Location";
                 dialog.CheckFileExists = true;
                 dialog.Filter = FontFilter;
 
                 if (dialog.ShowDialog() != DialogResult.OK)
                     return;
 
-                Face face = null;
+                FontListItem[] items = GetFaces(dialog.FileName);
 
-                try
+                if (items.Length == 0)
                 {
-                    face = GetFace(dialog.FileName, 0);
-
-                    if (face.FaceCount > 1)
-                    {
-                        string message = "The font file contains more than one face. Choose a face.";
-                        MessageBox.Show(message, MainForm.AppTitle);
-                        fontPathTextBox.Text = dialog.FileName;
-                        _faceIndex = -1;
-                        UpdateFaceList(dialog.FileName, face);
-                        return;
-                    }
-
-                    if (!ValidateFont(face))
-                        return;
-
-                    fontPathTextBox.Text = dialog.FileName;
-                    UpdateFaceInfo(dialog.FileName, face);
-                }
-                catch (FreeTypeException)
-                {
-                    string message = "The font file could not be loaded.";
+                    string message = "There are no supported typefaces in the font.";
                     MessageBox.Show(message, MainForm.AppTitle);
-                    return;
                 }
-                finally
+                else
                 {
-                    if (face != null)
-                        face.Dispose();
+                    fontPathTextBox.Text = dialog.FileName;
+                    UpdateFaceList(items);
+
+                    if (items.Length > 1)
+                    {
+                        string message = "The font contains more than one typeface. Choose a typeface.";
+                        MessageBox.Show(message, MainForm.AppTitle);
+                        faceIndexComboBox.SelectedIndex = 0;
+                    }
+                    else
+                    {
+                        faceIndexComboBox.SelectedIndex = 1;
+                    }
                 }
             }
         }
 
-        private void UpdateFaceList(string path, Face firstFace)
+        private void UpdateFaceList(FontListItem[] items)
         {
+            faceIndexComboBox.Enabled = true;
             faceIndexComboBox.Items.Clear();
             faceIndexComboBox.Items.Add("");
+            faceIndexComboBox.Items.AddRange(items);
 
-            int faceCount = firstFace.FaceCount;
-
-            for (int i = 0; i < faceCount; i++)
-            {
-                string familyName = firstFace.FamilyName;
-                string styleName = firstFace.StyleName;
-
-                if (i > 0)
-                {
-                    using (var face = _library.OpenFace(path, i))
-                    {
-                        familyName = face.FamilyName;
-                        styleName = face.StyleName;
-                    }
-                }
-
-                string item = string.Format("{0} - {1} ({2})", i, familyName, styleName);
-                faceIndexComboBox.Items.Add(item);
-            }
-
-            faceIndexComboBox.SelectedIndex = _faceIndex + 1;
-        }
-
-        private void UpdateFaceInfo(string path, Face face)
-        {
-            fontFamilyTextBox.Text = face.FamilyName + " (" + face.StyleName + ")";
-            copyrightTextBox.Text = "";
-
-            uint count = face.GetSfntNameCount();
-
-            for (uint i = 0; i < count; i++)
-            {
-                SfntName sfntName = face.GetSfntName(i);
-
-                // TODO: what about the language ID?
-                if (sfntName.NameId == 0)
-                {
-                    copyrightTextBox.Text = sfntName.String;
-                    break;
-                }
-            }
-
-            _faceIndex = face.FaceIndex;
-            UpdateFaceList(path, face);
+            if (items.Length <= 1)
+                faceIndexComboBox.Enabled = false;
         }
 
         private void fontPathTextBox_TextChanged(object sender, EventArgs e)

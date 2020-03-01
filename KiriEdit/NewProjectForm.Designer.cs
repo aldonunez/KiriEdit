@@ -194,6 +194,7 @@
             this.faceIndexComboBox.Name = "faceIndexComboBox";
             this.faceIndexComboBox.Size = new System.Drawing.Size(261, 39);
             this.faceIndexComboBox.TabIndex = 9;
+            this.faceIndexComboBox.SelectedIndexChanged += new System.EventHandler(this.FaceIndexComboBox_SelectedIndexChanged);
             // 
             // fontPathButton
             // 
@@ -231,6 +232,7 @@
             this.fontPathTextBox.Location = new System.Drawing.Point(226, 51);
             this.fontPathTextBox.Margin = new System.Windows.Forms.Padding(10);
             this.fontPathTextBox.Name = "fontPathTextBox";
+            this.fontPathTextBox.ReadOnly = true;
             this.fontPathTextBox.Size = new System.Drawing.Size(261, 38);
             this.fontPathTextBox.TabIndex = 4;
             this.fontPathTextBox.TextChanged += new System.EventHandler(this.fontPathTextBox_TextChanged);
