@@ -70,7 +70,7 @@
             this.projNameTextBox.Location = new System.Drawing.Point(244, 328);
             this.projNameTextBox.Margin = new System.Windows.Forms.Padding(10);
             this.projNameTextBox.Name = "projNameTextBox";
-            this.projNameTextBox.Size = new System.Drawing.Size(275, 38);
+            this.projNameTextBox.Size = new System.Drawing.Size(329, 38);
             this.projNameTextBox.TabIndex = 1;
             this.projNameTextBox.TextChanged += new System.EventHandler(this.projNameTextBox_TextChanged);
             // 
@@ -91,14 +91,14 @@
             this.projPathTextBox.Location = new System.Drawing.Point(244, 386);
             this.projPathTextBox.Margin = new System.Windows.Forms.Padding(10);
             this.projPathTextBox.Name = "projPathTextBox";
-            this.projPathTextBox.Size = new System.Drawing.Size(275, 38);
+            this.projPathTextBox.Size = new System.Drawing.Size(329, 38);
             this.projPathTextBox.TabIndex = 3;
             this.projPathTextBox.TextChanged += new System.EventHandler(this.projPathTextBox_TextChanged);
             // 
             // projPathButton
             // 
             this.projPathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.projPathButton.Location = new System.Drawing.Point(541, 375);
+            this.projPathButton.Location = new System.Drawing.Point(609, 375);
             this.projPathButton.Name = "projPathButton";
             this.projPathButton.Size = new System.Drawing.Size(172, 58);
             this.projPathButton.TabIndex = 6;
@@ -110,7 +110,7 @@
             // 
             this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.okButton.Enabled = false;
-            this.okButton.Location = new System.Drawing.Point(426, 466);
+            this.okButton.Location = new System.Drawing.Point(494, 466);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(172, 58);
             this.okButton.TabIndex = 7;
@@ -122,7 +122,7 @@
             // 
             this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelButton.Location = new System.Drawing.Point(616, 466);
+            this.cancelButton.Location = new System.Drawing.Point(684, 466);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(172, 58);
             this.cancelButton.TabIndex = 8;
@@ -145,7 +145,7 @@
             this.fontGroupBox.Location = new System.Drawing.Point(18, 12);
             this.fontGroupBox.Name = "fontGroupBox";
             this.fontGroupBox.Padding = new System.Windows.Forms.Padding(10);
-            this.fontGroupBox.Size = new System.Drawing.Size(770, 294);
+            this.fontGroupBox.Size = new System.Drawing.Size(838, 294);
             this.fontGroupBox.TabIndex = 9;
             this.fontGroupBox.TabStop = false;
             this.fontGroupBox.Text = "Font";
@@ -176,7 +176,7 @@
             this.copyrightTextBox.Margin = new System.Windows.Forms.Padding(10);
             this.copyrightTextBox.Name = "copyrightTextBox";
             this.copyrightTextBox.ReadOnly = true;
-            this.copyrightTextBox.Size = new System.Drawing.Size(261, 38);
+            this.copyrightTextBox.Size = new System.Drawing.Size(329, 38);
             this.copyrightTextBox.TabIndex = 10;
             // 
             // typefaceComboBox
@@ -188,14 +188,14 @@
             this.typefaceComboBox.Location = new System.Drawing.Point(226, 109);
             this.typefaceComboBox.Margin = new System.Windows.Forms.Padding(10);
             this.typefaceComboBox.Name = "typefaceComboBox";
-            this.typefaceComboBox.Size = new System.Drawing.Size(261, 39);
+            this.typefaceComboBox.Size = new System.Drawing.Size(329, 39);
             this.typefaceComboBox.TabIndex = 9;
             this.typefaceComboBox.SelectedIndexChanged += new System.EventHandler(this.FaceIndexComboBox_SelectedIndexChanged);
             // 
             // fontPathButton
             // 
             this.fontPathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.fontPathButton.Location = new System.Drawing.Point(523, 44);
+            this.fontPathButton.Location = new System.Drawing.Point(591, 44);
             this.fontPathButton.Name = "fontPathButton";
             this.fontPathButton.Size = new System.Drawing.Size(172, 58);
             this.fontPathButton.TabIndex = 8;
@@ -220,7 +220,7 @@
             this.fontPathTextBox.Margin = new System.Windows.Forms.Padding(10);
             this.fontPathTextBox.Name = "fontPathTextBox";
             this.fontPathTextBox.ReadOnly = true;
-            this.fontPathTextBox.Size = new System.Drawing.Size(261, 38);
+            this.fontPathTextBox.Size = new System.Drawing.Size(329, 38);
             this.fontPathTextBox.TabIndex = 4;
             this.fontPathTextBox.TextChanged += new System.EventHandler(this.fontPathTextBox_TextChanged);
             // 
@@ -230,7 +230,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(16F, 31F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cancelButton;
-            this.ClientSize = new System.Drawing.Size(800, 541);
+            this.ClientSize = new System.Drawing.Size(868, 541);
             this.Controls.Add(this.fontGroupBox);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
