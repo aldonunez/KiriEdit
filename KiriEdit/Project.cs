@@ -4,13 +4,14 @@ namespace KiriEdit
 {
     public class Project
     {
+        public string FontPath;
+        public int FaceIndex;
+        public string GlyphListPath;
+        public string FigureFolderPath;
+
+        // Runtime properties.
         public string Path;
         public bool IsDirty;
-
-        public string FontFamilyName;
-        public FontStyle FontStyle;
-
-        public FontFace FontFace;
     }
 
     public class ProjectSpec

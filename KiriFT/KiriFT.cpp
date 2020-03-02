@@ -235,6 +235,7 @@ namespace KiriFT
             nameRef.Name = gcnew String(charArray);
             nameRef.LanguageId = ftName.language_id;
             nameRef.NameId = ftName.name_id;
+            // The elements are of a value type. So copy it whole to update it.
             m_filteredSfntNames[index] = nameRef;
         }
 

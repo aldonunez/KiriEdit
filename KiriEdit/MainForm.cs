@@ -1,23 +1,17 @@
 ﻿using KiriEdit.Font;
-using Microsoft.Win32;
 using System;
 using System.IO;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace KiriEdit
 {
     public partial class MainForm : Form
     {
-        // TODO: put this some where else
+        // TODO: put this somewhere else
         public const string AppTitle = "KiriEdit";
-
-        private const int SampleFontSize = 20;
 
         private Project _project;
         private IView _view;
-
-        private FontListLoader _fontListLoader = new FontListLoader();
 
         public MainForm()
         {
@@ -25,14 +19,6 @@ namespace KiriEdit
             EnterNothingMode();
             Text = AppTitle;
             this.FormClosing += MainForm_FormClosing;
-
-            SystemEvents.InstalledFontsChanged += SystemEvents_InstalledFontsChanged;
-            _fontListLoader.Reload();
-        }
-
-        private void SystemEvents_InstalledFontsChanged(object sender, EventArgs e)
-        {
-            _fontListLoader.Reload();
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -77,8 +63,8 @@ namespace KiriEdit
             var project = new Project();
 
             project.Path = @"C:\Temp\sample.kiriproj";
-            project.FontFamilyName = "Arial Black";
-            project.FontStyle = FontStyle.Regular;
+            //project.FontFamilyName = "Arial Black";
+            //project.FontStyle = FontStyle.Regular;
 
             return project;
         }
@@ -88,26 +74,54 @@ namespace KiriEdit
             if (!CloseProject())
                 return;
 
+            ProjectSpec projectSpec = null;
+
             using (var dialog = new NewProjectForm())
             {
                 if (dialog.ShowDialog() != DialogResult.OK)
                     return;
-            }
-            FontFace face = null;
-            return;
 
-            // Canceled?
-            if (face == null)
-                return;
+                projectSpec = dialog.ProjectSpec;
+            }
+
+            Project project = MakeProject(projectSpec);
+
+            EnterProjectMode(project);
+        }
+
+        private Project MakeProject(ProjectSpec spec)
+        {
+            // Figure out paths and names.
+
+            string projectFolderPath = Path.Combine(spec.ProjectLocation, spec.ProjectName);
+            string projectFileName = spec.ProjectName + ".kiriproj";
+            string projectFilePath = Path.Combine(projectFolderPath, projectFileName);
+            string fontFileName = Path.GetFileName(spec.FontPath);
+
+            // Set up the project object.
 
             var project = new Project();
 
-            project.Path = @"C:\Temp\sample.kiriproj";
-            project.FontFamilyName = face.Family.Name;
-            project.FontStyle = face.Style;
-            project.FontFace = face;
+            project.FontPath = fontFileName;
+            project.FaceIndex = spec.FaceIndex;
+            project.GlyphListPath = "glyphs.kiriglyf";
+            project.FigureFolderPath = "figures";
 
-            EnterProjectMode(project);
+            // Runtime properties.
+            project.Path = projectFilePath;
+
+            // Commit everything to the file system.
+
+            DirectoryInfo dirInfo = null;
+
+            dirInfo = Directory.CreateDirectory(projectFolderPath);
+            dirInfo.CreateSubdirectory(project.FigureFolderPath);
+            File.Copy(spec.FontPath, project.FontPath);
+            File.Create(project.GlyphListPath);
+
+            SaveProject(project);
+
+            return project;
         }
 
         private void OpenProject()
@@ -219,6 +233,11 @@ namespace KiriEdit
             // TODO: Save the project.
         }
 
+        private void SaveProject(Project project)
+        {
+            // TODO:
+        }
+
         private string ChooseProject()
         {
             using (var dialog = new OpenFileDialog())
@@ -239,82 +258,9 @@ namespace KiriEdit
 
         private bool ValidateProject(Project project)
         {
-            // TODO: for now assume it's loaded
-
-            FontFamilyCollection collection = _fontListLoader.FontFamilies;
-            FontFace face = null;
-            FontFamily family;
-
-            if (collection.TryGetValue(project.FontFamilyName, out family))
-            {
-                face = family.GetFace(project.FontStyle);
-            }
-
-            if (face == null)
-            {
-                string message = string.Format(
-                    "The font {0} ({1}) is not supported.",
-                    project.FontFamilyName, project.FontStyle);
-
-                MessageBox.Show(message, AppTitle);
-                return false;
-            }
-
-            project.FontFace = face;
+            // TODO:
 
             return true;
-        }
-
-        private FontFace ChooseFont()
-        {
-            return ChooseFontSystemDialog();
-        }
-
-        private FontFace ChooseFontSystemDialog()
-        {
-            // TODO: for now assume it's loaded
-
-            var systemFont = OpenSystemFontDialog();
-
-            if (systemFont == null)
-                return null;
-
-            FontFamilyCollection collection = _fontListLoader.FontFamilies;
-            FontFace face = null;
-            FontFamily family;
-
-            if (collection.TryGetValue(systemFont.Name, out family))
-            {
-                face = family.GetFace((FontStyle) systemFont.Style);
-            }
-
-            if (face == null)
-            {
-                string message = string.Format(
-                    "The font {0} ({1}) is not supported.",
-                    systemFont.Name, systemFont.Style);
-
-                MessageBox.Show(message, AppTitle);
-            }
-
-            return face;
-        }
-
-        private System.Drawing.Font OpenSystemFontDialog()
-        {
-            using (FontDialog dialog = new FontDialog())
-            {
-                dialog.AllowSimulations = false;
-                dialog.ShowEffects = false;
-                dialog.MinSize = SampleFontSize;
-                dialog.MaxSize = SampleFontSize;
-                dialog.FontMustExist = true;
-
-                if (dialog.ShowDialog() == DialogResult.OK)
-                    return dialog.Font;
-            }
-
-            return null;
         }
     }
 
