@@ -69,6 +69,8 @@ namespace KiriEdit
                 var item = (FontListItem) typefaceComboBox.SelectedItem;
                 copyrightTextBox.Text = item.Copyright;
             }
+
+            UpdateOKButton();
         }
 
         private void okButton_Click(object sender, EventArgs e)
