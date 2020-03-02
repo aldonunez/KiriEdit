@@ -1,6 +1,7 @@
-﻿using KiriEdit.Font;
+﻿using KiriFT;
 using System;
 using System.IO;
+using System.Text.Json;
 using System.Windows.Forms;
 
 namespace KiriEdit
@@ -97,6 +98,7 @@ namespace KiriEdit
             string projectFileName = spec.ProjectName + ".kiriproj";
             string projectFilePath = Path.Combine(projectFolderPath, projectFileName);
             string fontFileName = Path.GetFileName(spec.FontPath);
+            string importedFontPath = Path.Combine(projectFolderPath, fontFileName);
 
             // Set up the project object.
 
@@ -116,7 +118,7 @@ namespace KiriEdit
 
             dirInfo = Directory.CreateDirectory(projectFolderPath);
             dirInfo.CreateSubdirectory(project.FigureFolderPath);
-            File.Copy(spec.FontPath, project.FontPath);
+            File.Copy(spec.FontPath, importedFontPath);
             File.Create(project.GlyphListPath);
 
             SaveProject(project);
@@ -135,7 +137,8 @@ namespace KiriEdit
 
             var project = LoadProject(path);
 
-            ValidateProject(project);
+            if (!ValidateProject(project))
+                return;
 
             EnterProjectMode(project);
         }
@@ -235,7 +238,17 @@ namespace KiriEdit
 
         private void SaveProject(Project project)
         {
-            // TODO:
+            var writerOptions = new JsonWriterOptions();
+            writerOptions.Indented = true;
+
+            var serializerOptions = new JsonSerializerOptions();
+            serializerOptions.AllowTrailingCommas = true;
+
+            using (var stream = File.OpenWrite(project.Path))
+            using (var writer = new Utf8JsonWriter(stream, writerOptions))
+            {
+                JsonSerializer.Serialize(writer, project, serializerOptions);
+            }
         }
 
         private string ChooseProject()
@@ -251,16 +264,57 @@ namespace KiriEdit
 
         private Project LoadProject(string path)
         {
-            var project = MakeSampleProject();
-
-            return project;
+            using (var stream = File.OpenRead(path))
+            {
+                var task = JsonSerializer.DeserializeAsync<Project>(stream);
+                Project project = task.Result;
+                project.Path = path;
+                return project;
+            }
         }
 
         private bool ValidateProject(Project project)
         {
-            // TODO:
+            if (!File.Exists(project.FullFontPath)
+                || !Directory.Exists(project.FullFiguresFolderPath)
+                )
+            {
+                ShowBadProjectMessage();
+                return false;
+            }
+
+            using (var lib = new Library())
+            {
+                Face face = null;
+
+                try
+                {
+                    face = lib.OpenFace(project.FullFontPath, project.FaceIndex);
+                    if ((face.Flags & FaceFlags.Scalable) != FaceFlags.Scalable)
+                    {
+                        ShowBadProjectMessage();
+                        return false;
+                    }
+                }
+                catch (FreeTypeException)
+                {
+                    ShowBadProjectMessage();
+                    return false;
+                }
+                finally
+                {
+                    if (face != null)
+                        face.Dispose();
+                }
+            }
 
             return true;
+        }
+
+        private void ShowBadProjectMessage()
+        {
+            string message = "The project could not be loaded due to missing files or settings.";
+            MessageBox.Show(message, AppTitle);
         }
     }
 
