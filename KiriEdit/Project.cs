@@ -11,14 +11,14 @@ namespace KiriEdit
         private ProjectFile ProjectFile { get; set; }
 
         private string _fullFontPath;
-        private string _fullFigureFolderPath;
+        private string _fullCharactersFolderPath;
 
         public bool IsDirty { get => ProjectFile.IsDirty; }
         public string RootPath { get; private set; }
         public string Name { get; private set; }
         public int FaceIndex { get => ProjectFile.FaceIndex; }
         public string FontPath { get => _fullFontPath; }
-        public string FiguresFolderPath { get => _fullFigureFolderPath; }
+        public string CharactersFolderPath { get => _fullCharactersFolderPath; }
 
         public CharacterItemCollection Characters { get; } = new CharacterItemCollection();
 
@@ -38,7 +38,7 @@ namespace KiriEdit
 
             projectFile.FontPath = fontFileName;
             projectFile.FaceIndex = spec.FaceIndex;
-            projectFile.CharacterFolderPath = "characters";
+            projectFile.CharactersFolderPath = "characters";
 
             // Runtime properties.
             projectFile.Path = projectFilePath;
@@ -48,7 +48,7 @@ namespace KiriEdit
             DirectoryInfo dirInfo = null;
 
             dirInfo = Directory.CreateDirectory(projectFolderPath);
-            dirInfo.CreateSubdirectory(projectFile.CharacterFolderPath);
+            dirInfo.CreateSubdirectory(projectFile.CharactersFolderPath);
             File.Copy(spec.FontPath, importedFontPath);
 
             Project project = new Project(projectFile);
@@ -66,7 +66,7 @@ namespace KiriEdit
             RootPath = Path.GetDirectoryName(projectFile.Path);
 
             _fullFontPath = GetFullItemPath(projectFile.FontPath);
-            _fullFigureFolderPath = GetFullItemPath(projectFile.CharacterFolderPath);
+            _fullCharactersFolderPath = GetFullItemPath(projectFile.CharactersFolderPath);
         }
 
         private string GetFullItemPath(string relativeItemPath)
@@ -79,6 +79,11 @@ namespace KiriEdit
             ProjectFile projectFile = LoadProjectFile(path);
 
             Project project = new Project(projectFile);
+
+            foreach (var codePoint in CharacterItem.EnumerateCharacterItems(project))
+            {
+                project.Characters.Add(codePoint);
+            }
 
             return project;
         }

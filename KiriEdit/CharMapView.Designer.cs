@@ -95,7 +95,7 @@
             this.addListCharButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.addListCharButton.Name = "addListCharButton";
             this.addListCharButton.Size = new System.Drawing.Size(34, 28);
-            this.addListCharButton.Text = "toolStripButton1";
+            this.addListCharButton.Text = "Add character";
             this.addListCharButton.Click += new System.EventHandler(this.addListCharButton_Click);
             // 
             // deleteListCharButton
@@ -104,8 +104,8 @@
             this.deleteListCharButton.Image = ((System.Drawing.Image)(resources.GetObject("deleteListCharButton.Image")));
             this.deleteListCharButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.deleteListCharButton.Name = "deleteListCharButton";
-            this.deleteListCharButton.Size = new System.Drawing.Size(34, 28);
-            this.deleteListCharButton.Text = "toolStripButton2";
+            this.deleteListCharButton.Size = new System.Drawing.Size(34, 52);
+            this.deleteListCharButton.Text = "Delete character";
             this.deleteListCharButton.Click += new System.EventHandler(this.deleteListCharButton_Click);
             // 
             // CharMapView

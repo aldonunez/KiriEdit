@@ -5,11 +5,18 @@ using System.Diagnostics;
 
 namespace KiriEdit
 {
-    public partial class CharMapView : UserControl
+    public partial class CharMapView : UserControl, IView
     {
+        // TODO: sort items according to language or ordinal.
+        //       For now, sort according to ordinal only.
+
         private List<CharListItem> _charListItems;
+        private StringComparer _stringComparer = StringComparer.Ordinal;
 
         public Project Project { get; set; }
+        public Control Control => this;
+        public string DocumentName => "test";
+        public bool IsDirty => false;
 
         public CharMapView()
         {
@@ -61,9 +68,11 @@ namespace KiriEdit
             }
 #endif
 
-            CharacterItem.Make(Project, codePoint);
+            var item = CharacterItem.Make(Project, codePoint);
 
-            charListBox.Items.Add(MakeCharListItem(codePoint));
+            item.Save();
+
+            _charListItems.Add(MakeCharListItem(codePoint));
             SortCharacterList();
 
             Project.Characters.Add(codePoint);
@@ -74,7 +83,8 @@ namespace KiriEdit
             var listItem = (CharListItem) charListBox.SelectedItem;
 
             _charListItems.Remove(listItem);
-            SortCharacterList();
+            charListBox.Items.Remove(listItem);
+            // No need to sort after deleting an item.
 
             Project.Characters.Remove(listItem.CodePoint);
         }
@@ -87,6 +97,7 @@ namespace KiriEdit
         private void CharMapView_Load(object sender, EventArgs e)
         {
             InitSortedCharacterList();
+            charListBox_SelectedIndexChanged(charListBox, EventArgs.Empty);
         }
 
         private void InitSortedCharacterList()
@@ -105,16 +116,30 @@ namespace KiriEdit
 
         private void SortCharacterList()
         {
-            // TODO: sort items according to language
+            _charListItems.Sort(CompareChars);
+
+            object selListItem = charListBox.SelectedItem;
 
             charListBox.Items.Clear();
             charListBox.Items.AddRange(_charListItems.ToArray());
+
+            charListBox.SelectedItem = selListItem;
+        }
+
+        private int CompareChars(CharListItem a, CharListItem b)
+        {
+            return _stringComparer.Compare(a.String, b.String);
         }
 
         private static CharListItem MakeCharListItem(uint codePoint)
         {
-            var text = string.Format("U+{0:X4} - {1}", codePoint, CharUtils.GetString(codePoint));
+            var text = string.Format("U+{0:X6} - {1}", codePoint, CharUtils.GetString(codePoint));
             return new CharListItem(text, codePoint);
+        }
+
+        public void Save()
+        {
+            // Nothing to do.
         }
 
         #region Inner classes
@@ -123,11 +148,13 @@ namespace KiriEdit
         {
             public string Text;
             public uint CodePoint;
+            public string String;
 
             public CharListItem(string text, uint codePoint)
             {
                 Text = text;
                 CodePoint = codePoint;
+                String = CharUtils.GetString(codePoint);
             }
 
             public override string ToString()

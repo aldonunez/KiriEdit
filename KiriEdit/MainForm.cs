@@ -19,7 +19,23 @@ namespace KiriEdit
             InitializeComponent();
             EnterNothingMode();
             Text = AppTitle;
-            this.FormClosing += MainForm_FormClosing;
+
+            KeyPress += MainForm_KeyPress;
+        }
+
+        private void MainForm_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == 'A' || e.KeyChar == 'a')
+            {
+                if (_project == null || _view != null)
+                    return;
+
+                var charMapView = new CharMapView();
+                charMapView.Project = _project;
+                hostPanel.Controls.Add(charMapView.Control);
+                charMapView.Control.Dock = DockStyle.Fill;
+                _view = charMapView;
+            }
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -204,7 +220,7 @@ namespace KiriEdit
         private bool ValidateProject(Project project)
         {
             if (!File.Exists(project.FontPath)
-                || !Directory.Exists(project.FiguresFolderPath)
+                || !Directory.Exists(project.CharactersFolderPath)
                 )
             {
                 ShowBadProjectMessage();

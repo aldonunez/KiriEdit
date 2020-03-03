@@ -6,7 +6,7 @@ namespace KiriEdit
     {
         public string FontPath { get; set; }
         public int FaceIndex { get; set; }
-        public string CharacterFolderPath { get; set; }
+        public string CharactersFolderPath { get; set; }
 
         // Runtime properties.
 
