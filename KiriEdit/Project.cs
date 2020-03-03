@@ -1,49 +1,126 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace KiriEdit.Model
 {
-    public class Project
+    internal class ProjectManager
     {
-        public string FontPath { get; set; }
-        public int FaceIndex { get; set; }
-        public string GlyphListPath { get; set; }
-        public string FigureFolderPath { get; set; }
+        public CharacterCollection Characters { get; }
 
-        // Runtime properties.
-        [JsonIgnore]
-        public string Path { get; set; }
-        [JsonIgnore]
-        public bool IsDirty { get; set; }
-        [JsonIgnore]
-        public string FullFontPath { get => GetFullItemPath(FontPath); }
-        [JsonIgnore]
-        public string FullGlyphListPath { get => GetFullItemPath(GlyphListPath); }
-        [JsonIgnore]
-        public string FullFiguresFolderPath { get => GetFullItemPath(FigureFolderPath); }
+        public Project Project { get; private set; }
 
-        private string GetFullItemPath(string relativeItemPath)
+        public bool IsProjectOpen { get => Project != null; }
+
+        public void CloseProject()
         {
-            string projectFolderPath = System.IO.Path.GetDirectoryName(Path);
-            string fullItemPath = System.IO.Path.Combine(projectFolderPath, relativeItemPath);
-            return fullItemPath;
+            throw new NotImplementedException();
         }
-    }
 
-    public class ProjectSpec
-    {
-        public string ProjectName;
-        public string ProjectLocation;
-        public string FontPath;
-        public int FaceIndex;
-    }
-
-    public class Character
-    {
-        public uint CodePoint { get; }
-
-        public Character(uint codePoint)
+#if false
+        public void MakeProject(string familyName, FontStyle fontStyle)
         {
-            CodePoint = codePoint;
+            if (IsProjectOpen)
+                throw new ApplicationException();
+
+            var project = new Project();
+
+            project.FontFamilyName = familyName;
+            project.FontStyle = fontStyle;
+
+            ValidateProject(project);
+
+            Project = project;
         }
+#endif
+
+        public void OpenProject(string projectPath)
+        {
+            Project project = null;
+
+            // TODO: load
+
+            ValidateProject(project);
+        }
+
+        public void SaveProject(string projectPath)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ValidateProject(Project project)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        #region Inner classes
+
+        //--------------------------------------------------------------------
+
+        public class CharacterCollection : ItemCollection<uint, Character>
+        {
+            public void Add(Character character)
+            {
+                Add(character.CodePoint, character);
+            }
+
+            public void Remove(Character character)
+            {
+                Remove(character.CodePoint);
+            }
+        }
+
+        public class ItemCollection<TKey, TValue> : INotifyCollectionChanged, IEnumerable<TValue>
+        {
+            private Dictionary<TKey, TValue> _map = new Dictionary<TKey, TValue>();
+
+            public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+            public int Count { get => _map.Count; }
+
+            public void Add(TKey key, TValue value)
+            {
+                _map.Add(key, value);
+                OnCollectionChanged(NotifyCollectionChangedAction.Add);
+            }
+
+            public void Remove(TKey key)
+            {
+                _map.Remove(key);
+                OnCollectionChanged(NotifyCollectionChangedAction.Remove);
+            }
+
+            public bool Contains(TKey key)
+            {
+                return _map.ContainsKey(key);
+            }
+
+            public IEnumerator<TValue> GetEnumerator()
+            {
+                return _map.Values.GetEnumerator();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return _map.Values.GetEnumerator();
+            }
+
+            private void OnCollectionChanged(NotifyCollectionChangedAction action)
+            {
+                if (CollectionChanged != null)
+                {
+                    var e = new NotifyCollectionChangedEventArgs(action);
+                    CollectionChanged(this, e);
+                }
+            }
+        }
+
+        #endregion
     }
 }

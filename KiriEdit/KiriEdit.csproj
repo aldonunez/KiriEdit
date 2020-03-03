@@ -121,7 +121,6 @@
     <Compile Include="NewCharacterForm.Designer.cs">
       <DependentUpon>NewCharacterForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ProjectManager.cs" />
     <Compile Include="NewProjectForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -130,6 +129,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Project.cs" />
+    <Compile Include="ProjectFile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reflector.cs" />
     <EmbeddedResource Include="CharMapView.resx">
