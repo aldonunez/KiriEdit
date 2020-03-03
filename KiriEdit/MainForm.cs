@@ -201,10 +201,10 @@ namespace KiriEdit
             return null;
         }
 
-        private bool ValidateProject(ProjectFile project)
+        private bool ValidateProject(Project project)
         {
-            if (!File.Exists(project.FullFontPath)
-                || !Directory.Exists(project.FullFiguresFolderPath)
+            if (!File.Exists(project.FontPath)
+                || !Directory.Exists(project.FiguresFolderPath)
                 )
             {
                 ShowBadProjectMessage();
@@ -217,7 +217,7 @@ namespace KiriEdit
 
                 try
                 {
-                    face = lib.OpenFace(project.FullFontPath, project.FaceIndex);
+                    face = lib.OpenFace(project.FontPath, project.FaceIndex);
                     if ((face.Flags & FaceFlags.Scalable) != FaceFlags.Scalable)
                     {
                         ShowBadProjectMessage();

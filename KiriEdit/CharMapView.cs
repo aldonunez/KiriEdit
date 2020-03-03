@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Windows.Forms;
 using TryFreetype.Model;
 using TryFreetype;
@@ -20,13 +19,25 @@ namespace KiriEdit
         {
             using (var dialog = new NewCharacterForm())
             {
-                dialog.ValidateChar += (uint codePoint) => !Project.Characters.Contains(codePoint);
+                dialog.ValidateChar += ValidateChar;
 
                 if (dialog.ShowDialog() != DialogResult.OK)
                     return;
 
                 AddMasterFigure(dialog.CodePoint);
             }
+        }
+
+        private bool ValidateChar(uint codePoint)
+        {
+            if (Project.Characters.Contains(codePoint))
+            {
+                string message = "The character is already included. Choose a different character.";
+                MessageBox.Show(message, MainForm.AppTitle);
+                return false;
+            }
+
+            return true;
         }
 
         private void AddMasterFigure(uint codePoint)
