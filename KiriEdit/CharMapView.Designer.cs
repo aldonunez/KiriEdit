@@ -64,7 +64,7 @@
             this.deleteListCharButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(213, 33);
+            this.toolStrip1.Size = new System.Drawing.Size(320, 57);
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -72,7 +72,7 @@
             // 
             this.comboBox1.Dock = System.Windows.Forms.DockStyle.Top;
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(0, 33);
+            this.comboBox1.Location = new System.Drawing.Point(0, 86);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(213, 28);
             this.comboBox1.TabIndex = 1;
@@ -82,9 +82,9 @@
             this.listBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listBox1.FormattingEnabled = true;
             this.listBox1.ItemHeight = 20;
-            this.listBox1.Location = new System.Drawing.Point(0, 61);
+            this.listBox1.Location = new System.Drawing.Point(0, 128);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(213, 346);
+            this.listBox1.Size = new System.Drawing.Size(320, 483);
             this.listBox1.TabIndex = 2;
             // 
             // addListCharButton
@@ -93,7 +93,7 @@
             this.addListCharButton.Image = ((System.Drawing.Image)(resources.GetObject("addListCharButton.Image")));
             this.addListCharButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.addListCharButton.Name = "addListCharButton";
-            this.addListCharButton.Size = new System.Drawing.Size(34, 28);
+            this.addListCharButton.Size = new System.Drawing.Size(34, 52);
             this.addListCharButton.Text = "toolStripButton1";
             this.addListCharButton.Click += new System.EventHandler(this.addListCharButton_Click);
             // 

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace KiriEdit
+namespace KiriEdit.Model
 {
     public class Project
     {
@@ -35,5 +35,15 @@ namespace KiriEdit
         public string ProjectLocation;
         public string FontPath;
         public int FaceIndex;
+    }
+
+    public class Character
+    {
+        public uint CodePoint { get; }
+
+        public Character(uint codePoint)
+        {
+            CodePoint = codePoint;
+        }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Text.Json;
 using System.Windows.Forms;
+using KiriEdit.Model;
 
 namespace KiriEdit
 {

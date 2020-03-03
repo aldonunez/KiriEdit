@@ -107,6 +107,7 @@
     <Compile Include="CharMapView.Designer.cs">
       <DependentUpon>CharMapView.cs</DependentUpon>
     </Compile>
+    <Compile Include="FigureUtils.cs" />
     <Compile Include="FolderSelectDialog.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -114,7 +115,13 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Manager.cs" />
+    <Compile Include="NewCharacterForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NewCharacterForm.Designer.cs">
+      <DependentUpon>NewCharacterForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProjectManager.cs" />
     <Compile Include="NewProjectForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -130,6 +137,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NewCharacterForm.resx">
+      <DependentUpon>NewCharacterForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="NewProjectForm.resx">
       <DependentUpon>NewProjectForm.cs</DependentUpon>
