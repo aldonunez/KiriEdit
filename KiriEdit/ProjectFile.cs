@@ -6,8 +6,7 @@ namespace KiriEdit
     {
         public string FontPath { get; set; }
         public int FaceIndex { get; set; }
-        public string GlyphListPath { get; set; }
-        public string FigureFolderPath { get; set; }
+        public string CharacterFolderPath { get; set; }
 
         // Runtime properties.
 
@@ -23,15 +22,5 @@ namespace KiriEdit
         public string ProjectLocation;
         public string FontPath;
         public int FaceIndex;
-    }
-
-    public class Character
-    {
-        public uint CodePoint { get; }
-
-        public Character(uint codePoint)
-        {
-            CodePoint = codePoint;
-        }
     }
 }

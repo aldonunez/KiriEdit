@@ -20,7 +20,7 @@ namespace KiriEdit
         public string FontPath { get => _fullFontPath; }
         public string FiguresFolderPath { get => _fullFigureFolderPath; }
 
-        public CharacterCollection Characters { get; } = new CharacterCollection();
+        public CharacterItemCollection Characters { get; } = new CharacterItemCollection();
 
         public static Project Make(ProjectSpec spec)
         {
@@ -38,8 +38,7 @@ namespace KiriEdit
 
             projectFile.FontPath = fontFileName;
             projectFile.FaceIndex = spec.FaceIndex;
-            projectFile.GlyphListPath = "glyphs.kiriglyf";
-            projectFile.FigureFolderPath = "figures";
+            projectFile.CharacterFolderPath = "characters";
 
             // Runtime properties.
             projectFile.Path = projectFilePath;
@@ -49,9 +48,8 @@ namespace KiriEdit
             DirectoryInfo dirInfo = null;
 
             dirInfo = Directory.CreateDirectory(projectFolderPath);
-            dirInfo.CreateSubdirectory(projectFile.FigureFolderPath);
+            dirInfo.CreateSubdirectory(projectFile.CharacterFolderPath);
             File.Copy(spec.FontPath, importedFontPath);
-            File.Create(projectFile.GlyphListPath);
 
             Project project = new Project(projectFile);
 
@@ -66,8 +64,9 @@ namespace KiriEdit
 
             Name = Path.GetFileNameWithoutExtension(projectFile.Path);
             RootPath = Path.GetDirectoryName(projectFile.Path);
+
             _fullFontPath = GetFullItemPath(projectFile.FontPath);
-            _fullFigureFolderPath = GetFullItemPath(projectFile.FigureFolderPath);
+            _fullFigureFolderPath = GetFullItemPath(projectFile.CharacterFolderPath);
         }
 
         private string GetFullItemPath(string relativeItemPath)
@@ -120,59 +119,50 @@ namespace KiriEdit
 
         //--------------------------------------------------------------------
 
-        public class CharacterCollection : ItemCollection<uint, Character>
+        public class CharacterItemCollection : ItemSet<uint>
         {
-            public void Add(Character character)
-            {
-                Add(character.CodePoint, character);
-            }
-
-            public void Remove(Character character)
-            {
-                Remove(character.CodePoint);
-            }
         }
 
-        public class ItemCollection<TKey, TValue> : INotifyCollectionChanged, IEnumerable<TValue>
+        public class ItemSet<T> : INotifyCollectionChanged, IEnumerable<T>
         {
-            private Dictionary<TKey, TValue> _map = new Dictionary<TKey, TValue>();
+            private HashSet<T> _set = new HashSet<T>();
 
             public event NotifyCollectionChangedEventHandler CollectionChanged;
 
-            public int Count { get => _map.Count; }
+            public int Count { get => _set.Count; }
 
-            public void Add(TKey key, TValue value)
+            public void Add(T value)
             {
-                _map.Add(key, value);
-                OnCollectionChanged(NotifyCollectionChangedAction.Add);
+                _set.Add(value);
+                OnCollectionChanged(NotifyCollectionChangedAction.Add, value);
             }
 
-            public void Remove(TKey key)
+            public void Remove(T value)
             {
-                _map.Remove(key);
-                OnCollectionChanged(NotifyCollectionChangedAction.Remove);
+                _set.Remove(value);
+                OnCollectionChanged(NotifyCollectionChangedAction.Remove, value);
             }
 
-            public bool Contains(TKey key)
+            public bool Contains(T value)
             {
-                return _map.ContainsKey(key);
+                return _set.Contains(value);
             }
 
-            public IEnumerator<TValue> GetEnumerator()
+            public IEnumerator<T> GetEnumerator()
             {
-                return _map.Values.GetEnumerator();
+                return _set.GetEnumerator();
             }
 
             IEnumerator IEnumerable.GetEnumerator()
             {
-                return _map.Values.GetEnumerator();
+                return _set.GetEnumerator();
             }
 
-            private void OnCollectionChanged(NotifyCollectionChangedAction action)
+            private void OnCollectionChanged(NotifyCollectionChangedAction action, T value)
             {
                 if (CollectionChanged != null)
                 {
-                    var e = new NotifyCollectionChangedEventArgs(action);
+                    var e = new NotifyCollectionChangedEventArgs(action, value);
                     CollectionChanged(this, e);
                 }
             }
