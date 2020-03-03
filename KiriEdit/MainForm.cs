@@ -3,7 +3,6 @@ using System;
 using System.IO;
 using System.Text.Json;
 using System.Windows.Forms;
-using KiriEdit.Model;
 
 namespace KiriEdit
 {
@@ -60,17 +59,6 @@ namespace KiriEdit
             SaveProject();
         }
 
-        private Project MakeSampleProject()
-        {
-            var project = new Project();
-
-            project.Path = @"C:\Temp\sample.kiriproj";
-            //project.FontFamilyName = "Arial Black";
-            //project.FontStyle = FontStyle.Regular;
-
-            return project;
-        }
-
         private void NewProject()
         {
             if (!CloseProject())
@@ -86,45 +74,9 @@ namespace KiriEdit
                 projectSpec = dialog.ProjectSpec;
             }
 
-            Project project = MakeProject(projectSpec);
+            Project project = Project.Make(projectSpec);
 
             EnterProjectMode(project);
-        }
-
-        private Project MakeProject(ProjectSpec spec)
-        {
-            // Figure out paths and names.
-
-            string projectFolderPath = Path.Combine(spec.ProjectLocation, spec.ProjectName);
-            string projectFileName = spec.ProjectName + ".kiriproj";
-            string projectFilePath = Path.Combine(projectFolderPath, projectFileName);
-            string fontFileName = Path.GetFileName(spec.FontPath);
-            string importedFontPath = Path.Combine(projectFolderPath, fontFileName);
-
-            // Set up the project object.
-
-            var project = new Project();
-
-            project.FontPath = fontFileName;
-            project.FaceIndex = spec.FaceIndex;
-            project.GlyphListPath = "glyphs.kiriglyf";
-            project.FigureFolderPath = "figures";
-
-            // Runtime properties.
-            project.Path = projectFilePath;
-
-            // Commit everything to the file system.
-
-            DirectoryInfo dirInfo = null;
-
-            dirInfo = Directory.CreateDirectory(projectFolderPath);
-            dirInfo.CreateSubdirectory(project.FigureFolderPath);
-            File.Copy(spec.FontPath, importedFontPath);
-            File.Create(project.GlyphListPath);
-
-            SaveProject(project);
-
-            return project;
         }
 
         private void OpenProject()
@@ -136,10 +88,11 @@ namespace KiriEdit
             if (path == null)
                 return;
 
-            var project = LoadProject(path);
+            var project = Project.Open(path);
 
-            if (!ValidateProject(project))
-                return;
+            // TODO:
+            //if (!ValidateProject(project))
+            //    return;
 
             EnterProjectMode(project);
         }
@@ -173,7 +126,7 @@ namespace KiriEdit
             saveAllMenuItem.Enabled = true;
 
             UpdateViewHostingState();
-            string baseName = Path.GetFileNameWithoutExtension(project.Path);
+            string baseName = project.Name;
             Text = baseName + " - " + AppTitle;
 
             _project = project;
@@ -234,22 +187,7 @@ namespace KiriEdit
             if (_project == null)
                 return;
 
-            // TODO: Save the project.
-        }
-
-        private void SaveProject(Project project)
-        {
-            var writerOptions = new JsonWriterOptions();
-            writerOptions.Indented = true;
-
-            var serializerOptions = new JsonSerializerOptions();
-            serializerOptions.AllowTrailingCommas = true;
-
-            using (var stream = File.OpenWrite(project.Path))
-            using (var writer = new Utf8JsonWriter(stream, writerOptions))
-            {
-                JsonSerializer.Serialize(writer, project, serializerOptions);
-            }
+            _project.Save();
         }
 
         private string ChooseProject()
@@ -263,18 +201,7 @@ namespace KiriEdit
             return null;
         }
 
-        private Project LoadProject(string path)
-        {
-            using (var stream = File.OpenRead(path))
-            {
-                var task = JsonSerializer.DeserializeAsync<Project>(stream);
-                Project project = task.Result;
-                project.Path = path;
-                return project;
-            }
-        }
-
-        private bool ValidateProject(Project project)
+        private bool ValidateProject(ProjectFile project)
         {
             if (!File.Exists(project.FullFontPath)
                 || !Directory.Exists(project.FullFiguresFolderPath)

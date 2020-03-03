@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace KiriEdit.Model
+namespace KiriEdit
 {
-    public class Project
+    public class ProjectFile
     {
         public string FontPath { get; set; }
         public int FaceIndex { get; set; }

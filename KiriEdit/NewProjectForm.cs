@@ -1,5 +1,4 @@
-﻿using KiriEdit.Model;
-using KiriFT;
+﻿using KiriFT;
 using System;
 using System.Collections.Generic;
 using System.IO;

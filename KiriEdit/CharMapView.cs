@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using KiriEdit.Model;
 using TryFreetype.Model;
 using TryFreetype;
 using System.IO;
@@ -16,6 +9,8 @@ namespace KiriEdit
 {
     public partial class CharMapView : UserControl
     {
+        public Project Project { get; set; }
+
         public CharMapView()
         {
             InitializeComponent();
@@ -25,11 +20,7 @@ namespace KiriEdit
         {
             using (var dialog = new NewCharacterForm())
             {
-                // TODO:
-                ProjectManager m = new ProjectManager();
-
-
-                dialog.ValidateChar += (uint codePoint) => !m.Characters.Contains(codePoint);
+                dialog.ValidateChar += (uint codePoint) => !Project.Characters.Contains(codePoint);
 
                 if (dialog.ShowDialog() != DialogResult.OK)
                     return;
@@ -40,15 +31,11 @@ namespace KiriEdit
 
         private void AddMasterFigure(uint codePoint)
         {
-            // TODO:
-            ProjectManager m = new ProjectManager();
-
-
             string figurePath = "";
 
             Figure figure = FigureUtils.MakeMasterFigure(
-                m.Project.FontPath,
-                m.Project.FaceIndex,
+                Project.FontPath,
+                Project.FaceIndex,
                 codePoint);
 
             using (var stream = File.Create(figurePath))
@@ -59,7 +46,7 @@ namespace KiriEdit
 
             Character character = new Character(codePoint);
 
-            m.Characters.Add(character);
+            Project.Characters.Add(character);
         }
 
         private void deleteListCharButton_Click(object sender, EventArgs e)

@@ -1,61 +1,118 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
+using System.Text.Json;
 
-namespace KiriEdit.Model
+namespace KiriEdit
 {
-    internal class ProjectManager
+    public class Project
     {
-        public CharacterCollection Characters { get; }
+        private ProjectFile ProjectFile { get; set; }
 
-        public Project Project { get; private set; }
+        private string _fullFontPath;
+        private string _fullFigureFolderPath;
 
-        public bool IsProjectOpen { get => Project != null; }
+        public bool IsDirty { get => ProjectFile.IsDirty; }
+        public string RootPath { get; private set; }
+        public string Name { get; private set; }
+        public int FaceIndex { get => ProjectFile.FaceIndex; }
+        public string FontPath { get => _fullFontPath; }
+        public string FiguresFolderPath { get => _fullFigureFolderPath; }
 
-        public void CloseProject()
+        public CharacterCollection Characters { get; } = new CharacterCollection();
+
+        public static Project Make(ProjectSpec spec)
         {
-            throw new NotImplementedException();
+            // Figure out paths and names.
+
+            string projectFolderPath = Path.Combine(spec.ProjectLocation, spec.ProjectName);
+            string projectFileName = spec.ProjectName + ".kiriproj";
+            string projectFilePath = Path.Combine(projectFolderPath, projectFileName);
+            string fontFileName = Path.GetFileName(spec.FontPath);
+            string importedFontPath = Path.Combine(projectFolderPath, fontFileName);
+
+            // Set up the project object.
+
+            var projectFile = new ProjectFile();
+
+            projectFile.FontPath = fontFileName;
+            projectFile.FaceIndex = spec.FaceIndex;
+            projectFile.GlyphListPath = "glyphs.kiriglyf";
+            projectFile.FigureFolderPath = "figures";
+
+            // Runtime properties.
+            projectFile.Path = projectFilePath;
+
+            // Commit everything to the file system.
+
+            DirectoryInfo dirInfo = null;
+
+            dirInfo = Directory.CreateDirectory(projectFolderPath);
+            dirInfo.CreateSubdirectory(projectFile.FigureFolderPath);
+            File.Copy(spec.FontPath, importedFontPath);
+            File.Create(projectFile.GlyphListPath);
+
+            Project project = new Project(projectFile);
+
+            project.Save();
+
+            return project;
         }
 
-#if false
-        public void MakeProject(string familyName, FontStyle fontStyle)
+        private Project(ProjectFile projectFile)
         {
-            if (IsProjectOpen)
-                throw new ApplicationException();
+            ProjectFile = projectFile;
 
-            var project = new Project();
-
-            project.FontFamilyName = familyName;
-            project.FontStyle = fontStyle;
-
-            ValidateProject(project);
-
-            Project = project;
-        }
-#endif
-
-        public void OpenProject(string projectPath)
-        {
-            Project project = null;
-
-            // TODO: load
-
-            ValidateProject(project);
+            Name = Path.GetFileNameWithoutExtension(projectFile.Path);
+            RootPath = Path.GetDirectoryName(projectFile.Path);
+            _fullFontPath = GetFullItemPath(projectFile.FontPath);
+            _fullFigureFolderPath = GetFullItemPath(projectFile.FigureFolderPath);
         }
 
-        public void SaveProject(string projectPath)
+        private string GetFullItemPath(string relativeItemPath)
         {
-            throw new NotImplementedException();
+            return Path.Combine(RootPath, relativeItemPath);
         }
 
-        private void ValidateProject(Project project)
+        public static Project Open(string path)
         {
-            throw new NotImplementedException();
+            ProjectFile projectFile = LoadProjectFile(path);
+
+            Project project = new Project(projectFile);
+
+            return project;
+        }
+
+        private static ProjectFile LoadProjectFile(string path)
+        {
+            using (var stream = File.OpenRead(path))
+            {
+                var task = JsonSerializer.DeserializeAsync<ProjectFile>(stream);
+                ProjectFile projectFile = task.Result;
+                projectFile.Path = path;
+                return projectFile;
+            }
+        }
+
+        public void Save()
+        {
+            SaveProjectFile(ProjectFile);
+        }
+
+        private static void SaveProjectFile(ProjectFile project)
+        {
+            var writerOptions = new JsonWriterOptions();
+            writerOptions.Indented = true;
+
+            var serializerOptions = new JsonSerializerOptions();
+            serializerOptions.AllowTrailingCommas = true;
+
+            using (var stream = File.OpenWrite(project.Path))
+            using (var writer = new Utf8JsonWriter(stream, writerOptions))
+            {
+                JsonSerializer.Serialize(writer, project, serializerOptions);
+            }
         }
 
 
