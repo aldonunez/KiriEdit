@@ -30,12 +30,16 @@ namespace KiriEdit
                 if (_project == null || _view != null)
                     return;
 
-                var charMapView = new CharMapView();
-                charMapView.Project = _project;
-                hostPanel.Controls.Add(charMapView.Control);
-                charMapView.Control.Dock = DockStyle.Fill;
-                _view = charMapView;
+                SetView(new CharMapView());
             }
+        }
+
+        private void SetView(IView view)
+        {
+            view.Project = _project;
+            hostPanel.Controls.Add(view.Control);
+            view.Control.Dock = DockStyle.Fill;
+            _view = view;
         }
 
         private void ShellForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -273,6 +277,7 @@ namespace KiriEdit
 
     internal interface IView
     {
+        Project Project { get; set; }
         Control Control { get; }
         string DocumentName { get; }
         bool IsDirty { get; }

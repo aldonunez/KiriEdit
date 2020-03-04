@@ -48,24 +48,6 @@ namespace KiriEdit
 
         private void AddCharacter(uint codePoint)
         {
-            // TODO: put this in the character/shape/figure editor, or in CharacterItem.
-#if false
-            // AddMasterFigure(uint codePoint)
-
-            string figurePath = "";
-
-            Figure figure = FigureUtils.MakeMasterFigure(
-                Project.FontPath,
-                Project.FaceIndex,
-                codePoint);
-
-            using (var stream = File.Create(figurePath))
-            using (var writer = new StreamWriter(stream))
-            {
-                FigureSerializer.Serialize(figure, writer);
-            }
-#endif
-
             _charListItems.Add(MakeCharListItem(codePoint));
             SortCharacterList();
 
