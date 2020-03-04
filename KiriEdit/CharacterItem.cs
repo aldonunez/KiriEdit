@@ -6,26 +6,16 @@ namespace KiriEdit
 {
     public class CharacterItem
     {
-        private Project _project;
+        //private Project _project;
 
         private string RootPath { get; }
 
         public uint CodePoint { get; }
 
-        private CharacterItem(Project project, uint codePoint)
-        {
-            string name = MakeCharacterFileName(codePoint);
-            string charPath = Path.Combine(project.CharactersFolderPath, name);
-
-            RootPath = charPath;
-            _project = project;
-            CodePoint = codePoint;
-        }
-
-        public static CharacterItem Make(Project project, uint codePoint)
-        {
-            return new CharacterItem(project, codePoint);
-        }
+        //public static CharacterItem Make(Project project, uint codePoint)
+        //{
+        //    return new CharacterItem(project, codePoint);
+        //}
 
         private const string CharacterFolderSearchPattern = "U_*";
 
@@ -52,19 +42,30 @@ namespace KiriEdit
             return string.Format("U_{0:X6}", codePoint);
         }
 
-        public void Save()
+        private static string GetRootPath(Project project, uint codePoint)
         {
+            string name = MakeCharacterFileName(codePoint);
+            string charPath = Path.Combine(project.CharactersFolderPath, name);
+            return charPath;
+        }
+
+        public static void AddStorage(Project project, uint codePoint)
+        {
+            string rootPath = GetRootPath(project, codePoint);
+
             // It's OK if it already exists.
-            Directory.CreateDirectory(RootPath);
+            Directory.CreateDirectory(rootPath);
 
             // TODO: save the character config file
         }
 
-        public void Delete()
+        public static void DeleteStorage(Project project, uint codePoint)
         {
+            string rootPath = GetRootPath(project, codePoint);
+
             // TODO: Delete recursively.
 
-            Directory.Delete(RootPath);
+            Directory.Delete(rootPath);
         }
     }
 }

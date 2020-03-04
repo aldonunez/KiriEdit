@@ -20,7 +20,7 @@ namespace KiriEdit
         public string FontPath { get => _fullFontPath; }
         public string CharactersFolderPath { get => _fullCharactersFolderPath; }
 
-        public CharacterItemCollection Characters { get; } = new CharacterItemCollection();
+        public CharacterItemCollection Characters { get; }
 
         public static Project Make(ProjectSpec spec)
         {
@@ -60,6 +60,8 @@ namespace KiriEdit
 
         private Project(ProjectFile projectFile)
         {
+            Characters = new CharacterItemCollection(this);
+
             ProjectFile = projectFile;
 
             Name = Path.GetFileNameWithoutExtension(projectFile.Path);
@@ -126,6 +128,24 @@ namespace KiriEdit
 
         public class CharacterItemCollection : ItemSet<uint>
         {
+            private Project _project;
+
+            public CharacterItemCollection(Project project)
+            {
+                _project = project;
+            }
+
+            public void Add(uint codePoint)
+            {
+                CharacterItem.AddStorage(_project, codePoint);
+                AddInternal(codePoint);
+            }
+
+            public void Delete(uint codePoint)
+            {
+                CharacterItem.DeleteStorage(_project, codePoint);
+                RemoveInternal(codePoint);
+            }
         }
 
         public class ItemSet<T> : INotifyCollectionChanged, IEnumerable<T>
@@ -136,13 +156,13 @@ namespace KiriEdit
 
             public int Count { get => _set.Count; }
 
-            public void Add(T value)
+            protected void AddInternal(T value)
             {
                 _set.Add(value);
                 OnCollectionChanged(NotifyCollectionChangedAction.Add, value);
             }
 
-            public void Remove(T value)
+            protected void RemoveInternal(T value)
             {
                 _set.Remove(value);
                 OnCollectionChanged(NotifyCollectionChangedAction.Remove, value);

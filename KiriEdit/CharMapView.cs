@@ -66,10 +66,6 @@ namespace KiriEdit
             }
 #endif
 
-            var item = CharacterItem.Make(Project, codePoint);
-
-            item.Save();
-
             _charListItems.Add(MakeCharListItem(codePoint));
             SortCharacterList();
 
@@ -83,15 +79,11 @@ namespace KiriEdit
             if (!ConfirmDeleteCharacter(listItem))
                 return;
 
-            var charItem = CharacterItem.Make(Project, listItem.CodePoint);
-
-            charItem.Delete();
-
             _charListItems.Remove(listItem);
             charListBox.Items.Remove(listItem);
             // No need to sort after deleting an item.
 
-            Project.Characters.Remove(listItem.CodePoint);
+            Project.Characters.Delete(listItem.CodePoint);
         }
 
         private bool ConfirmDeleteCharacter(CharListItem listItem)
