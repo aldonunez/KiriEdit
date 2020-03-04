@@ -1,6 +1,6 @@
 ﻿namespace KiriEdit
 {
-    partial class MainForm
+    partial class ShellForm
     {
         /// <summary>
         /// Required designer variable.
@@ -140,7 +140,7 @@
             this.hostPanel.Size = new System.Drawing.Size(800, 395);
             this.hostPanel.TabIndex = 2;
             // 
-            // MainForm
+            // ShellForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -149,9 +149,9 @@
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.mainMenuStrip);
             this.MainMenuStrip = this.mainMenuStrip;
-            this.Name = "MainForm";
+            this.Name = "ShellForm";
             this.Text = "Form1";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ShellForm_FormClosing);
             this.mainMenuStrip.ResumeLayout(false);
             this.mainMenuStrip.PerformLayout();
             this.ResumeLayout(false);

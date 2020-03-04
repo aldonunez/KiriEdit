@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace KiriEdit
 {
-    public partial class MainForm : Form
+    public partial class ShellForm : Form
     {
         // TODO: put this somewhere else
         public const string AppTitle = "KiriEdit";
@@ -14,16 +14,16 @@ namespace KiriEdit
         private Project _project;
         private IView _view;
 
-        public MainForm()
+        public ShellForm()
         {
             InitializeComponent();
             EnterNothingMode();
             Text = AppTitle;
 
-            KeyPress += MainForm_KeyPress;
+            KeyPress += ShellForm_KeyPress;
         }
 
-        private void MainForm_KeyPress(object sender, KeyPressEventArgs e)
+        private void ShellForm_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == 'A' || e.KeyChar == 'a')
             {
@@ -38,7 +38,7 @@ namespace KiriEdit
             }
         }
 
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        private void ShellForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (!ConfirmCloseProject())
                 e.Cancel = true;

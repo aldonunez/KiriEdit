@@ -103,7 +103,7 @@ namespace KiriEdit
             {
                 string message = "The project directory already exists. Choose a different name or location for your project.";
 
-                MessageBox.Show(message, MainForm.AppTitle);
+                MessageBox.Show(message, ShellForm.AppTitle);
                 return false;
             }
 
@@ -203,7 +203,7 @@ namespace KiriEdit
                 if (items.Length == 0)
                 {
                     string message = "There are no supported typefaces in the font.";
-                    MessageBox.Show(message, MainForm.AppTitle);
+                    MessageBox.Show(message, ShellForm.AppTitle);
                 }
                 else
                 {
@@ -213,7 +213,7 @@ namespace KiriEdit
                     if (items.Length > 1)
                     {
                         string message = "The font contains more than one typeface. Choose a typeface.";
-                        MessageBox.Show(message, MainForm.AppTitle);
+                        MessageBox.Show(message, ShellForm.AppTitle);
                         typefaceComboBox.SelectedIndex = 0;
                     }
                     else

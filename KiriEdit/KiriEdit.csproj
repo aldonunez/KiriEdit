@@ -111,11 +111,11 @@
     <Compile Include="CharUtils.cs" />
     <Compile Include="FigureUtils.cs" />
     <Compile Include="FolderSelectDialog.cs" />
-    <Compile Include="MainForm.cs">
+    <Compile Include="ShellForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
+    <Compile Include="ShellForm.Designer.cs">
+      <DependentUpon>ShellForm.cs</DependentUpon>
     </Compile>
     <Compile Include="NewCharacterForm.cs">
       <SubType>Form</SubType>
@@ -137,8 +137,8 @@
     <EmbeddedResource Include="CharMapView.resx">
       <DependentUpon>CharMapView.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
+    <EmbeddedResource Include="ShellForm.resx">
+      <DependentUpon>ShellForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="NewCharacterForm.resx">
       <DependentUpon>NewCharacterForm.cs</DependentUpon>

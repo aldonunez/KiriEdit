@@ -39,7 +39,7 @@ namespace KiriEdit
             if (Project.Characters.Contains(codePoint))
             {
                 string message = "The character is already included. Choose a different character.";
-                MessageBox.Show(message, MainForm.AppTitle);
+                MessageBox.Show(message, ShellForm.AppTitle);
                 return false;
             }
 
@@ -89,7 +89,7 @@ namespace KiriEdit
         private bool ConfirmDeleteCharacter(CharListItem listItem)
         {
             string message = string.Format("'{0}' will be deleted permanently.", listItem.CodePoint);
-            DialogResult result = MessageBox.Show(message, MainForm.AppTitle, MessageBoxButtons.OKCancel);
+            DialogResult result = MessageBox.Show(message, ShellForm.AppTitle, MessageBoxButtons.OKCancel);
 
             if (result == DialogResult.OK)
                 return true;
