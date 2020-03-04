@@ -77,9 +77,6 @@ namespace KiriEdit
 
         private void NewProject()
         {
-            if (!CloseProject())
-                return;
-
             ProjectSpec projectSpec = null;
 
             using (var dialog = new NewProjectForm())
@@ -97,16 +94,13 @@ namespace KiriEdit
 
         private void OpenProject()
         {
-            if (!CloseProject())
-                return;
-
             var path = ChooseProject();
             if (path == null)
                 return;
 
             var project = Project.Open(path);
 
-            // TODO:
+            // TODO: Validate in Project.Open
             //if (!ValidateProject(project))
             //    return;
 
@@ -124,8 +118,17 @@ namespace KiriEdit
 
         private void EnterNothingMode()
         {
+            newProjectMenuItem.Enabled = true;
+            openProjectMenuItem.Enabled = true;
             closeProjectMenuItem.Enabled = false;
             saveAllMenuItem.Enabled = false;
+
+            if (_view != null)
+            {
+                hostPanel.Controls.Clear();
+                _view.Control.Dispose();
+                _view = null;
+            }
 
             UpdateViewHostingState();
             Text = AppTitle;
@@ -138,6 +141,8 @@ namespace KiriEdit
             if (project == null)
                 throw new ArgumentNullException(nameof(project));
 
+            newProjectMenuItem.Enabled = false;
+            openProjectMenuItem.Enabled = false;
             closeProjectMenuItem.Enabled = true;
             saveAllMenuItem.Enabled = true;
 
