@@ -80,11 +80,29 @@ namespace KiriEdit
         {
             var listItem = (CharListItem) charListBox.SelectedItem;
 
+            if (!ConfirmDeleteCharacter(listItem))
+                return;
+
+            var charItem = CharacterItem.Make(Project, listItem.CodePoint);
+
+            charItem.Delete();
+
             _charListItems.Remove(listItem);
             charListBox.Items.Remove(listItem);
             // No need to sort after deleting an item.
 
             Project.Characters.Remove(listItem.CodePoint);
+        }
+
+        private bool ConfirmDeleteCharacter(CharListItem listItem)
+        {
+            string message = string.Format("'{0}' will be deleted permanently.", listItem.CodePoint);
+            DialogResult result = MessageBox.Show(message, MainForm.AppTitle, MessageBoxButtons.OKCancel);
+
+            if (result == DialogResult.OK)
+                return true;
+
+            return false;
         }
 
         private void charListBox_SelectedIndexChanged(object sender, EventArgs e)

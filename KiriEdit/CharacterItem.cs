@@ -47,7 +47,7 @@ namespace KiriEdit
             yield break;
         }
 
-        public static string MakeCharacterFileName(uint codePoint)
+        private static string MakeCharacterFileName(uint codePoint)
         {
             return string.Format("U_{0:X6}", codePoint);
         }
@@ -58,6 +58,13 @@ namespace KiriEdit
             Directory.CreateDirectory(RootPath);
 
             // TODO: save the character config file
+        }
+
+        public void Delete()
+        {
+            // TODO: Delete recursively.
+
+            Directory.Delete(RootPath);
         }
     }
 }
