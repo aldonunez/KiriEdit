@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
+using System.Windows.Forms;
 
 namespace KiriEdit
 {
     public partial class CharMapView : UserControl, IView
     {
-        // TODO: sort items according to language or ordinal.
-        //       For now, sort according to ordinal only.
-
         private List<CharListItem> _charListItems;
         private StringComparer _stringComparer = StringComparer.Ordinal;
 
@@ -98,6 +96,36 @@ namespace KiriEdit
         {
             InitSortedCharacterList();
             charListBox_SelectedIndexChanged(charListBox, EventArgs.Empty);
+
+            var cultures = CultureInfo.GetCultures(CultureTypes.NeutralCultures);
+
+            Array.Sort(
+                cultures,
+                (a, b) => CultureInfo.CurrentUICulture.CompareInfo.Compare(a.DisplayName, b.DisplayName));
+
+            sortComboBox.Items.Add(new OrdinalCultureItem());
+            sortComboBox.Items.AddRange(cultures);
+            sortComboBox.DisplayMember = "DisplayName";
+        }
+
+        private class OrdinalCultureItem
+        {
+            public string DisplayName { get => "Ordinal"; }
+        }
+
+        private void SortComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (sortComboBox.SelectedIndex < 0)
+                return;
+
+            var listItem = sortComboBox.SelectedItem;
+
+            if (sortComboBox.SelectedItem is OrdinalCultureItem)
+                _stringComparer = StringComparer.Ordinal;
+            else
+                _stringComparer = ((CultureInfo) listItem).CompareInfo.GetStringComparer(CompareOptions.None);
+
+            SortCharacterList();
         }
 
         private void InitSortedCharacterList()

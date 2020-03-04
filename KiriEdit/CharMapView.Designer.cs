@@ -31,7 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CharMapView));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.charListBox = new System.Windows.Forms.ListBox();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.sortComboBox = new System.Windows.Forms.ComboBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.addListCharButton = new System.Windows.Forms.ToolStripButton();
             this.deleteListCharButton = new System.Windows.Forms.ToolStripButton();
@@ -50,10 +50,11 @@
             // splitContainer1.Panel1
             // 
             this.splitContainer1.Panel1.Controls.Add(this.charListBox);
-            this.splitContainer1.Panel1.Controls.Add(this.comboBox1);
+            this.splitContainer1.Panel1.Controls.Add(this.sortComboBox);
             this.splitContainer1.Panel1.Controls.Add(this.toolStrip1);
             this.splitContainer1.Size = new System.Drawing.Size(640, 407);
             this.splitContainer1.SplitterDistance = 213;
+            this.splitContainer1.SplitterWidth = 8;
             this.splitContainer1.TabIndex = 0;
             // 
             // charListBox
@@ -67,14 +68,17 @@
             this.charListBox.TabIndex = 2;
             this.charListBox.SelectedIndexChanged += new System.EventHandler(this.charListBox_SelectedIndexChanged);
             // 
-            // comboBox1
+            // sortComboBox
             // 
-            this.comboBox1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(0, 33);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(213, 28);
-            this.comboBox1.TabIndex = 1;
+            this.sortComboBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
+            this.sortComboBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+            this.sortComboBox.Dock = System.Windows.Forms.DockStyle.Top;
+            this.sortComboBox.FormattingEnabled = true;
+            this.sortComboBox.Location = new System.Drawing.Point(0, 33);
+            this.sortComboBox.Name = "sortComboBox";
+            this.sortComboBox.Size = new System.Drawing.Size(213, 28);
+            this.sortComboBox.TabIndex = 1;
+            this.sortComboBox.SelectedIndexChanged += new System.EventHandler(this.SortComboBox_SelectedIndexChanged);
             // 
             // toolStrip1
             // 
@@ -104,7 +108,7 @@
             this.deleteListCharButton.Image = ((System.Drawing.Image)(resources.GetObject("deleteListCharButton.Image")));
             this.deleteListCharButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.deleteListCharButton.Name = "deleteListCharButton";
-            this.deleteListCharButton.Size = new System.Drawing.Size(34, 52);
+            this.deleteListCharButton.Size = new System.Drawing.Size(34, 28);
             this.deleteListCharButton.Text = "Delete character";
             this.deleteListCharButton.Click += new System.EventHandler(this.deleteListCharButton_Click);
             // 
@@ -130,7 +134,7 @@
 
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.ListBox charListBox;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox sortComboBox;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton addListCharButton;
         private System.Windows.Forms.ToolStripButton deleteListCharButton;
