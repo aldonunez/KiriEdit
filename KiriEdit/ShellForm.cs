@@ -21,6 +21,18 @@ namespace KiriEdit
             Text = AppTitle;
 
             KeyPress += ShellForm_KeyPress;
+            ResizeBegin += ShellForm_ResizeBegin;
+            ResizeEnd += ShellForm_ResizeEnd;
+        }
+
+        private void ShellForm_ResizeBegin(object sender, EventArgs e)
+        {
+            hostPanel.SuspendLayout();
+        }
+
+        private void ShellForm_ResizeEnd(object sender, EventArgs e)
+        {
+            hostPanel.ResumeLayout();
         }
 
         private void ShellForm_KeyPress(object sender, KeyPressEventArgs e)

@@ -99,6 +99,14 @@ namespace KiriEdit
             sortComboBox.Items.AddRange(cultures);
             sortComboBox.DisplayMember = "DisplayName";
             // Leave auto-complete turned off, because it's too slow to load.
+
+            // TEST:
+            splitContainer1.Panel2.Padding = new Padding(20);
+            var grid = new CharacterGrid();
+            grid.Dock = DockStyle.Fill;
+            grid.FontPath = Project.FontPath;
+            grid.FaceIndex = Project.FaceIndex;
+            splitContainer1.Panel2.Controls.Add(grid);
         }
 
         private class OrdinalCultureItem
