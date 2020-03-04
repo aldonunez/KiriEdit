@@ -70,10 +70,7 @@
             // 
             // sortComboBox
             // 
-            this.sortComboBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
-            this.sortComboBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.sortComboBox.Dock = System.Windows.Forms.DockStyle.Top;
-            this.sortComboBox.FormattingEnabled = true;
             this.sortComboBox.Location = new System.Drawing.Point(0, 33);
             this.sortComboBox.Name = "sortComboBox";
             this.sortComboBox.Size = new System.Drawing.Size(213, 28);
