@@ -36,6 +36,13 @@ namespace KiriEdit
             _fontCollection = new PrivateFontCollection();
             _fontCollection.AddFontFile(FontPath);
 
+            _renderArgs.Columns = Columns;
+            _renderArgs.FontFamily = _fontCollection.Families[0].Name;
+            _renderArgs.FontStyle = 0;
+            _renderArgs.HeightToWidth = HeightToWidth;
+            _renderArgs.OnColor = Color.Black.ToArgb();
+            _renderArgs.OffColor = Color.Gray.ToArgb();
+
             UpdateFont();
         }
 
@@ -52,18 +59,12 @@ namespace KiriEdit
 
             try
             {
-                _renderArgs.Columns = Columns;
-                _renderArgs.FirstCodePoint = 'A';
-                _renderArgs.FontFamily = _fontCollection.Families[0].Name;
-                _renderArgs.FontStyle = 0;
+                _renderArgs.FirstCodePoint = ' ';
                 _renderArgs.Hdc = hdc;
                 _renderArgs.Height = _contentHeight;
                 _renderArgs.Width = _contentWidth;
-                _renderArgs.HeightToWidth = HeightToWidth;
-                _renderArgs.OnColor = Color.Black.ToArgb();
-                _renderArgs.OffColor = Color.Gray.ToArgb();
 
-                KiriFT.Drawing.CharGridRenderer.Draw(_renderArgs);
+                CharGridRenderer.Draw(_renderArgs);
             }
             finally
             {

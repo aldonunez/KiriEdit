@@ -56,9 +56,6 @@ namespace KiriFT
             args->OutCellHeight = cellHeight;
             args->OutRows = rows;
 
-            msclr::interop::marshal_context context;
-            const wchar_t* nativeFontFamily = context.marshal_as<const wchar_t*>(args->FontFamily);
-
             // Lines
 
             HPEN hPen = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
@@ -110,7 +107,7 @@ namespace KiriFT
                 CLIP_DEFAULT_PRECIS,
                 DEFAULT_QUALITY,
                 DEFAULT_PITCH,
-                nativeFontFamily
+                args->NativeFontFamily
             );
 
             hOldObj = SelectObject(hdc, hFont);
@@ -155,6 +152,45 @@ namespace KiriFT
 
             SelectObject(hdc, hOldObj);
             DeleteObject(hFont);
+        }
+
+        wchar_t* CharGridRendererArgs::NativeFontFamily::get()
+        {
+            return m_nativeFontFamily;
+        }
+
+        String^ CharGridRendererArgs::FontFamily::get()
+        {
+            return m_fontFamily;
+        }
+
+        void CharGridRendererArgs::FontFamily::set(String^ value)
+        {
+            if (!String::Equals(value, m_fontFamily))
+            {
+                if (m_nativeFontFamily != nullptr)
+                {
+                    Marshal::FreeHGlobal(IntPtr(m_nativeFontFamily));
+                    m_nativeFontFamily = nullptr;
+                }
+
+                m_nativeFontFamily = (wchar_t*) Marshal::StringToHGlobalUni(value).ToPointer();
+                m_fontFamily = value;
+            }
+        }
+
+        CharGridRendererArgs::~CharGridRendererArgs()
+        {
+            this->!CharGridRendererArgs();
+        }
+
+        CharGridRendererArgs::!CharGridRendererArgs()
+        {
+            if (m_nativeFontFamily != nullptr)
+            {
+                Marshal::FreeHGlobal(IntPtr(m_nativeFontFamily));
+                m_nativeFontFamily = nullptr;
+            }
         }
     }
 }

@@ -20,6 +20,12 @@
 
             if (disposing)
             {
+                if (_renderArgs != null)
+                {
+                    _renderArgs.Dispose();
+                    _renderArgs = null;
+                }
+
                 if (_fontCollection != null)
                 {
                     _fontCollection.Dispose();
