@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Windows.Forms;
 using System.Drawing.Text;
-using KiriFT;
 using KiriFT.Drawing;
 
 namespace KiriEdit
@@ -14,8 +13,6 @@ namespace KiriEdit
         private const uint MaxUnicodeCodePoint = 0x2FFFF;
         private const uint MinUnicodePoint = '!';
 
-        private Library _library;
-        private Face _face;
         private PrivateFontCollection _fontCollection;
         private CharGridRendererArgs _renderArgs = new CharGridRendererArgs();
 
@@ -27,11 +24,13 @@ namespace KiriEdit
             InitializeComponent();
         }
 
+        private void CharacterGrid_GotFocus(object sender, EventArgs e)
+        {
+            vScrollBar.Focus();
+        }
+
         private void CharacterGrid_Load(object sender, EventArgs e)
         {
-            _library = new Library();
-            _face = _library.OpenFace(FontPath, FaceIndex);
-
             _fontCollection = new PrivateFontCollection();
             _fontCollection.AddFontFile(FontPath);
 
@@ -91,6 +90,15 @@ namespace KiriEdit
         {
             int row = vScrollBar.Value;
             return (uint) (MinUnicodePoint + row * Columns);
+        }
+
+        public void ScrollTo(uint codePoint)
+        {
+            if (codePoint > MaxUnicodeCodePoint)
+                return;
+
+            int row = (int) (codePoint - MinUnicodePoint) / Columns;
+            vScrollBar.Value = row;
         }
     }
 }

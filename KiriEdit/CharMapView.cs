@@ -82,6 +82,15 @@ namespace KiriEdit
         private void charListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             deleteListCharButton.Enabled = charListBox.SelectedIndex >= 0;
+
+
+            if (charListBox.SelectedIndex >= 0)
+            {
+                // TEST:
+                var listItem = (CharListItem) charListBox.SelectedItem;
+                var charGrid = (CharacterGrid) splitContainer1.Panel2.Controls[0];
+                charGrid.ScrollTo(listItem.CodePoint);
+            }
         }
 
         private void CharMapView_Load(object sender, EventArgs e)

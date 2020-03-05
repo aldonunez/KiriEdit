@@ -31,18 +31,6 @@
                     _fontCollection.Dispose();
                     _fontCollection = null;
                 }
-
-                if (_face != null)
-                {
-                    _face.Dispose();
-                    _face = null;
-                }
-
-                if (_library != null)
-                {
-                    _library.Dispose();
-                    _library = null;
-                }
             }
 
             base.Dispose(disposing);
@@ -76,6 +64,7 @@
             this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "CharacterGrid";
             this.Size = new System.Drawing.Size(315, 237);
+            this.GotFocus += new System.EventHandler(this.CharacterGrid_GotFocus);
             this.Load += new System.EventHandler(this.CharacterGrid_Load);
             this.Resize += new System.EventHandler(this.CharacterGrid_Resize);
             this.ResumeLayout(false);
