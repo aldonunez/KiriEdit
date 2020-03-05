@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing.Text;
 using KiriFT;
+using KiriFT.Drawing;
 
 namespace KiriEdit
 {
@@ -20,11 +15,10 @@ namespace KiriEdit
         private Library _library;
         private Face _face;
         private PrivateFontCollection _fontCollection;
+        private CharGridRendererArgs _renderArgs = new CharGridRendererArgs();
 
         private int _contentWidth;
         private int _contentHeight;
-        private float _cellWidth;
-        private float _cellHeight;
 
         public string FontPath { get; set; }
         public int FaceIndex { get; set; }
@@ -58,22 +52,18 @@ namespace KiriEdit
 
             try
             {
-                KiriFT.Drawing.CharGridRendererArgs args = new KiriFT.Drawing.CharGridRendererArgs();
+                _renderArgs.Columns = Columns;
+                _renderArgs.FirstCodePoint = 'A';
+                _renderArgs.FontFamily = _fontCollection.Families[0].Name;
+                _renderArgs.FontStyle = 0;
+                _renderArgs.Hdc = hdc;
+                _renderArgs.Height = _contentHeight;
+                _renderArgs.Width = _contentWidth;
+                _renderArgs.HeightToWidth = HeightToWidth;
+                _renderArgs.OnColor = Color.Black.ToArgb();
+                _renderArgs.OffColor = Color.Gray.ToArgb();
 
-                args.Columns = 20;
-                args.FirstCodePoint = 0x1F000;
-                //args.FirstCodePoint = 0x4e2d;
-                //args.FirstCodePoint = 'A';
-                //args.FontFamily = _fontCollection.Families[0].Name;
-                args.FontFamily = "Segoe UI";
-                args.FontStyle = 0;
-                args.Hdc = hdc;
-                args.Height = _contentHeight;
-                args.Width = _contentWidth;
-                args.HeightToWidth = HeightToWidth;
-                args.OnColor = Color.Red.ToArgb();
-
-                KiriFT.Drawing.CharGridRenderer.Draw(args);
+                KiriFT.Drawing.CharGridRenderer.Draw(_renderArgs);
             }
             finally
             {
@@ -85,9 +75,6 @@ namespace KiriEdit
         {
             _contentWidth = vScrollBar.Left;
             _contentHeight = Height;
-
-            _cellWidth = _contentWidth / (float) Columns;
-            _cellHeight = _cellWidth * HeightToWidth;
         }
     }
 }

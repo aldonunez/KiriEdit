@@ -11,21 +11,31 @@ namespace KiriFT
 {
     namespace Drawing
     {
-        UINT Utf32ToWideChar(UINT32 codePoint32, wchar_t& high, wchar_t& low)
+        UINT Utf32ToWideChar(UINT32 codePoint32, wchar_t& first, wchar_t& second)
         {
             if (codePoint32 < 0x10000)
             {
-                high = 0;
-                low = (wchar_t) codePoint32;
+                first = (wchar_t) codePoint32;
+                second = 0;
             }
             else
             {
                 UINT32 temp = codePoint32 - 0x10000;
-                high = ((temp >> 10) & 0x3FF) + 0xD800;
-                low = ((temp >> 0) & 0x3FF) + 0xDC00;
+                first  = ((temp >> 10) & 0x3FF) + 0xD800;   // high
+                second = ((temp >>  0) & 0x3FF) + 0xDC00;   // low
             }
 
-            return (high == 0) ? 1 : 2;
+            return (second == 0) ? 1 : 2;
+        }
+
+        COLORREF ConvertWinFormsColorToGdi(int wfColor)
+        {
+            COLORREF colorref =
+                  ((wfColor & 0x0000FF) << 16)
+                | ((wfColor & 0x00FF00) << 0)
+                | ((wfColor & 0xFF0000) >> 16)
+                ;
+            return colorref;
         }
 
         void CharGridRenderer::Draw(CharGridRendererArgs^ args)
@@ -105,17 +115,11 @@ namespace KiriFT
 
             hOldObj = SelectObject(hdc, hFont);
 
-            COLORREF onColor =
-                  ((args->OnColor & 0x0000FF) << 16)
-                | ((args->OnColor & 0x00FF00) << 0)
-                | ((args->OnColor & 0xFF0000) >> 16)
-                ;
+            COLORREF onColor = ConvertWinFormsColorToGdi(args->OnColor);
 
             SetBkMode(hdc, TRANSPARENT);
             SetTextAlign(hdc, TA_TOP | TA_LEFT);
             SetTextColor(hdc, onColor);
-            System::Diagnostics::Debug::WriteLine("OnColor:");
-            System::Diagnostics::Debug::WriteLine((UInt32) args->OnColor);
 
             UINT32 codePoint = args->FirstCodePoint;
             float xcell = 0;
@@ -129,12 +133,12 @@ namespace KiriFT
                     int len = 0;
                     int logWidth = 0;
 
-                    len = Utf32ToWideChar(codePoint, str[1], str[0]);
+                    len = Utf32ToWideChar(codePoint, str[0], str[1]);
 
                     SIZE size;
                     bRet = GetTextExtentPoint32(hdc, str, len, &size);
-                    logWidth = size.cx;
                     assert(bRet);
+                    logWidth = size.cx;
 
                     int x = (int) (xcell + (cellWidth - logWidth) / 2);
                     int y = (int) (ycell + (cellHeight - logHeight) / 2);
