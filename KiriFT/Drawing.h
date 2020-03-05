@@ -6,6 +6,14 @@ namespace KiriFT
 {
     namespace Drawing
     {
+        public value struct CharGridMetrics
+        {
+        public:
+            Single CellWidth;
+            Single CellHeight;
+            Int32 Rows;
+        };
+
         public ref class CharGridRendererArgs
         {
             String^ m_fontFamily;
@@ -21,14 +29,13 @@ namespace KiriFT
             Int32 Columns;
             Single HeightToWidth;
             UInt32 FirstCodePoint;
+            UInt32 LastCodePoint;
             Int32 OnColor;
             Int32 OffColor;
             Int32 FontStyle;
             property String^ FontFamily { String^ get(); void set(String^ value); }
 
-            Single OutCellWidth;
-            Single OutCellHeight;
-            Int32 OutRows;
+            CharGridMetrics GetMetrics();
 
             ~CharGridRendererArgs();
             !CharGridRendererArgs();

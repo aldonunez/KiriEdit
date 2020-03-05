@@ -45,6 +45,7 @@
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -52,28 +53,31 @@
             this.splitContainer1.Panel1.Controls.Add(this.charListBox);
             this.splitContainer1.Panel1.Controls.Add(this.sortComboBox);
             this.splitContainer1.Panel1.Controls.Add(this.toolStrip1);
-            this.splitContainer1.Size = new System.Drawing.Size(640, 407);
-            this.splitContainer1.SplitterDistance = 213;
-            this.splitContainer1.SplitterWidth = 8;
+            this.splitContainer1.Panel1MinSize = 100;
+            this.splitContainer1.Panel2MinSize = 300;
+            this.splitContainer1.Size = new System.Drawing.Size(427, 265);
+            this.splitContainer1.SplitterDistance = 122;
+            this.splitContainer1.SplitterWidth = 5;
             this.splitContainer1.TabIndex = 0;
             // 
             // charListBox
             // 
             this.charListBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.charListBox.FormattingEnabled = true;
-            this.charListBox.ItemHeight = 20;
-            this.charListBox.Location = new System.Drawing.Point(0, 61);
+            this.charListBox.Location = new System.Drawing.Point(0, 52);
+            this.charListBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.charListBox.Name = "charListBox";
-            this.charListBox.Size = new System.Drawing.Size(213, 346);
+            this.charListBox.Size = new System.Drawing.Size(122, 213);
             this.charListBox.TabIndex = 2;
             this.charListBox.SelectedIndexChanged += new System.EventHandler(this.charListBox_SelectedIndexChanged);
             // 
             // sortComboBox
             // 
             this.sortComboBox.Dock = System.Windows.Forms.DockStyle.Top;
-            this.sortComboBox.Location = new System.Drawing.Point(0, 33);
+            this.sortComboBox.Location = new System.Drawing.Point(0, 31);
+            this.sortComboBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.sortComboBox.Name = "sortComboBox";
-            this.sortComboBox.Size = new System.Drawing.Size(213, 28);
+            this.sortComboBox.Size = new System.Drawing.Size(122, 21);
             this.sortComboBox.TabIndex = 1;
             this.sortComboBox.SelectedIndexChanged += new System.EventHandler(this.SortComboBox_SelectedIndexChanged);
             // 
@@ -85,7 +89,7 @@
             this.deleteListCharButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(213, 33);
+            this.toolStrip1.Size = new System.Drawing.Size(122, 31);
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -95,7 +99,7 @@
             this.addListCharButton.Image = ((System.Drawing.Image)(resources.GetObject("addListCharButton.Image")));
             this.addListCharButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.addListCharButton.Name = "addListCharButton";
-            this.addListCharButton.Size = new System.Drawing.Size(34, 28);
+            this.addListCharButton.Size = new System.Drawing.Size(28, 28);
             this.addListCharButton.Text = "Add character";
             this.addListCharButton.Click += new System.EventHandler(this.addListCharButton_Click);
             // 
@@ -105,17 +109,18 @@
             this.deleteListCharButton.Image = ((System.Drawing.Image)(resources.GetObject("deleteListCharButton.Image")));
             this.deleteListCharButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.deleteListCharButton.Name = "deleteListCharButton";
-            this.deleteListCharButton.Size = new System.Drawing.Size(34, 28);
+            this.deleteListCharButton.Size = new System.Drawing.Size(28, 28);
             this.deleteListCharButton.Text = "Delete character";
             this.deleteListCharButton.Click += new System.EventHandler(this.deleteListCharButton_Click);
             // 
             // CharMapView
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.splitContainer1);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "CharMapView";
-            this.Size = new System.Drawing.Size(640, 407);
+            this.Size = new System.Drawing.Size(427, 265);
             this.Load += new System.EventHandler(this.CharMapView_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();

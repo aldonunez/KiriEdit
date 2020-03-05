@@ -48,13 +48,10 @@ namespace KiriFT
             HDC hdc = (HDC) args->Hdc.ToPointer();
             int contentWidth = args->Width;
             int contentHeight = args->Height;
-            float cellWidth = (contentWidth / (float) args->Columns);
-            float cellHeight = cellWidth * args->HeightToWidth;
-            int rows = (int) ceilf(contentHeight / cellHeight);
-
-            args->OutCellWidth = cellWidth;
-            args->OutCellHeight = cellHeight;
-            args->OutRows = rows;
+            auto metrics = args->GetMetrics();
+            float cellWidth = metrics.CellWidth;
+            float cellHeight = metrics.CellHeight;
+            int rows = metrics.Rows;
 
             // Lines
 
@@ -118,6 +115,11 @@ namespace KiriFT
             SetTextAlign(hdc, TA_TOP | TA_LEFT);
             SetTextColor(hdc, onColor);
 
+            UINT32 lastCodePoint = args->LastCodePoint;
+
+            if (lastCodePoint == 0)
+                lastCodePoint = 0x10FFFF;
+
             UINT32 codePoint = args->FirstCodePoint;
             float xcell = 0;
             float ycell = 0;
@@ -126,6 +128,9 @@ namespace KiriFT
             {
                 for (int c = 0; c < COLUMNS; c++)
                 {
+                    if (codePoint > lastCodePoint)
+                        continue;
+
                     wchar_t str[2] = L"";
                     int len = 0;
                     int logWidth = 0;
@@ -177,6 +182,21 @@ namespace KiriFT
                 m_nativeFontFamily = (wchar_t*) Marshal::StringToHGlobalUni(value).ToPointer();
                 m_fontFamily = value;
             }
+        }
+
+        CharGridMetrics CharGridRendererArgs::GetMetrics()
+        {
+            CharGridMetrics metrics;
+
+            float cellWidth = (Width / (float) Columns);
+            float cellHeight = cellWidth * HeightToWidth;
+            int rows = (int) ceilf(Height / cellHeight);
+
+            metrics.CellHeight = cellHeight;
+            metrics.CellWidth = cellWidth;
+            metrics.Rows = rows;
+
+            return metrics;
         }
 
         CharGridRendererArgs::~CharGridRendererArgs()

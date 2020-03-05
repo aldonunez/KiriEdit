@@ -62,18 +62,20 @@
             // vScrollBar
             // 
             this.vScrollBar.Dock = System.Windows.Forms.DockStyle.Right;
-            this.vScrollBar.Location = new System.Drawing.Point(447, 0);
+            this.vScrollBar.Location = new System.Drawing.Point(289, 0);
             this.vScrollBar.Name = "vScrollBar";
-            this.vScrollBar.Size = new System.Drawing.Size(26, 365);
+            this.vScrollBar.Size = new System.Drawing.Size(26, 237);
             this.vScrollBar.TabIndex = 0;
+            this.vScrollBar.ValueChanged += new System.EventHandler(this.vScrollBar_ValueChanged);
             // 
             // CharacterGrid
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.vScrollBar);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "CharacterGrid";
-            this.Size = new System.Drawing.Size(473, 365);
+            this.Size = new System.Drawing.Size(315, 237);
             this.Load += new System.EventHandler(this.CharacterGrid_Load);
             this.Resize += new System.EventHandler(this.CharacterGrid_Resize);
             this.ResumeLayout(false);
