@@ -33,6 +33,8 @@ namespace KiriFT
             Int32 OnColor;
             Int32 OffColor;
             Int32 FontStyle;
+            array<Byte>^ ResidencyMap;
+            Int32 ResidencyOffset;
             property String^ FontFamily { String^ get(); void set(String^ value); }
 
             CharGridMetrics GetMetrics();

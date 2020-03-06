@@ -110,15 +110,19 @@ namespace KiriFT
             hOldObj = SelectObject(hdc, hFont);
 
             COLORREF onColor = ConvertWinFormsColorToGdi(args->OnColor);
+            COLORREF offColor = ConvertWinFormsColorToGdi(args->OffColor);
 
             SetBkMode(hdc, TRANSPARENT);
             SetTextAlign(hdc, TA_TOP | TA_LEFT);
-            SetTextColor(hdc, onColor);
 
             UINT32 lastCodePoint = args->LastCodePoint;
 
             if (lastCodePoint == 0)
                 lastCodePoint = 0x10FFFF;
+
+            array<Byte>^ residencyMap = args->ResidencyMap;
+            Int32 residencyOffset = args->ResidencyOffset;
+            UInt32 residencyWord = 0xFFFFFFFF;
 
             UINT32 codePoint = args->FirstCodePoint;
             float xcell = 0;
@@ -126,6 +130,16 @@ namespace KiriFT
 
             for (int r = 0; r < rows; r++)
             {
+                if (residencyMap != nullptr)
+                {
+                    residencyWord =
+                          (residencyMap[residencyOffset + 0])
+                        | (residencyMap[residencyOffset + 1] << 8)
+                        | (residencyMap[residencyOffset + 2] << 16)
+                        ;
+                    residencyOffset += 3;
+                }
+
                 for (int c = 0; c < COLUMNS; c++)
                 {
                     if (codePoint > lastCodePoint)
@@ -144,7 +158,16 @@ namespace KiriFT
 
                     int x = (int) (xcell + (cellWidth - logWidth) / 2);
                     int y = (int) (ycell + (cellHeight - logHeight) / 2);
+                    COLORREF color;
 
+                    if ((residencyWord & 1) != 0)
+                        color = onColor;
+                    else
+                        color = offColor;
+
+                    residencyWord >>= 1;
+
+                    SetTextColor(hdc, color);
                     TextOutW(hdc, x, y, str, len);
 
                     xcell += cellWidth;
