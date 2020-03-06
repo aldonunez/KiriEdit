@@ -16,24 +16,14 @@ namespace KiriEdit
         private PrivateFontCollection _fontCollection;
         private CharGridRendererArgs _renderArgs;
 
-        // TEST:
-        private byte[] _residencyMap = new byte[0x10000];
-
         public string FontPath { get; set; }
         public int FaceIndex { get; set; }
+
+        public byte[] ResidencyMap { get; set; }
 
         public CharacterGrid()
         {
             InitializeComponent();
-
-            // TEST:
-            _residencyMap[0] = 0b00001111;
-            _residencyMap[1] = 0b00001111;
-            _residencyMap[2] = 0b00001111;
-
-            _residencyMap[3] = 0b11110000;
-            _residencyMap[4] = 0b11110000;
-            _residencyMap[5] = 0b11110000;
         }
 
         private void CharacterGrid_GotFocus(object sender, EventArgs e)
@@ -62,6 +52,8 @@ namespace KiriEdit
             {
                 _renderArgs.Hdc = hdc;
                 _renderArgs.FirstCodePoint = GetPageCodePoint();
+                _renderArgs.ResidencyMap = ResidencyMap;
+                _renderArgs.ResidencyOffset = GetPageResidencyOffset();
 
                 CharGridRenderer.Draw(_renderArgs);
             }
@@ -85,10 +77,6 @@ namespace KiriEdit
             _renderArgs.HeightToWidth = HeightToWidth;
             _renderArgs.OnColor = Color.Black.ToArgb();
             _renderArgs.OffColor = Color.Gray.ToArgb();
-
-            // TEST:
-            _renderArgs.ResidencyMap = _residencyMap;
-            _renderArgs.ResidencyOffset = 0;
         }
 
         private void UpdateRenderArgs()
@@ -115,6 +103,12 @@ namespace KiriEdit
         {
             int row = vScrollBar.Value;
             return (uint) (MinUnicodePoint + row * Columns);
+        }
+
+        private int GetPageResidencyOffset()
+        {
+            int row = vScrollBar.Value;
+            return row * 3;
         }
 
         public void ScrollTo(uint codePoint)

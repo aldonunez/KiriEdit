@@ -116,6 +116,17 @@ namespace KiriEdit
             grid.FontPath = Project.FontPath;
             grid.FaceIndex = Project.FaceIndex;
             splitContainer1.Panel2.Controls.Add(grid);
+
+            // TEST:
+            byte[] residencyMap = new byte[0x10000];
+            residencyMap[0] = 0b00001111;
+            residencyMap[1] = 0b00001111;
+            residencyMap[2] = 0b00001111;
+
+            residencyMap[3] = 0b11110000;
+            residencyMap[4] = 0b11110000;
+            residencyMap[5] = 0b11110000;
+            grid.ResidencyMap = residencyMap;
         }
 
         private class OrdinalCultureItem
