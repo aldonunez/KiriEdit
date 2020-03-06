@@ -14,7 +14,7 @@ namespace KiriEdit
         private const uint MinUnicodePoint = '!';
 
         private PrivateFontCollection _fontCollection;
-        private CharGridRendererArgs _renderArgs = new CharGridRendererArgs();
+        private CharGridRendererArgs _renderArgs;
 
         public string FontPath { get; set; }
         public int FaceIndex { get; set; }
@@ -31,23 +31,13 @@ namespace KiriEdit
 
         private void CharacterGrid_Load(object sender, EventArgs e)
         {
-            _fontCollection = new PrivateFontCollection();
-            _fontCollection.AddFontFile(FontPath);
-
-            _renderArgs.Columns = Columns;
-            _renderArgs.LastCodePoint = MaxUnicodeCodePoint;
-            _renderArgs.FontFamily = _fontCollection.Families[0].Name;
-            _renderArgs.FontStyle = 0;
-            _renderArgs.HeightToWidth = HeightToWidth;
-            _renderArgs.OnColor = Color.Black.ToArgb();
-            _renderArgs.OffColor = Color.Gray.ToArgb();
-
-            UpdateLayout();
+            InitRenderArgs();
+            UpdateRenderArgs();
         }
 
         private void CharacterGrid_Resize(object sender, EventArgs e)
         {
-            UpdateLayout();
+            UpdateRenderArgs();
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -69,8 +59,27 @@ namespace KiriEdit
             }
         }
 
-        private void UpdateLayout()
+        private void InitRenderArgs()
         {
+            _fontCollection = new PrivateFontCollection();
+            _fontCollection.AddFontFile(FontPath);
+
+            _renderArgs = new CharGridRendererArgs();
+
+            _renderArgs.Columns = Columns;
+            _renderArgs.LastCodePoint = MaxUnicodeCodePoint;
+            _renderArgs.FontFamily = _fontCollection.Families[0].Name;
+            _renderArgs.FontStyle = 0;
+            _renderArgs.HeightToWidth = HeightToWidth;
+            _renderArgs.OnColor = Color.Black.ToArgb();
+            _renderArgs.OffColor = Color.Gray.ToArgb();
+        }
+
+        private void UpdateRenderArgs()
+        {
+            if (_renderArgs == null)
+                return;
+
             _renderArgs.Height = Height;
             _renderArgs.Width = vScrollBar.Left;
 
