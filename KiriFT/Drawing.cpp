@@ -132,8 +132,11 @@ namespace KiriFT
             {
                 if (residencyMap != nullptr)
                 {
+                    if (residencyOffset + 3 >= residencyMap->Length)
+                        break;
+
                     residencyWord =
-                          (residencyMap[residencyOffset + 0])
+                        (residencyMap[residencyOffset + 0])
                         | (residencyMap[residencyOffset + 1] << 8)
                         | (residencyMap[residencyOffset + 2] << 16)
                         ;
@@ -143,7 +146,7 @@ namespace KiriFT
                 for (int c = 0; c < COLUMNS; c++)
                 {
                     if (codePoint > lastCodePoint)
-                        continue;
+                        break;
 
                     wchar_t str[2] = L"";
                     int len = 0;
