@@ -26,6 +26,23 @@ namespace KiriEdit
             InitializeComponent();
         }
 
+        private void CharacterGrid_MouseWheel(object sender, MouseEventArgs e)
+        {
+            int value = vScrollBar.Value;
+
+            if (e.Delta < 0)
+                value += vScrollBar.SmallChange;
+            else if (e.Delta > 0)
+                value -= vScrollBar.SmallChange;
+
+            if (value < vScrollBar.Minimum)
+                value = vScrollBar.Minimum;
+            else if (value > vScrollBar.Maximum)
+                value = vScrollBar.Maximum;
+
+            vScrollBar.Value = value;
+        }
+
         private void CharacterGrid_GotFocus(object sender, EventArgs e)
         {
             vScrollBar.Focus();

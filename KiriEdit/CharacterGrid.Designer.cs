@@ -66,6 +66,7 @@
             this.Size = new System.Drawing.Size(315, 237);
             this.GotFocus += new System.EventHandler(this.CharacterGrid_GotFocus);
             this.Load += new System.EventHandler(this.CharacterGrid_Load);
+            this.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.CharacterGrid_MouseWheel);
             this.Resize += new System.EventHandler(this.CharacterGrid_Resize);
             this.ResumeLayout(false);
 
