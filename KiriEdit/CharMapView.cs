@@ -80,7 +80,7 @@ namespace KiriEdit
         private bool ConfirmDeleteCharacter(CharListItem listItem)
         {
             string message = string.Format("'{0}' will be deleted permanently.", listItem.Text);
-            DialogResult result = MessageBox.Show(message, ShellForm.AppTitle, MessageBoxButtons.OKCancel);
+            DialogResult result = MessageBox.Show(message, ShellForm.AppTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
 
             if (result == DialogResult.OK)
                 return true;

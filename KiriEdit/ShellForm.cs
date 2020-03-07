@@ -267,7 +267,7 @@ namespace KiriEdit
         private void ShowBadProjectMessage()
         {
             string message = "The project could not be loaded due to missing files or settings.";
-            MessageBox.Show(message, AppTitle);
+            MessageBox.Show(message, AppTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 
