@@ -26,7 +26,7 @@ namespace KiriEdit
 
         private void addListCharButton_Click(object sender, EventArgs e)
         {
-            using (var dialog = new NewCharacterForm())
+            using (var dialog = new InputCharacterForm())
             {
                 dialog.ValidateChar += ValidateChar;
 
@@ -243,7 +243,7 @@ namespace KiriEdit
 
         private void findCharButton_Click(object sender, EventArgs e)
         {
-            using (var dialog = new NewCharacterForm())
+            using (var dialog = new InputCharacterForm())
             {
                 if (dialog.ShowDialog() != DialogResult.OK)
                     return;

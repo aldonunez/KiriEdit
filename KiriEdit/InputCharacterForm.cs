@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace KiriEdit
 {
-    public partial class NewCharacterForm : Form
+    public partial class InputCharacterForm : Form
     {
         public delegate bool ValidateCharHandler(uint codePoint);
 
@@ -12,7 +12,7 @@ namespace KiriEdit
 
         public uint CodePoint { get; private set; }
 
-        public NewCharacterForm()
+        public InputCharacterForm()
         {
             InitializeComponent();
         }

@@ -1,6 +1,6 @@
 ﻿namespace KiriEdit
 {
-    partial class NewCharacterForm
+    partial class InputCharacterForm
     {
         /// <summary>
         /// Required designer variable.
