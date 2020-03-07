@@ -74,7 +74,7 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.charGrid);
             this.splitContainer1.Panel2.Controls.Add(this.panel1);
-            this.splitContainer1.Panel2.Padding = new System.Windows.Forms.Padding(8);
+            this.splitContainer1.Panel2.Padding = new System.Windows.Forms.Padding(8, 0, 8, 8);
             this.splitContainer1.Panel2MinSize = 300;
             this.splitContainer1.Size = new System.Drawing.Size(427, 265);
             this.splitContainer1.SplitterDistance = 121;
@@ -138,7 +138,7 @@
             // 
             this.panel1.Controls.Add(this.fontNameLabel);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel1.Location = new System.Drawing.Point(8, 8);
+            this.panel1.Location = new System.Drawing.Point(8, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(285, 32);
             this.panel1.TabIndex = 1;
@@ -155,11 +155,11 @@
             // charGrid
             // 
             this.charGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.charGrid.Location = new System.Drawing.Point(8, 40);
+            this.charGrid.Location = new System.Drawing.Point(8, 32);
             this.charGrid.Margin = new System.Windows.Forms.Padding(2);
             this.charGrid.Name = "charGrid";
             this.charGrid.OnCharacterColor = System.Drawing.Color.Red;
-            this.charGrid.Size = new System.Drawing.Size(285, 217);
+            this.charGrid.Size = new System.Drawing.Size(285, 225);
             this.charGrid.TabIndex = 0;
             // 
             // CharMapView

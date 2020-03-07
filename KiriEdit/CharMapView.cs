@@ -123,6 +123,7 @@ namespace KiriEdit
                 throw new ApplicationException();
 
             charGrid.Font = new Font(fontFamily, 12, (FontStyle) Project.FontStyle);
+            fontNameLabel.Text = Project.FontName;
 
             byte[] residencyMap = new byte[0x2000];
             LoadResidencyMap(residencyMap);
