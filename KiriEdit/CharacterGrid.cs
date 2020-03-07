@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using KiriFT.Drawing;
@@ -15,7 +16,15 @@ namespace KiriEdit
         private CharGridRendererArgs _renderArgs;
         private Font _curFont;
 
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public byte[] ResidencyMap { get; set; }
+
+        [DefaultValue(typeof(Color), "Black")]
+        public Color OnCharacterColor { get; set; } = Color.Black;
+
+        [DefaultValue(typeof(Color), "Gray")]
+        public Color OffCharacterColor { get; set; } = Color.Gray;
 
         public CharacterGrid()
         {
@@ -108,14 +117,17 @@ namespace KiriEdit
         {
             base.OnPaint(e);
 
+            _renderArgs.FirstCodePoint = GetPageCodePoint();
+            _renderArgs.ResidencyMap = ResidencyMap;
+            _renderArgs.ResidencyOffset = GetPageResidencyOffset();
+            _renderArgs.OnColor = OnCharacterColor.ToArgb();
+            _renderArgs.OffColor = OffCharacterColor.ToArgb();
+
             IntPtr hdc = e.Graphics.GetHdc();
 
             try
             {
                 _renderArgs.Hdc = hdc;
-                _renderArgs.FirstCodePoint = GetPageCodePoint();
-                _renderArgs.ResidencyMap = ResidencyMap;
-                _renderArgs.ResidencyOffset = GetPageResidencyOffset();
 
                 UpdateFont();
 
@@ -139,10 +151,8 @@ namespace KiriEdit
             _renderArgs = new CharGridRendererArgs();
 
             _renderArgs.Columns = Columns;
-            _renderArgs.LastCodePoint = MaxUnicodeCodePoint;
             _renderArgs.HeightToWidth = HeightToWidth;
-            _renderArgs.OnColor = Color.Black.ToArgb();
-            _renderArgs.OffColor = Color.Gray.ToArgb();
+            _renderArgs.LastCodePoint = MaxUnicodeCodePoint;
         }
 
         private void UpdateRenderArgs()
