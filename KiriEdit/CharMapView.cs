@@ -54,6 +54,9 @@ namespace KiriEdit
             _charListItems.Add(MakeCharListItem(codePoint));
             SortCharacterList();
 
+            ModifyResidencyMap(charGrid.ResidencyMap, codePoint, ResidencyAction.Add);
+            charGrid.Refresh();
+
             Project.Characters.Add(codePoint);
         }
 
@@ -68,12 +71,15 @@ namespace KiriEdit
             charListBox.Items.Remove(listItem);
             // No need to sort after deleting an item.
 
+            ModifyResidencyMap(charGrid.ResidencyMap, listItem.CodePoint, ResidencyAction.Remove);
+            charGrid.Refresh();
+
             Project.Characters.Delete(listItem.CodePoint);
         }
 
         private bool ConfirmDeleteCharacter(CharListItem listItem)
         {
-            string message = string.Format("'{0}' will be deleted permanently.", listItem.CodePoint);
+            string message = string.Format("'{0}' will be deleted permanently.", listItem.Text);
             DialogResult result = MessageBox.Show(message, ShellForm.AppTitle, MessageBoxButtons.OKCancel);
 
             if (result == DialogResult.OK)
@@ -115,15 +121,8 @@ namespace KiriEdit
 
             charGrid.Font = new Font(_fontCollection.Families[0], 12);
 
-            // TEST:
-            byte[] residencyMap = new byte[0x10000];
-            residencyMap[0] = 0b00001111;
-            residencyMap[1] = 0b00001111;
-            residencyMap[2] = 0b00001111;
-
-            residencyMap[3] = 0b11110000;
-            residencyMap[4] = 0b11110000;
-            residencyMap[5] = 0b11110000;
+            byte[] residencyMap = new byte[0x2000];
+            LoadResidencyMap(residencyMap);
             charGrid.ResidencyMap = residencyMap;
         }
 
@@ -187,6 +186,44 @@ namespace KiriEdit
         public void Save()
         {
             // Nothing to do.
+        }
+
+        // Assumes that the map is all zero.
+        //
+        private void LoadResidencyMap(byte[] map)
+        {
+            foreach (var item in _charListItems)
+            {
+                ModifyResidencyMap(map, item.CodePoint, ResidencyAction.Add);
+            }
+        }
+
+        private enum ResidencyAction
+        {
+            Add,
+            Remove
+        }
+
+        private void ModifyResidencyMap(byte[] map, uint codePoint, ResidencyAction action)
+        {
+            int value = (int) codePoint - '!';
+
+            if (value >= map.Length)
+                return;
+
+            int row = value / 20;
+            int col = value % 20;
+
+            int mapRow = row;
+            int mapCol = col / 8;
+            int mapBit = col % 8;
+
+            int byteOffset = (mapRow * 3) + mapCol;
+
+            if (action == ResidencyAction.Add)
+                map[byteOffset] |= (byte) (1 << mapBit);
+            else
+                map[byteOffset] &= (byte) ~(1 << mapBit);
         }
 
         #region Inner classes
