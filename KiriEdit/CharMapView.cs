@@ -117,13 +117,27 @@ namespace KiriEdit
 
             _fontCollection = new PrivateFontCollection();
             _fontCollection.AddFontFile(Project.FontPath);
-            // TODO: what about the face index and the style?
 
-            charGrid.Font = new Font(_fontCollection.Families[0], 12);
+            var fontFamily = FindFontFamily(_fontCollection);
+            if (fontFamily == null)
+                throw new ApplicationException();
+
+            charGrid.Font = new Font(fontFamily, 12, (FontStyle) Project.FontStyle);
 
             byte[] residencyMap = new byte[0x2000];
             LoadResidencyMap(residencyMap);
             charGrid.ResidencyMap = residencyMap;
+        }
+
+        private FontFamily FindFontFamily(PrivateFontCollection collection)
+        {
+            foreach (var family in collection.Families)
+            {
+                if (family.Name == Project.FontFamily)
+                    return family;
+            }
+
+            return null;
         }
 
         private class OrdinalCultureItem
