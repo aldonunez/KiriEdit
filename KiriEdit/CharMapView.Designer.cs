@@ -45,19 +45,22 @@
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.addListCharButton = new System.Windows.Forms.ToolStripButton();
             this.deleteListCharButton = new System.Windows.Forms.ToolStripButton();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.fontNameLabel = new System.Windows.Forms.Label();
             this.charGrid = new KiriEdit.CharacterGrid();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(2);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -70,7 +73,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.charGrid);
-            this.splitContainer1.Panel2.Padding = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.splitContainer1.Panel2.Controls.Add(this.panel1);
+            this.splitContainer1.Panel2.Padding = new System.Windows.Forms.Padding(8);
             this.splitContainer1.Panel2MinSize = 300;
             this.splitContainer1.Size = new System.Drawing.Size(427, 265);
             this.splitContainer1.SplitterDistance = 121;
@@ -82,7 +86,7 @@
             this.charListBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.charListBox.FormattingEnabled = true;
             this.charListBox.Location = new System.Drawing.Point(0, 52);
-            this.charListBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.charListBox.Margin = new System.Windows.Forms.Padding(2);
             this.charListBox.Name = "charListBox";
             this.charListBox.Size = new System.Drawing.Size(121, 213);
             this.charListBox.TabIndex = 2;
@@ -92,7 +96,7 @@
             // 
             this.sortComboBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.sortComboBox.Location = new System.Drawing.Point(0, 31);
-            this.sortComboBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.sortComboBox.Margin = new System.Windows.Forms.Padding(2);
             this.sortComboBox.Name = "sortComboBox";
             this.sortComboBox.Size = new System.Drawing.Size(121, 21);
             this.sortComboBox.TabIndex = 1;
@@ -130,14 +134,32 @@
             this.deleteListCharButton.Text = "Delete character";
             this.deleteListCharButton.Click += new System.EventHandler(this.deleteListCharButton_Click);
             // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.fontNameLabel);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel1.Location = new System.Drawing.Point(8, 8);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(285, 32);
+            this.panel1.TabIndex = 1;
+            // 
+            // fontNameLabel
+            // 
+            this.fontNameLabel.AutoSize = true;
+            this.fontNameLabel.Location = new System.Drawing.Point(3, 10);
+            this.fontNameLabel.Name = "fontNameLabel";
+            this.fontNameLabel.Size = new System.Drawing.Size(35, 13);
+            this.fontNameLabel.TabIndex = 0;
+            this.fontNameLabel.Text = "label1";
+            // 
             // charGrid
             // 
             this.charGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.charGrid.Location = new System.Drawing.Point(8, 8);
-            this.charGrid.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.charGrid.Location = new System.Drawing.Point(8, 40);
+            this.charGrid.Margin = new System.Windows.Forms.Padding(2);
             this.charGrid.Name = "charGrid";
             this.charGrid.OnCharacterColor = System.Drawing.Color.Red;
-            this.charGrid.Size = new System.Drawing.Size(285, 249);
+            this.charGrid.Size = new System.Drawing.Size(285, 217);
             this.charGrid.TabIndex = 0;
             // 
             // CharMapView
@@ -145,7 +167,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.splitContainer1);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "CharMapView";
             this.Size = new System.Drawing.Size(427, 265);
             this.Load += new System.EventHandler(this.CharMapView_Load);
@@ -156,6 +178,8 @@
             this.splitContainer1.ResumeLayout(false);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -168,6 +192,8 @@
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton addListCharButton;
         private System.Windows.Forms.ToolStripButton deleteListCharButton;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Label fontNameLabel;
         private CharacterGrid charGrid;
     }
 }
