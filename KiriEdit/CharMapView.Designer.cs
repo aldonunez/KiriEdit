@@ -47,6 +47,8 @@
             this.deleteListCharButton = new System.Windows.Forms.ToolStripButton();
             this.panel1 = new System.Windows.Forms.Panel();
             this.fontNameLabel = new System.Windows.Forms.Label();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.findCharButton = new System.Windows.Forms.Button();
             this.charGrid = new KiriEdit.CharacterGrid();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -54,6 +56,7 @@
             this.splitContainer1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -73,6 +76,7 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.charGrid);
+            this.splitContainer1.Panel2.Controls.Add(this.panel2);
             this.splitContainer1.Panel2.Controls.Add(this.panel1);
             this.splitContainer1.Panel2.Padding = new System.Windows.Forms.Padding(8, 0, 8, 8);
             this.splitContainer1.Panel2MinSize = 300;
@@ -152,6 +156,27 @@
             this.fontNameLabel.TabIndex = 0;
             this.fontNameLabel.Text = "label1";
             // 
+            // panel2
+            // 
+            this.panel2.AutoSize = true;
+            this.panel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.panel2.Controls.Add(this.findCharButton);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel2.Location = new System.Drawing.Point(8, 227);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(285, 30);
+            this.panel2.TabIndex = 2;
+            // 
+            // findCharButton
+            // 
+            this.findCharButton.Location = new System.Drawing.Point(4, 4);
+            this.findCharButton.Name = "findCharButton";
+            this.findCharButton.Size = new System.Drawing.Size(75, 23);
+            this.findCharButton.TabIndex = 0;
+            this.findCharButton.Text = "Find";
+            this.findCharButton.UseVisualStyleBackColor = true;
+            this.findCharButton.Click += new System.EventHandler(this.findCharButton_Click);
+            // 
             // charGrid
             // 
             this.charGrid.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -159,7 +184,7 @@
             this.charGrid.Margin = new System.Windows.Forms.Padding(2);
             this.charGrid.Name = "charGrid";
             this.charGrid.OnCharacterColor = System.Drawing.Color.Red;
-            this.charGrid.Size = new System.Drawing.Size(285, 225);
+            this.charGrid.Size = new System.Drawing.Size(285, 195);
             this.charGrid.TabIndex = 0;
             // 
             // CharMapView
@@ -174,12 +199,14 @@
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
+            this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -195,5 +222,7 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label fontNameLabel;
         private CharacterGrid charGrid;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Button findCharButton;
     }
 }

@@ -241,6 +241,17 @@ namespace KiriEdit
                 map[byteOffset] &= (byte) ~(1 << mapBit);
         }
 
+        private void findCharButton_Click(object sender, EventArgs e)
+        {
+            using (var dialog = new NewCharacterForm())
+            {
+                if (dialog.ShowDialog() != DialogResult.OK)
+                    return;
+
+                charGrid.ScrollTo(dialog.CodePoint);
+            }
+        }
+
         #region Inner classes
 
         private class CharListItem
