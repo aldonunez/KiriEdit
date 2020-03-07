@@ -281,6 +281,29 @@ namespace KiriFT
             throw gcnew FreeTypeException(error);
     }
 
+    Int32 Face::ParseLegacyStyle(String^ styleName)
+    {
+        // TODO: literal numbers
+        Int32 style = 0;
+
+        if (   styleName->IndexOf("Fat", StringComparison::OrdinalIgnoreCase) >= 0
+            || styleName->IndexOf("Heavy", StringComparison::OrdinalIgnoreCase) >= 0
+            || styleName->IndexOf("Thick", StringComparison::OrdinalIgnoreCase) >= 0
+            || styleName->IndexOf("Bold", StringComparison::OrdinalIgnoreCase) >= 0
+            || styleName->IndexOf("Black", StringComparison::OrdinalIgnoreCase) >= 0)
+        {
+            style |= 1;
+        }
+
+        if (   styleName->IndexOf("Oblique", StringComparison::OrdinalIgnoreCase) >= 0
+            || styleName->IndexOf("Italic", StringComparison::OrdinalIgnoreCase) >= 0)
+        {
+            style |= 2;
+        }
+
+        return style;
+    }
+
     OutlineHandlers::OutlineHandlers(MoveToHandler^ moveTo, LineToHandler^ lineTo, ConicToHandler^ conicTo, CubicToHandler^ cubicTo) :
         MoveTo(moveTo),
         LineTo(lineTo),

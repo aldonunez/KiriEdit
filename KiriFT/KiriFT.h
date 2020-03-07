@@ -111,6 +111,8 @@ namespace KiriFT
 
 		void LoadChar(UInt32 ch);
 		void Decompose(OutlineHandlers^ handlers);
+
+        static Int32 ParseLegacyStyle(String^ styleName);
 	};
 
     [Flags]

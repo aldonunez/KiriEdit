@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Text.Json;
+using KiriFT;
 
 namespace KiriEdit
 {
@@ -18,6 +19,9 @@ namespace KiriEdit
         public string Name { get; private set; }
         public int FaceIndex { get => ProjectFile.FaceIndex; }
         public string FontPath { get => _fullFontPath; }
+        public string FontFamily { get => ProjectFile.FontFamily; }
+        public string FontName { get => ProjectFile.FontName; }
+        public int FontStyle { get => ProjectFile.FontStyle; }
         public string CharactersFolderPath { get => _fullCharactersFolderPath; }
 
         public CharacterItemCollection Characters { get; }
@@ -40,6 +44,8 @@ namespace KiriEdit
             projectFile.FaceIndex = spec.FaceIndex;
             projectFile.CharactersFolderPath = "characters";
 
+            FillFontInfo(projectFile, spec);
+
             // Runtime properties.
             projectFile.Path = projectFilePath;
 
@@ -56,6 +62,31 @@ namespace KiriEdit
             project.Save();
 
             return project;
+        }
+
+        private static void FillFontInfo(ProjectFile projectFile, ProjectSpec spec)
+        {
+            var openParams = OpenParams.IgnoreTypographicFamily;
+
+            using (var lib = new Library())
+            using (var face = lib.OpenFace(spec.FontPath, spec.FaceIndex, openParams))
+            {
+                uint count = face.GetSfntNameCount();
+
+                for (uint i = 0; i < count; i++)
+                {
+                    // TODO: literal number
+                    var sfntName = face.GetSfntName(i);
+                    if (sfntName.NameId == 4)
+                    {
+                        projectFile.FontName = sfntName.String;
+                        break;
+                    }
+                }
+
+                projectFile.FontFamily = face.FamilyName;
+                projectFile.FontStyle = Face.ParseLegacyStyle(face.StyleName);
+            }
         }
 
         private Project(ProjectFile projectFile)
