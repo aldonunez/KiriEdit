@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Drawing.Text;
 using KiriFT.Drawing;
 
 namespace KiriEdit
@@ -13,11 +12,8 @@ namespace KiriEdit
         private const uint MaxUnicodeCodePoint = 0x2FFFF;
         private const uint MinUnicodePoint = '!';
 
-        private PrivateFontCollection _fontCollection;
         private CharGridRendererArgs _renderArgs;
-
-        public string FontPath { get; set; }
-        public int FaceIndex { get; set; }
+        private Font _curFont;
 
         public byte[] ResidencyMap { get; set; }
 
@@ -72,6 +68,8 @@ namespace KiriEdit
                 _renderArgs.ResidencyMap = ResidencyMap;
                 _renderArgs.ResidencyOffset = GetPageResidencyOffset();
 
+                UpdateFont();
+
                 CharGridRenderer.Draw(_renderArgs);
             }
             finally
@@ -82,15 +80,10 @@ namespace KiriEdit
 
         private void InitRenderArgs()
         {
-            _fontCollection = new PrivateFontCollection();
-            _fontCollection.AddFontFile(FontPath);
-
             _renderArgs = new CharGridRendererArgs();
 
             _renderArgs.Columns = Columns;
             _renderArgs.LastCodePoint = MaxUnicodeCodePoint;
-            _renderArgs.FontFamily = _fontCollection.Families[0].Name;
-            _renderArgs.FontStyle = 0;
             _renderArgs.HeightToWidth = HeightToWidth;
             _renderArgs.OnColor = Color.Black.ToArgb();
             _renderArgs.OffColor = Color.Gray.ToArgb();
@@ -109,6 +102,27 @@ namespace KiriEdit
 
             vScrollBar.Maximum = (int) (MaxUnicodeCodePoint - MinUnicodePoint) / Columns;
             vScrollBar.LargeChange = wholeRows;
+        }
+
+        private void UpdateFont()
+        {
+            Font font = Font;
+
+            if (!object.Equals(_curFont, font))
+            {
+                if (font != null)
+                {
+                    _renderArgs.FontFamily = Font.FontFamily.Name;
+                    _renderArgs.FontStyle = (int) Font.Style;
+                }
+                else
+                {
+                    _renderArgs.FontFamily = null;
+                    _renderArgs.FontStyle = 0;
+                }
+
+                _curFont = font;
+            }
         }
 
         private void vScrollBar_ValueChanged(object sender, EventArgs e)

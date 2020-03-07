@@ -205,7 +205,11 @@ namespace KiriFT
                     m_nativeFontFamily = nullptr;
                 }
 
-                m_nativeFontFamily = (wchar_t*) Marshal::StringToHGlobalUni(value).ToPointer();
+                if (value != nullptr)
+                {
+                    m_nativeFontFamily = (wchar_t*) Marshal::StringToHGlobalUni(value).ToPointer();
+                }
+
                 m_fontFamily = value;
             }
         }

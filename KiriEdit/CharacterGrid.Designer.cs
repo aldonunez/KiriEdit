@@ -25,12 +25,6 @@
                     _renderArgs.Dispose();
                     _renderArgs = null;
                 }
-
-                if (_fontCollection != null)
-                {
-                    _fontCollection.Dispose();
-                    _fontCollection = null;
-                }
             }
 
             base.Dispose(disposing);

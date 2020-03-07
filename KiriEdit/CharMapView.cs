@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Text;
 using System.Globalization;
 using System.Windows.Forms;
 
@@ -10,6 +12,7 @@ namespace KiriEdit
     {
         private List<CharListItem> _charListItems;
         private StringComparer _stringComparer = StringComparer.Ordinal;
+        private PrivateFontCollection _fontCollection;
 
         public Project Project { get; set; }
         public Control Control => this;
@@ -109,12 +112,15 @@ namespace KiriEdit
             sortComboBox.DisplayMember = "DisplayName";
             // Leave auto-complete turned off, because it's too slow to load.
 
+            _fontCollection = new PrivateFontCollection();
+            _fontCollection.AddFontFile(Project.FontPath);
+            // TODO: what about the face index and the style?
+
             // TEST:
             splitContainer1.Panel2.Padding = new Padding(20);
             var grid = new CharacterGrid();
             grid.Dock = DockStyle.Fill;
-            grid.FontPath = Project.FontPath;
-            grid.FaceIndex = Project.FaceIndex;
+            grid.Font = new Font(_fontCollection.Families[0], 12);
             splitContainer1.Panel2.Controls.Add(grid);
 
             // TEST:

@@ -17,6 +17,16 @@
             {
                 components.Dispose();
             }
+
+            if (disposing)
+            {
+                if (_fontCollection != null)
+                {
+                    _fontCollection.Dispose();
+                    _fontCollection = null;
+                }
+            }
+
             base.Dispose(disposing);
         }
 
