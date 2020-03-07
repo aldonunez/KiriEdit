@@ -22,14 +22,58 @@ namespace KiriEdit
             InitializeComponent();
         }
 
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.Up)
+            {
+                ShiftScrollBar(-vScrollBar.SmallChange);
+                return true;
+            }
+            else if (keyData == Keys.Down)
+            {
+                ShiftScrollBar(vScrollBar.SmallChange);
+                return true;
+            }
+            else if (keyData == Keys.PageUp)
+            {
+                ShiftScrollBar(-vScrollBar.LargeChange);
+                return true;
+            }
+            else if (keyData == Keys.PageDown)
+            {
+                ShiftScrollBar(vScrollBar.LargeChange);
+                return true;
+            }
+            else if (keyData == Keys.Home)
+            {
+                vScrollBar.Value = vScrollBar.Minimum;
+                return true;
+            }
+            else if (keyData == Keys.End)
+            {
+                vScrollBar.Value = vScrollBar.Maximum;
+                return true;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
         private void CharacterGrid_MouseWheel(object sender, MouseEventArgs e)
         {
-            int value = vScrollBar.Value;
+            if (e.Delta != 0)
+            {
+                int amount = vScrollBar.SmallChange;
 
-            if (e.Delta < 0)
-                value += vScrollBar.SmallChange;
-            else if (e.Delta > 0)
-                value -= vScrollBar.SmallChange;
+                if (e.Delta > 0)
+                    amount = -amount;
+
+                ShiftScrollBar(amount);
+            }
+        }
+
+        private void ShiftScrollBar(int amount)
+        {
+            int value = vScrollBar.Value + amount;
 
             if (value < vScrollBar.Minimum)
                 value = vScrollBar.Minimum;
@@ -41,7 +85,12 @@ namespace KiriEdit
 
         private void CharacterGrid_GotFocus(object sender, EventArgs e)
         {
-            vScrollBar.Focus();
+            Invalidate();
+        }
+
+        private void CharacterGrid_LostFocus(object sender, EventArgs e)
+        {
+            Invalidate();
         }
 
         private void CharacterGrid_Load(object sender, EventArgs e)
@@ -76,6 +125,13 @@ namespace KiriEdit
             {
                 e.Graphics.ReleaseHdc(hdc);
             }
+
+            Rectangle border = Rectangle.FromLTRB(0, 0, vScrollBar.Left, Height);
+
+            if (Focused)
+                ControlPaint.DrawFocusRectangle(e.Graphics, border);
+            else
+                ControlPaint.DrawBorder(e.Graphics, border, Color.Black, ButtonBorderStyle.Solid);
         }
 
         private void InitRenderArgs()

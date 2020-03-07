@@ -58,30 +58,23 @@ namespace KiriFT
             HPEN hPen = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
             hOldObj = SelectObject(hdc, hPen);
 
-            float x = 0;
+            float x = cellWidth;
 
-            for (int i = 0; i < COLUMNS; i++)
+            for (int i = 1; i < COLUMNS; i++)
             {
                 MoveToEx(hdc, (int) x, 0, NULL);
                 LineTo(hdc, (int) x, contentHeight);
                 x += cellWidth;
             }
 
-            x--;
-            MoveToEx(hdc, (int) x, 0, NULL);
-            LineTo(hdc, (int) x, contentHeight);
+            float y = cellHeight;
 
-            float y = 0;
-
-            for (int i = 0; i < rows; i++)
+            for (int i = 1; i < rows; i++)
             {
                 MoveToEx(hdc, 0, (int) y, NULL);
                 LineTo(hdc, contentWidth, (int) y);
                 y += cellHeight;
             }
-
-            MoveToEx(hdc, 0, args->Height - 1, NULL);
-            LineTo(hdc, contentWidth, args->Height - 1);
 
             SelectObject(hdc, hOldObj);
             DeleteObject(hPen);
