@@ -1,11 +1,13 @@
 ﻿using System;
-using System.Text;
+using System.Globalization;
 using System.Windows.Forms;
 
 namespace KiriEdit
 {
     public partial class InputCharacterForm : Form
     {
+        private Control _curChangingControl;
+
         public delegate bool ValidateCharHandler(uint codePoint);
 
         public event ValidateCharHandler ValidateChar;
@@ -22,6 +24,53 @@ namespace KiriEdit
             int codePointCount = CharUtils.GetCodePointCount(charTextBox.Text);
 
             okButton.Enabled = codePointCount == 1;
+
+            if (_curChangingControl == null)
+            {
+                _curChangingControl = charTextBox;
+
+                try
+                {
+                    codePointTextBox.Text = "";
+
+                    if (codePointCount == 1)
+                    {
+                        uint codePoint = CharUtils.GetCodePoint(charTextBox.Text);
+                        codePointTextBox.Text = string.Format("U+{0:X4}", codePoint);
+                    }
+                }
+                finally
+                {
+                    _curChangingControl = null;
+                }
+            }
+        }
+
+        private void codepointTextBox_TextChanged(object sender, EventArgs e)
+        {
+            if (_curChangingControl == null)
+            {
+                _curChangingControl = codePointTextBox;
+
+                try
+                {
+                    charTextBox.Text = "";
+
+                    string codePointText = codePointTextBox.Text;
+
+                    if (codePointText.StartsWith("U+", StringComparison.OrdinalIgnoreCase))
+                        codePointText = codePointText.Substring(2);
+
+                    if (uint.TryParse(codePointText, NumberStyles.HexNumber, null, out uint codePoint))
+                    {
+                        charTextBox.Text = CharUtils.GetString(codePoint);
+                    }
+                }
+                finally
+                {
+                    _curChangingControl = null;
+                }
+            }
         }
 
         private void okButton_Click(object sender, EventArgs e)
