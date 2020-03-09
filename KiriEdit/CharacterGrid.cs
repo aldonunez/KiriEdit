@@ -12,8 +12,8 @@ namespace KiriEdit
 
         private CharGridRendererArgs _renderArgs;
         private Font _curFont;
-        private CharSet _charSet;
-        private int _columns;
+        private CharSet _charSet = new SequentialCharSet(null, 0, 0xFFFF);
+        private int _columns = 10;
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -24,6 +24,9 @@ namespace KiriEdit
             {
                 if (value != _charSet)
                 {
+                    if (value == null)
+                        throw new ArgumentNullException("value");
+
                     _charSet = value;
                     UpdateRenderArgs();
                 }
@@ -39,7 +42,7 @@ namespace KiriEdit
                 if (value != _columns)
                 {
                     if (value < CharGridRenderer.MinimumColumns || value > CharGridRenderer.MaximumColumns)
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException("value");
 
                     _columns = value;
                     UpdateRenderArgs();
@@ -55,9 +58,6 @@ namespace KiriEdit
 
         public CharacterGrid()
         {
-            if (DesignMode)
-                CharSet = new SequentialCharSet(null, '!', 0xFFFF);
-
             InitializeComponent();
         }
 
@@ -183,7 +183,7 @@ namespace KiriEdit
 
         private void UpdateRenderArgs()
         {
-            if (_renderArgs == null || CharSet == null)
+            if (_renderArgs == null)
                 return;
 
             _renderArgs.Columns = Columns;

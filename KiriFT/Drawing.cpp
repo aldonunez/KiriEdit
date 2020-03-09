@@ -256,8 +256,11 @@ namespace KiriFT
         {
             int length = lastCodePoint - firstCodePoint + 1;
 
-            if (residencyMap->Length < GetRecommendedMapSize(length))
-                throw gcnew ArgumentException("The map is too small.", "residencyMap");
+            if (residencyMap != nullptr)
+            {
+                if (residencyMap->Length < GetRecommendedMapSize(length))
+                    throw gcnew ArgumentException("The map is too small.", "residencyMap");
+            }
 
             _residencyMap = residencyMap;
             _firstCodePoint = firstCodePoint;
