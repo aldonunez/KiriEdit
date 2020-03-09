@@ -102,7 +102,8 @@ namespace KiriEdit
             if (charListBox.SelectedIndex >= 0)
             {
                 var listItem = (CharListItem) charListBox.SelectedItem;
-                charGrid.ScrollTo(listItem.CodePoint);
+                int index = (int) (listItem.CodePoint - FirstCodePoint);
+                charGrid.ScrollTo(index);
             }
         }
 
@@ -253,7 +254,8 @@ namespace KiriEdit
                 if (dialog.ShowDialog() != DialogResult.OK)
                     return;
 
-                charGrid.ScrollTo(dialog.CodePoint);
+                int index = (int) (dialog.CodePoint - FirstCodePoint);
+                charGrid.ScrollTo(index);
             }
         }
 

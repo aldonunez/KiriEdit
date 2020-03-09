@@ -10,15 +10,25 @@ namespace KiriEdit
     {
         private const int Columns = 20;
         private const float HeightToWidth = 37f / 32f;
-        private const uint MaxUnicodeCodePoint = 0x2FFFF;
-        private const uint MinUnicodePoint = '!';
 
         private CharGridRendererArgs _renderArgs;
         private Font _curFont;
+        private CharSet _charSet;
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public CharSet CharSet { get; set; }
+        public CharSet CharSet
+        {
+            get => _charSet;
+            set
+            {
+                if (value != _charSet)
+                {
+                    _charSet = value;
+                    UpdateRenderArgs();
+                }
+            }
+        }
 
         [DefaultValue(typeof(Color), "Black")]
         public Color OnCharacterColor { get; set; } = Color.Black;
@@ -29,7 +39,7 @@ namespace KiriEdit
         public CharacterGrid()
         {
             if (DesignMode)
-                CharSet = new SequentialCharSet(null, 20, '!', 0xFFFF);
+                CharSet = new SequentialCharSet(null, 10, '!', 0xFFFF);
 
             InitializeComponent();
         }
@@ -157,7 +167,7 @@ namespace KiriEdit
 
         private void UpdateRenderArgs()
         {
-            if (_renderArgs == null)
+            if (_renderArgs == null || CharSet == null)
                 return;
 
             _renderArgs.Height = Height;
@@ -166,7 +176,7 @@ namespace KiriEdit
             CharGridMetrics metrics = _renderArgs.GetMetrics();
             int wholeRows = (int) (_renderArgs.Height / metrics.CellHeight);
 
-            vScrollBar.Maximum = (int) (MaxUnicodeCodePoint - MinUnicodePoint) / Columns;
+            vScrollBar.Maximum = Math.Max(0, CharSet.Length - 1) / Columns;
             vScrollBar.LargeChange = wholeRows;
         }
 
@@ -196,24 +206,18 @@ namespace KiriEdit
             Refresh();
         }
 
-        private uint GetPageCodePoint()
-        {
-            int row = vScrollBar.Value;
-            return (uint) (MinUnicodePoint + row * Columns);
-        }
-
         private int GetPageStartRow()
         {
             int row = vScrollBar.Value;
             return row;
         }
 
-        public void ScrollTo(uint codePoint)
+        public void ScrollTo(int index)
         {
-            if (codePoint > MaxUnicodeCodePoint)
+            if (index >= CharSet.Length)
                 return;
 
-            int row = (int) (codePoint - MinUnicodePoint) / Columns;
+            int row = index / Columns;
             vScrollBar.Value = row;
         }
     }
