@@ -167,8 +167,12 @@ namespace KiriEdit
             }
             finally
             {
+                _renderArgs.Hdc = IntPtr.Zero;
                 e.Graphics.ReleaseHdc(hdc);
             }
+
+            if (_curIndex >= 0)
+                DrawSelectionCell(e.Graphics);
 
             Rectangle border = Rectangle.FromLTRB(0, 0, vScrollBar.Left, Height);
 
@@ -176,9 +180,6 @@ namespace KiriEdit
                 ControlPaint.DrawFocusRectangle(e.Graphics, border);
             else
                 ControlPaint.DrawBorder(e.Graphics, border, Color.Black, ButtonBorderStyle.Solid);
-
-            if (_curIndex >= 0)
-                DrawSelectionCell(e.Graphics);
         }
 
         private void DrawSelectionCell(Graphics graphics)
@@ -234,13 +235,33 @@ namespace KiriEdit
             graphics.FillRectangle(Brushes.White, x1, y1, width, height);
             graphics.DrawRectangle(Pens.Black, x1, y1, width, height);
 
-            using (Font font = new Font(_curFont.FontFamily, height * 0.7f, GraphicsUnit.Pixel))
+            int oldHeight = _renderArgs.Height;
+            int oldWidth = _renderArgs.Width;
+            _renderArgs.Height = 1;
+            _renderArgs.Width = (int) width;
+            _renderArgs.Left = (int) x1;
+            _renderArgs.Top = (int) y1;
+            _renderArgs.Columns = 1;
+            _renderArgs.StartRow = _curIndex;
+
+            IntPtr hdc = graphics.GetHdc();
+
+            try
             {
-                SizeF fontSize = graphics.MeasureString("A", font);
-                using (Brush brush = new SolidBrush(OnCharacterColor))
-                {
-                    graphics.DrawString("A", font, brush, x1 + (width - fontSize.Width) / 2, y1 + (height - fontSize.Height) / 2);
-                }
+                _renderArgs.Hdc = hdc;
+
+                CharGridRenderer.Draw(_renderArgs, CharSet);
+            }
+            finally
+            {
+                _renderArgs.Hdc = IntPtr.Zero;
+                graphics.ReleaseHdc(hdc);
+
+                _renderArgs.Height = oldHeight;
+                _renderArgs.Width = oldWidth;
+                _renderArgs.Left = 0;
+                _renderArgs.Top = 0;
+                _renderArgs.Columns = Columns;
             }
         }
 

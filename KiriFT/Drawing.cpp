@@ -127,11 +127,11 @@ namespace KiriFT
 
             UINT32 codePoint = seqCharSet->_firstCodePoint + args->StartRow * COLUMNS;
 
-            float ycell = 0;
+            float ycell = args->Top;
 
             for (int r = 0; r < rows; r++)
             {
-                float xcell = 0;
+                float xcell = args->Left;
 
                 if (residencyMap != nullptr)
                 {

@@ -54,6 +54,8 @@ namespace KiriFT
             IntPtr Hdc;
             Int32 Width;
             Int32 Height;
+            Int32 Left;
+            Int32 Top;
             Int32 Columns;
             Single HeightToWidth;
             Int32 OnColor;
@@ -72,6 +74,8 @@ namespace KiriFT
         {
         public:
             static void Draw(CharGridRendererArgs^ args, CharSet^ charSet);
+
+            // TODO: Consider splitting the line drawing code into its own method.
 
             static const Int32 MinimumColumns = 1;
             static const Int32 MaximumColumns = 32;
