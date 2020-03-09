@@ -254,6 +254,12 @@ namespace KiriEdit
             }
         }
 
+        private void charGrid_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            uint codePoint = charGrid.CharSet.MapToCodePoint(charGrid.SelectedIndex);
+            charDescriptionLabel.Text = string.Format("U+{0:X4}", codePoint);
+        }
+
         #region Inner classes
 
         private class CharListItem

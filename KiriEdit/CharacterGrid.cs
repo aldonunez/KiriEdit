@@ -17,6 +17,8 @@ namespace KiriEdit
         private int _columns = 10;
         private int _curIndex = -1;
 
+        public event EventHandler SelectedIndexChanged;
+
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public CharSet CharSet
@@ -30,7 +32,7 @@ namespace KiriEdit
                         throw new ArgumentNullException("value");
 
                     _charSet = value;
-                    _curIndex = -1;
+                    SelectedIndex = -1;
                     UpdateRenderArgs();
                 }
             }
@@ -58,6 +60,20 @@ namespace KiriEdit
 
         [DefaultValue(typeof(Color), "Gray")]
         public Color OffCharacterColor { get; set; } = Color.Gray;
+
+        [Browsable(false)]
+        public int SelectedIndex
+        {
+            get => _curIndex;
+            private set
+            {
+                if (value != _curIndex)
+                {
+                    _curIndex = value;
+                    OnSelectedIndexChanged();
+                }
+            }
+        }
 
         public CharacterGrid()
         {
@@ -363,9 +379,14 @@ namespace KiriEdit
 
         public void SelectCharacter(int index)
         {
-            _curIndex = index;
+            SelectedIndex = index;
             ScrollCenterTo(index);
             Invalidate();
+        }
+
+        private void OnSelectedIndexChanged()
+        {
+            SelectedIndexChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }

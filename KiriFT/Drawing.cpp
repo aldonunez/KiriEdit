@@ -127,11 +127,11 @@ namespace KiriFT
 
             UINT32 codePoint = seqCharSet->_firstCodePoint + args->StartRow * COLUMNS;
 
-            float ycell = args->Top;
+            float ycell = (float) args->Top;
 
             for (int r = 0; r < rows; r++)
             {
-                float xcell = args->Left;
+                float xcell = (float) args->Left;
 
                 if (residencyMap != nullptr)
                 {
@@ -293,6 +293,11 @@ namespace KiriFT
         Int32 SequentialCharSet::MapToIndex(UInt32 codePoint)
         {
             return codePoint - _firstCodePoint;
+        }
+
+        UInt32 SequentialCharSet::MapToCodePoint(Int32 index)
+        {
+            return _firstCodePoint + index;
         }
 
         Int32 SequentialCharSet::GetRecommendedMapSize(Int32 charCount)
