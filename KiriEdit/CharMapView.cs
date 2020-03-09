@@ -67,8 +67,11 @@ namespace KiriEdit
 
         private void deleteListCharButton_Click(object sender, EventArgs e)
         {
-            var listItem = (CharListItem) charListBox.SelectedItem;
+            DeleteListItem((CharListItem) charListBox.SelectedItem);
+        }
 
+        private void DeleteListItem(CharListItem listItem)
+        {
             if (!ConfirmDeleteCharacter(listItem))
                 return;
 
@@ -256,8 +259,66 @@ namespace KiriEdit
 
         private void charGrid_SelectedIndexChanged(object sender, EventArgs e)
         {
+            int index = charGrid.SelectedIndex;
+            if (index < 0)
+                return;
+
             uint codePoint = charGrid.CharSet.MapToCodePoint(charGrid.SelectedIndex);
             charDescriptionLabel.Text = string.Format("U+{0:X4}", codePoint);
+        }
+
+        private void addCharacterMenuItem_Click(object sender, EventArgs e)
+        {
+            int index = charGrid.SelectedIndex;
+            if (index < 0)
+                return;
+
+            uint codePoint = charGrid.CharSet.MapToCodePoint(index);
+
+            AddCharacter(codePoint);
+        }
+
+        private void deleteCharacterMenuItem_Click(object sender, EventArgs e)
+        {
+            int index = charGrid.SelectedIndex;
+            if (index < 0)
+                return;
+
+            uint codePoint = charGrid.CharSet.MapToCodePoint(index);
+
+            foreach (var listItem in _charListItems)
+            {
+                if (listItem.CodePoint == codePoint)
+                {
+                    DeleteListItem(listItem);
+                    break;
+                }
+            }
+        }
+
+        private void CharGrid_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                int index = charGrid.SelectedIndex;
+                if (index < 0)
+                    return;
+
+                uint codePoint = charGrid.CharSet.MapToCodePoint(index);
+
+                if (Project.Characters.Contains(codePoint))
+                {
+                    addCharacterMenuItem.Enabled = false;
+                    deleteCharacterMenuItem.Enabled = true;
+                }
+                else
+                {
+                    addCharacterMenuItem.Enabled = true;
+                    deleteCharacterMenuItem.Enabled = false;
+                }
+
+                characterContextMenu.Show(charGrid, e.X, e.Y);
+            }
         }
 
         #region Inner classes

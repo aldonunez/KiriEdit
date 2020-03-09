@@ -38,6 +38,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CharMapView));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.charListBox = new System.Windows.Forms.ListBox();
@@ -51,6 +52,9 @@
             this.findCharButton = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.fontNameLabel = new System.Windows.Forms.Label();
+            this.characterContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.addCharacterMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteCharacterMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -58,6 +62,7 @@
             this.toolStrip1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.characterContextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -150,6 +155,7 @@
             this.charGrid.Size = new System.Drawing.Size(285, 172);
             this.charGrid.TabIndex = 0;
             this.charGrid.SelectedIndexChanged += new System.EventHandler(this.charGrid_SelectedIndexChanged);
+            this.charGrid.MouseUp += new System.Windows.Forms.MouseEventHandler(this.CharGrid_MouseUp);
             // 
             // panel2
             // 
@@ -202,6 +208,28 @@
             this.fontNameLabel.TabIndex = 0;
             this.fontNameLabel.Text = "label1";
             // 
+            // characterContextMenu
+            // 
+            this.characterContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addCharacterMenuItem,
+            this.deleteCharacterMenuItem});
+            this.characterContextMenu.Name = "characterContextMenu";
+            this.characterContextMenu.Size = new System.Drawing.Size(172, 48);
+            // 
+            // addCharacterMenuItem
+            // 
+            this.addCharacterMenuItem.Name = "addCharacterMenuItem";
+            this.addCharacterMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.addCharacterMenuItem.Text = "Add character";
+            this.addCharacterMenuItem.Click += new System.EventHandler(this.addCharacterMenuItem_Click);
+            // 
+            // deleteCharacterMenuItem
+            // 
+            this.deleteCharacterMenuItem.Name = "deleteCharacterMenuItem";
+            this.deleteCharacterMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.deleteCharacterMenuItem.Text = "Delete character ...";
+            this.deleteCharacterMenuItem.Click += new System.EventHandler(this.deleteCharacterMenuItem_Click);
+            // 
             // CharMapView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -222,6 +250,7 @@
             this.panel2.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.characterContextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -240,5 +269,8 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Button findCharButton;
         private System.Windows.Forms.Label charDescriptionLabel;
+        private System.Windows.Forms.ContextMenuStrip characterContextMenu;
+        private System.Windows.Forms.ToolStripMenuItem addCharacterMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deleteCharacterMenuItem;
     }
 }
