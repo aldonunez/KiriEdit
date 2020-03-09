@@ -101,7 +101,7 @@ namespace KiriEdit
             {
                 var listItem = (CharListItem) charListBox.SelectedItem;
                 int index = charGrid.CharSet.MapToIndex(listItem.CodePoint);
-                charGrid.ScrollTo(index);
+                charGrid.SelectCharacter(index);
             }
         }
 
@@ -250,7 +250,7 @@ namespace KiriEdit
                     return;
 
                 int index = charGrid.CharSet.MapToIndex(dialog.CodePoint);
-                charGrid.ScrollTo(index);
+                charGrid.SelectCharacter(index);
             }
         }
 

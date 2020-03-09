@@ -9,11 +9,13 @@ namespace KiriEdit
     public partial class CharacterGrid : UserControl
     {
         private const float HeightToWidth = 37f / 32f;
+        const float SelectionBoxRatio = 1.3f;
 
         private CharGridRendererArgs _renderArgs;
         private Font _curFont;
         private CharSet _charSet = new SequentialCharSet(null, 0, 0xFFFF);
         private int _columns = 10;
+        private int _curIndex = -1;
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -28,6 +30,7 @@ namespace KiriEdit
                         throw new ArgumentNullException("value");
 
                     _charSet = value;
+                    _curIndex = -1;
                     UpdateRenderArgs();
                 }
             }
@@ -58,6 +61,7 @@ namespace KiriEdit
 
         public CharacterGrid()
         {
+            DoubleBuffered = true;
             InitializeComponent();
         }
 
@@ -172,6 +176,72 @@ namespace KiriEdit
                 ControlPaint.DrawFocusRectangle(e.Graphics, border);
             else
                 ControlPaint.DrawBorder(e.Graphics, border, Color.Black, ButtonBorderStyle.Solid);
+
+            if (_curIndex >= 0)
+                DrawSelectionCell(e.Graphics);
+        }
+
+        private void DrawSelectionCell(Graphics graphics)
+        {
+            CharGridMetrics metrics = _renderArgs.GetMetrics();
+
+            int wholeRows = (int) (_renderArgs.Height / metrics.CellHeight);
+            int startIndex = GetPageStartRow() * Columns;
+            int endIndex = startIndex + wholeRows * Columns;
+
+            if (_curIndex < startIndex || _curIndex >= endIndex)
+                return;
+
+            int relativeIndex = _curIndex - startIndex;
+            int row = relativeIndex / Columns;
+            int col = relativeIndex % Columns;
+
+            float halfWidth = metrics.CellWidth / 2;
+            float halfHeight = metrics.CellHeight / 2;
+            float centerX = col * metrics.CellWidth + halfWidth;
+            float centerY = row * metrics.CellHeight + halfHeight;
+
+            float x1 = centerX - halfWidth * SelectionBoxRatio;
+            float y1 = centerY - halfHeight * SelectionBoxRatio;
+            float x2 = centerX + halfWidth * SelectionBoxRatio;
+            float y2 = centerY + halfHeight * SelectionBoxRatio;
+
+            if (x1 < 0)
+            {
+                x2 -= x1;
+                x1 = 0;
+            }
+            else if (x2 > _renderArgs.Width)
+            {
+                x1 -= (x2 - _renderArgs.Width);
+                x2 = _renderArgs.Width;
+            }
+
+            if (y1 < 0)
+            {
+                y2 -= y1;
+                y1 = 0;
+            }
+            else if (y2 > _renderArgs.Height)
+            {
+                y1 -= (y2 - _renderArgs.Height);
+                y2 = _renderArgs.Height;
+            }
+
+            float width = x2 - x1;
+            float height = y2 - y1;
+
+            graphics.FillRectangle(Brushes.White, x1, y1, width, height);
+            graphics.DrawRectangle(Pens.Black, x1, y1, width, height);
+
+            using (Font font = new Font(_curFont.FontFamily, height * 0.7f, GraphicsUnit.Pixel))
+            {
+                SizeF fontSize = graphics.MeasureString("A", font);
+                using (Brush brush = new SolidBrush(OnCharacterColor))
+                {
+                    graphics.DrawString("A", font, brush, x1 + (width - fontSize.Width) / 2, y1 + (height - fontSize.Height) / 2);
+                }
+            }
         }
 
         private void InitRenderArgs()
@@ -205,8 +275,8 @@ namespace KiriEdit
             {
                 if (font != null)
                 {
-                    _renderArgs.FontFamily = Font.FontFamily.Name;
-                    _renderArgs.FontStyle = (int) Font.Style;
+                    _renderArgs.FontFamily = font.FontFamily.Name;
+                    _renderArgs.FontStyle = (int) font.Style;
                 }
                 else
                 {
@@ -220,7 +290,7 @@ namespace KiriEdit
 
         private void vScrollBar_ValueChanged(object sender, EventArgs e)
         {
-            Refresh();
+            Invalidate();
         }
 
         private int GetPageStartRow()
@@ -234,8 +304,47 @@ namespace KiriEdit
             if (index >= CharSet.Length)
                 return;
 
+            CharGridMetrics metrics = _renderArgs.GetMetrics();
+
+            int wholeRows = (int) (_renderArgs.Height / metrics.CellHeight);
+            int startIndex = GetPageStartRow() * Columns;
+            int endIndex = startIndex + wholeRows * Columns;
+
+            if (_curIndex >= startIndex && _curIndex < endIndex)
+                return;
+
             int row = index / Columns;
             vScrollBar.Value = row;
+        }
+
+        public void ScrollCenterTo(int index)
+        {
+            if (index >= CharSet.Length)
+                return;
+
+            CharGridMetrics metrics = _renderArgs.GetMetrics();
+
+            int wholeRows = (int) (_renderArgs.Height / metrics.CellHeight);
+            int startIndex = GetPageStartRow() * Columns;
+            int endIndex = startIndex + wholeRows * Columns;
+
+            if (_curIndex >= startIndex && _curIndex < endIndex)
+                return;
+
+            int selectedRow = index / Columns;
+            int row = selectedRow - wholeRows / 2;
+
+            if (row < 0)
+                row = 0;
+
+            vScrollBar.Value = row;
+        }
+
+        public void SelectCharacter(int index)
+        {
+            _curIndex = index;
+            ScrollCenterTo(index);
+            Invalidate();
         }
     }
 }
