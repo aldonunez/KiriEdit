@@ -55,12 +55,14 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.vScrollBar);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "CharacterGrid";
             this.Size = new System.Drawing.Size(315, 237);
+            this.Load += new System.EventHandler(this.CharacterGrid_Load);
             this.GotFocus += new System.EventHandler(this.CharacterGrid_GotFocus);
             this.LostFocus += new System.EventHandler(this.CharacterGrid_LostFocus);
-            this.Load += new System.EventHandler(this.CharacterGrid_Load);
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.CharacterGrid_MouseDown);
+            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.CharacterGrid_MouseMove);
             this.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.CharacterGrid_MouseWheel);
             this.Resize += new System.EventHandler(this.CharacterGrid_Resize);
             this.ResumeLayout(false);

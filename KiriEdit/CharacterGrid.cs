@@ -81,6 +81,28 @@ namespace KiriEdit
             InitializeComponent();
         }
 
+        private void CharacterGrid_MouseDown(object sender, MouseEventArgs e)
+        {
+            SelectByMouse(e);
+        }
+
+        private void CharacterGrid_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+                SelectByMouse(e);
+        }
+
+        private void SelectByMouse(MouseEventArgs e)
+        {
+            var metrics = _renderArgs.GetMetrics();
+            int row = (int) (e.Y / metrics.CellHeight);
+            int col = (int) (e.X / metrics.CellWidth);
+            int relativeIndex = row * Columns + col;
+            int index = relativeIndex + GetPageStartRow() * Columns;
+
+            SelectCharacter(index);
+        }
+
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             if (keyData == Keys.Up)
