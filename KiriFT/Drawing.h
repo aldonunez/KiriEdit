@@ -25,14 +25,12 @@ namespace KiriFT
         {
         internal:
             array<Int32>^ _residencyMap;
-            Int32 _columns;
             Int32 _firstCodePoint;
             Int32 _lastCodePoint;
 
         public:
             SequentialCharSet(
                 array<Int32>^ residencyMap,
-                Int32 columns,
                 Int32 firstCodePoint,
                 Int32 lastCodePoint);
 
@@ -70,6 +68,9 @@ namespace KiriFT
         {
         public:
             static void Draw(CharGridRendererArgs^ args, CharSet^ charSet);
+
+            static const Int32 MinimumColumns = 1;
+            static const Int32 MaximumColumns = 32;
         };
     }
 }

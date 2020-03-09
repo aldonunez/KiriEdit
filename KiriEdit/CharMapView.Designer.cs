@@ -179,6 +179,7 @@
             // 
             // charGrid
             // 
+            this.charGrid.Columns = 20;
             this.charGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.charGrid.Location = new System.Drawing.Point(8, 32);
             this.charGrid.Margin = new System.Windows.Forms.Padding(2);

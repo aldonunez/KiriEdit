@@ -251,19 +251,17 @@ namespace KiriFT
 
         SequentialCharSet::SequentialCharSet(
             array<Int32>^ residencyMap,
-            Int32 columns,
             Int32 firstCodePoint,
             Int32 lastCodePoint)
         {
             _residencyMap = residencyMap;
-            _columns = columns;
             _firstCodePoint = firstCodePoint;
             _lastCodePoint = lastCodePoint;
         }
 
         Int32 SequentialCharSet::Length::get()
         {
-            return _residencyMap->Length * _columns;
+            return _lastCodePoint - _firstCodePoint + 1;
         }
 
         void SequentialCharSet::SetIncluded(Int32 index, Boolean value)

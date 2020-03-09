@@ -8,12 +8,12 @@ namespace KiriEdit
 {
     public partial class CharacterGrid : UserControl
     {
-        private const int Columns = 20;
         private const float HeightToWidth = 37f / 32f;
 
         private CharGridRendererArgs _renderArgs;
         private Font _curFont;
         private CharSet _charSet;
+        private int _columns;
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -30,6 +30,23 @@ namespace KiriEdit
             }
         }
 
+        [DefaultValue(10)]
+        public int Columns
+        {
+            get => _columns;
+            set
+            {
+                if (value != _columns)
+                {
+                    if (value < CharGridRenderer.MinimumColumns || value > CharGridRenderer.MaximumColumns)
+                        throw new ArgumentOutOfRangeException();
+
+                    _columns = value;
+                    UpdateRenderArgs();
+                }
+            }
+        }
+
         [DefaultValue(typeof(Color), "Black")]
         public Color OnCharacterColor { get; set; } = Color.Black;
 
@@ -39,7 +56,7 @@ namespace KiriEdit
         public CharacterGrid()
         {
             if (DesignMode)
-                CharSet = new SequentialCharSet(null, 10, '!', 0xFFFF);
+                CharSet = new SequentialCharSet(null, '!', 0xFFFF);
 
             InitializeComponent();
         }
@@ -161,7 +178,6 @@ namespace KiriEdit
         {
             _renderArgs = new CharGridRendererArgs();
 
-            _renderArgs.Columns = Columns;
             _renderArgs.HeightToWidth = HeightToWidth;
         }
 
@@ -170,6 +186,7 @@ namespace KiriEdit
             if (_renderArgs == null || CharSet == null)
                 return;
 
+            _renderArgs.Columns = Columns;
             _renderArgs.Height = Height;
             _renderArgs.Width = vScrollBar.Left;
 
