@@ -38,8 +38,17 @@ namespace KiriFT
             return colorref;
         }
 
-        void CharGridRenderer::Draw(CharGridRendererArgs^ args)
+        void CharGridRenderer::Draw(CharGridRendererArgs^ args, CharSet^ charSet)
         {
+            if (args == nullptr)
+                throw gcnew ArgumentNullException("args");
+
+            if (charSet == nullptr)
+                throw gcnew ArgumentNullException("charSet");
+
+            if (!SequentialCharSet::typeid->IsAssignableFrom(charSet->GetType()))
+                throw gcnew ArgumentException("Only SequentialCharSet is allowed.", "charSet");
+
             BOOL    bRet = FALSE;
             HGDIOBJ hOldObj = NULL;
 
@@ -108,38 +117,44 @@ namespace KiriFT
             SetBkMode(hdc, TRANSPARENT);
             SetTextAlign(hdc, TA_TOP | TA_LEFT);
 
-            UINT32 lastCodePoint = args->LastCodePoint;
+            auto seqCharSet = (SequentialCharSet^) charSet;
 
-            if (lastCodePoint == 0)
-                lastCodePoint = 0x10FFFF;
+            UINT32 lastCodePoint = (UINT32) seqCharSet->_lastCodePoint;
 
-            array<Byte>^ residencyMap = args->ResidencyMap;
-            Int32 residencyOffset = args->ResidencyOffset;
-            UInt32 residencyWord = 0xFFFFFFFF;
+            array<Int32>^ residencyMap = seqCharSet->_residencyMap;
+            Int32 residencyOffset = args->StartRow;
+            Int32 residencyWord = 0xFFFFFFFF;
 
-            UINT32 codePoint = args->FirstCodePoint;
-            float xcell = 0;
+            UINT32 codePoint = seqCharSet->_firstCodePoint + args->StartRow * COLUMNS;
+
             float ycell = 0;
 
             for (int r = 0; r < rows; r++)
             {
+                float xcell = 0;
+
                 if (residencyMap != nullptr)
                 {
-                    if (residencyOffset + 3 >= residencyMap->Length)
+                    if (residencyOffset >= residencyMap->Length)
                         break;
 
-                    residencyWord =
-                        (residencyMap[residencyOffset + 0])
-                        | (residencyMap[residencyOffset + 1] << 8)
-                        | (residencyMap[residencyOffset + 2] << 16)
-                        ;
-                    residencyOffset += 3;
+                    residencyWord = residencyMap[residencyOffset];
+                    residencyOffset += 1;
                 }
 
                 for (int c = 0; c < COLUMNS; c++)
                 {
                     if (codePoint > lastCodePoint)
                         break;
+
+                    COLORREF color;
+
+                    if ((residencyWord & 1) != 0)
+                        color = onColor;
+                    else
+                        color = offColor;
+
+                    residencyWord >>= 1;
 
                     wchar_t str[2] = L"";
                     int len = 0;
@@ -154,23 +169,15 @@ namespace KiriFT
 
                     int x = (int) (xcell + (cellWidth - logWidth) / 2);
                     int y = (int) (ycell + (cellHeight - logHeight) / 2);
-                    COLORREF color;
-
-                    if ((residencyWord & 1) != 0)
-                        color = onColor;
-                    else
-                        color = offColor;
-
-                    residencyWord >>= 1;
 
                     SetTextColor(hdc, color);
                     TextOutW(hdc, x, y, str, len);
 
-                    xcell += cellWidth;
                     codePoint++;
+
+                    xcell += cellWidth;
                 }
 
-                xcell = 0;
                 ycell += cellHeight;
             }
 
@@ -234,6 +241,38 @@ namespace KiriFT
                 Marshal::FreeHGlobal(IntPtr(m_nativeFontFamily));
                 m_nativeFontFamily = nullptr;
             }
+        }
+
+        SequentialCharSet::SequentialCharSet(
+            array<Int32>^ residencyMap,
+            Int32 columns,
+            Int32 firstCodePoint,
+            Int32 lastCodePoint)
+        {
+            _residencyMap = residencyMap;
+            _columns = columns;
+            _firstCodePoint = firstCodePoint;
+            _lastCodePoint = lastCodePoint;
+        }
+
+        Int32 SequentialCharSet::Length::get()
+        {
+            return _residencyMap->Length * _columns;
+        }
+
+        void SequentialCharSet::SetIncluded(Int32 index, Boolean value)
+        {
+            if (_residencyMap == nullptr)
+                return;
+
+            int row = index / _columns;
+            int col = index % _columns;
+            int mask = 1UL << col;
+
+            if (value)
+                _residencyMap[row] |= mask;
+            else
+                _residencyMap[row] &= ~mask;
         }
     }
 }

@@ -5,11 +5,18 @@ using System.Drawing;
 using System.Drawing.Text;
 using System.Globalization;
 using System.Windows.Forms;
+using KiriFT.Drawing;
 
 namespace KiriEdit
 {
     public partial class CharMapView : UserControl, IView
     {
+        private const uint FirstCodePoint = '!';
+        private const uint LastCodePoint = 0xFFFF;
+        private const int Columns = 20;
+        private const int CharSetSize = (int) (LastCodePoint - FirstCodePoint + 1);
+        private const int CharSetRows = (CharSetSize + Columns - 1) / Columns;
+
         private List<CharListItem> _charListItems;
         private StringComparer _stringComparer = StringComparer.Ordinal;
         private PrivateFontCollection _fontCollection;
@@ -54,7 +61,7 @@ namespace KiriEdit
             _charListItems.Add(MakeCharListItem(codePoint));
             SortCharacterList();
 
-            ModifyResidencyMap(charGrid.ResidencyMap, codePoint, ResidencyAction.Add);
+            ModifyResidencyMap(charGrid.CharSet, codePoint, ResidencyAction.Add);
             charGrid.Refresh();
 
             Project.Characters.Add(codePoint);
@@ -71,7 +78,7 @@ namespace KiriEdit
             charListBox.Items.Remove(listItem);
             // No need to sort after deleting an item.
 
-            ModifyResidencyMap(charGrid.ResidencyMap, listItem.CodePoint, ResidencyAction.Remove);
+            ModifyResidencyMap(charGrid.CharSet, listItem.CodePoint, ResidencyAction.Remove);
             charGrid.Refresh();
 
             Project.Characters.Delete(listItem.CodePoint);
@@ -125,9 +132,15 @@ namespace KiriEdit
             charGrid.Font = new Font(fontFamily, 12, (FontStyle) Project.FontStyle);
             fontNameLabel.Text = Project.FontName;
 
-            byte[] residencyMap = new byte[0x2000];
+            int[] residencyMap = new int[CharSetRows];
             LoadResidencyMap(residencyMap);
-            charGrid.ResidencyMap = residencyMap;
+
+            SequentialCharSet charSet = new SequentialCharSet(
+                residencyMap,
+                Columns,
+                (int) FirstCodePoint,
+                (int) LastCodePoint);
+            charGrid.CharSet = charSet;
         }
 
         private FontFamily FindFontFamily(PrivateFontCollection collection)
@@ -205,11 +218,15 @@ namespace KiriEdit
 
         // Assumes that the map is all zero.
         //
-        private void LoadResidencyMap(byte[] map)
+        private void LoadResidencyMap(int[] map)
         {
             foreach (var item in _charListItems)
             {
-                ModifyResidencyMap(map, item.CodePoint, ResidencyAction.Add);
+                int value = (int) (item.CodePoint - FirstCodePoint);
+                int row = value / Columns;
+                int col = value % Columns;
+
+                map[row] |= (1 << col);
             }
         }
 
@@ -219,26 +236,14 @@ namespace KiriEdit
             Remove
         }
 
-        private void ModifyResidencyMap(byte[] map, uint codePoint, ResidencyAction action)
+        private void ModifyResidencyMap(CharSet charSet, uint codePoint, ResidencyAction action)
         {
-            int value = (int) codePoint - '!';
+            int value = (int) (codePoint - FirstCodePoint);
 
-            if (value >= map.Length)
+            if (value >= charSet.Length)
                 return;
 
-            int row = value / 20;
-            int col = value % 20;
-
-            int mapRow = row;
-            int mapCol = col / 8;
-            int mapBit = col % 8;
-
-            int byteOffset = (mapRow * 3) + mapCol;
-
-            if (action == ResidencyAction.Add)
-                map[byteOffset] |= (byte) (1 << mapBit);
-            else
-                map[byteOffset] &= (byte) ~(1 << mapBit);
+            charSet.SetIncluded(value, action == ResidencyAction.Add);
         }
 
         private void findCharButton_Click(object sender, EventArgs e)

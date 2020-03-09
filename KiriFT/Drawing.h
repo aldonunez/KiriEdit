@@ -14,6 +14,32 @@ namespace KiriFT
             Int32 Rows;
         };
 
+        public ref class CharSet abstract
+        {
+        public:
+            virtual property Int32 Length { Int32 get() abstract; };
+            virtual void SetIncluded(Int32 index, Boolean value) abstract;
+        };
+
+        public ref class SequentialCharSet : CharSet
+        {
+        internal:
+            array<Int32>^ _residencyMap;
+            Int32 _columns;
+            Int32 _firstCodePoint;
+            Int32 _lastCodePoint;
+
+        public:
+            SequentialCharSet(
+                array<Int32>^ residencyMap,
+                Int32 columns,
+                Int32 firstCodePoint,
+                Int32 lastCodePoint);
+
+            virtual property Int32 Length { Int32 get() override; };
+            virtual void SetIncluded(Int32 index, Boolean value) override;
+        };
+
         public ref class CharGridRendererArgs
         {
             String^ m_fontFamily;
@@ -28,13 +54,10 @@ namespace KiriFT
             Int32 Height;
             Int32 Columns;
             Single HeightToWidth;
-            UInt32 FirstCodePoint;
-            UInt32 LastCodePoint;
             Int32 OnColor;
             Int32 OffColor;
             Int32 FontStyle;
-            array<Byte>^ ResidencyMap;
-            Int32 ResidencyOffset;
+            Int32 StartRow;
             property String^ FontFamily { String^ get(); void set(String^ value); }
 
             CharGridMetrics GetMetrics();
@@ -46,7 +69,7 @@ namespace KiriFT
         public ref class CharGridRenderer
         {
         public:
-            static void Draw(CharGridRendererArgs^ args);
+            static void Draw(CharGridRendererArgs^ args, CharSet^ charSet);
         };
     }
 }

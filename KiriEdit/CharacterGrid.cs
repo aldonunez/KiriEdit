@@ -18,7 +18,7 @@ namespace KiriEdit
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public byte[] ResidencyMap { get; set; }
+        public CharSet CharSet { get; set; }
 
         [DefaultValue(typeof(Color), "Black")]
         public Color OnCharacterColor { get; set; } = Color.Black;
@@ -28,6 +28,9 @@ namespace KiriEdit
 
         public CharacterGrid()
         {
+            if (DesignMode)
+                CharSet = new SequentialCharSet(null, 20, '!', 0xFFFF);
+
             InitializeComponent();
         }
 
@@ -117,9 +120,7 @@ namespace KiriEdit
         {
             base.OnPaint(e);
 
-            _renderArgs.FirstCodePoint = GetPageCodePoint();
-            _renderArgs.ResidencyMap = ResidencyMap;
-            _renderArgs.ResidencyOffset = GetPageResidencyOffset();
+            _renderArgs.StartRow = GetPageStartRow();
             _renderArgs.OnColor = OnCharacterColor.ToArgb();
             _renderArgs.OffColor = OffCharacterColor.ToArgb();
 
@@ -131,7 +132,7 @@ namespace KiriEdit
 
                 UpdateFont();
 
-                CharGridRenderer.Draw(_renderArgs);
+                CharGridRenderer.Draw(_renderArgs, CharSet);
             }
             finally
             {
@@ -152,7 +153,6 @@ namespace KiriEdit
 
             _renderArgs.Columns = Columns;
             _renderArgs.HeightToWidth = HeightToWidth;
-            _renderArgs.LastCodePoint = MaxUnicodeCodePoint;
         }
 
         private void UpdateRenderArgs()
@@ -202,10 +202,10 @@ namespace KiriEdit
             return (uint) (MinUnicodePoint + row * Columns);
         }
 
-        private int GetPageResidencyOffset()
+        private int GetPageStartRow()
         {
             int row = vScrollBar.Value;
-            return row * 3;
+            return row;
         }
 
         public void ScrollTo(uint codePoint)
