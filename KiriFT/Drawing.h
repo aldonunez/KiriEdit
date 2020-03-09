@@ -36,6 +36,8 @@ namespace KiriFT
 
             virtual property Int32 Length { Int32 get() override; };
             virtual void SetIncluded(Int32 index, Boolean value) override;
+
+            static Int32 GetRecommendedMapSize(Int32 charCount);
         };
 
         public ref class CharGridRendererArgs

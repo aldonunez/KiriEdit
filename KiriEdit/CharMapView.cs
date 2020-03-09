@@ -131,7 +131,7 @@ namespace KiriEdit
             charGrid.Font = new Font(fontFamily, 12, (FontStyle) Project.FontStyle);
             fontNameLabel.Text = Project.FontName;
 
-            const int CharSetMapSize = ((CharSetSize + 31) / 32) + 1;
+            int CharSetMapSize = SequentialCharSet.GetRecommendedMapSize(CharSetSize);
             int[] residencyMap = new int[CharSetMapSize];
             LoadResidencyMap(residencyMap);
 

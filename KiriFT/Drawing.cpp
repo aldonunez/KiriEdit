@@ -254,6 +254,11 @@ namespace KiriFT
             Int32 firstCodePoint,
             Int32 lastCodePoint)
         {
+            int length = lastCodePoint - firstCodePoint + 1;
+
+            if (residencyMap->Length < GetRecommendedMapSize(length))
+                throw gcnew ArgumentException("The map is too small.", "residencyMap");
+
             _residencyMap = residencyMap;
             _firstCodePoint = firstCodePoint;
             _lastCodePoint = lastCodePoint;
@@ -277,6 +282,38 @@ namespace KiriFT
                 _residencyMap[row] |= mask;
             else
                 _residencyMap[row] &= ~mask;
+        }
+
+        Int32 SequentialCharSet::GetRecommendedMapSize(Int32 charCount)
+        {
+            // Round up to a whole number of integers occupied.
+
+            // Add one to account for the operation while drawing of making a residency word for the
+            // last character in a sequential character set. This might involve combining bits from
+            // two words: the word containing the bit at the beginning of a row, and the next word.
+
+            // For example, given this code from CharGridRenderer::Draw:
+
+            //   int bitRow = index / 32;
+            //   int bitCol = index % 32;
+
+            //   residencyWord = (UInt32) residencyMap[bitRow] >> bitCol;
+
+            //   if (bitCol > 0)
+            //   {
+            //       bitRow++;
+            //       residencyWord |= (UInt32) residencyMap[bitRow] << (32 - bitCol);
+            //   }
+
+            // If index is 0xFFFF and the character set length is 0x10000, then this code will overflow
+            // if the residency map is length 0x800 (=0x10000/32). To keep the calculation above simple,
+            // add another element.
+
+            // If index is 0xFFFF, the character set length is 0x10000, and the residency map length is
+            // 0x800 (=0x10000/32); then this code will overflow. To keep the calculation above simple,
+            // allocate one more element.
+
+            return (charCount + 31) / 32 + 1;
         }
     }
 }
