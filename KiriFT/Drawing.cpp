@@ -135,11 +135,17 @@ namespace KiriFT
 
                 if (residencyMap != nullptr)
                 {
-                    if (residencyOffset >= residencyMap->Length)
-                        break;
+                    int index = codePoint - seqCharSet->_firstCodePoint;
+                    int bitRow = index / 32;
+                    int bitCol = index % 32;
 
-                    residencyWord = residencyMap[residencyOffset];
-                    residencyOffset += 1;
+                    residencyWord = (UInt32) residencyMap[bitRow] >> bitCol;
+
+                    if (bitCol > 0)
+                    {
+                        bitRow++;
+                        residencyWord |= (UInt32) residencyMap[bitRow] << (32 - bitCol);
+                    }
                 }
 
                 for (int c = 0; c < COLUMNS; c++)
@@ -265,8 +271,8 @@ namespace KiriFT
             if (_residencyMap == nullptr)
                 return;
 
-            int row = index / _columns;
-            int col = index % _columns;
+            int row = index / 32;
+            int col = index % 32;
             int mask = 1UL << col;
 
             if (value)

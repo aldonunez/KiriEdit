@@ -15,7 +15,7 @@ namespace KiriEdit
         private const uint LastCodePoint = 0xFFFF;
         private const int Columns = 20;
         private const int CharSetSize = (int) (LastCodePoint - FirstCodePoint + 1);
-        private const int CharSetRows = (CharSetSize + Columns - 1) / Columns;
+        private const int CharSetMapSize = (CharSetSize + 31) / 32;
 
         private List<CharListItem> _charListItems;
         private StringComparer _stringComparer = StringComparer.Ordinal;
@@ -133,7 +133,7 @@ namespace KiriEdit
             charGrid.Font = new Font(fontFamily, 12, (FontStyle) Project.FontStyle);
             fontNameLabel.Text = Project.FontName;
 
-            int[] residencyMap = new int[CharSetRows];
+            int[] residencyMap = new int[CharSetMapSize];
             LoadResidencyMap(residencyMap);
 
             SequentialCharSet charSet = new SequentialCharSet(
@@ -224,8 +224,8 @@ namespace KiriEdit
             foreach (var item in _charListItems)
             {
                 int value = (int) (item.CodePoint - FirstCodePoint);
-                int row = value / Columns;
-                int col = value % Columns;
+                int row = value / 32;
+                int col = value % 32;
 
                 map[row] |= (1 << col);
             }
