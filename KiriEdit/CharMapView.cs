@@ -100,7 +100,7 @@ namespace KiriEdit
             if (charListBox.SelectedIndex >= 0)
             {
                 var listItem = (CharListItem) charListBox.SelectedItem;
-                int index = (int) (listItem.CodePoint - FirstCodePoint);
+                int index = charGrid.CharSet.MapToIndex(listItem.CodePoint);
                 charGrid.ScrollTo(index);
             }
         }
@@ -221,9 +221,9 @@ namespace KiriEdit
         {
             foreach (var item in _charListItems)
             {
-                int value = (int) (item.CodePoint - FirstCodePoint);
-                int row = value / 32;
-                int col = value % 32;
+                int index = (int) (item.CodePoint - FirstCodePoint);
+                int row = index / 32;
+                int col = index % 32;
 
                 map[row] |= (1 << col);
             }
@@ -237,12 +237,9 @@ namespace KiriEdit
 
         private void ModifyResidencyMap(CharSet charSet, uint codePoint, ResidencyAction action)
         {
-            int value = (int) (codePoint - FirstCodePoint);
+            int index = charSet.MapToIndex(codePoint);
 
-            if (value >= charSet.Length)
-                return;
-
-            charSet.SetIncluded(value, action == ResidencyAction.Add);
+            charSet.SetIncluded(index, action == ResidencyAction.Add);
         }
 
         private void findCharButton_Click(object sender, EventArgs e)
@@ -252,7 +249,7 @@ namespace KiriEdit
                 if (dialog.ShowDialog() != DialogResult.OK)
                     return;
 
-                int index = (int) (dialog.CodePoint - FirstCodePoint);
+                int index = charGrid.CharSet.MapToIndex(dialog.CodePoint);
                 charGrid.ScrollTo(index);
             }
         }

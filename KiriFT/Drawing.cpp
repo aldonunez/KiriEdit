@@ -278,10 +278,18 @@ namespace KiriFT
             int col = index % 32;
             int mask = 1UL << col;
 
+            if (row >= _residencyMap->Length)
+                return;
+
             if (value)
                 _residencyMap[row] |= mask;
             else
                 _residencyMap[row] &= ~mask;
+        }
+
+        Int32 SequentialCharSet::MapToIndex(UInt32 codePoint)
+        {
+            return codePoint - _firstCodePoint;
         }
 
         Int32 SequentialCharSet::GetRecommendedMapSize(Int32 charCount)

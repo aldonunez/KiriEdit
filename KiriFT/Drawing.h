@@ -19,6 +19,7 @@ namespace KiriFT
         public:
             virtual property Int32 Length { Int32 get() abstract; };
             virtual void SetIncluded(Int32 index, Boolean value) abstract;
+            virtual Int32 MapToIndex(UInt32 codePoint) abstract;
         };
 
         public ref class SequentialCharSet : CharSet
@@ -36,6 +37,7 @@ namespace KiriFT
 
             virtual property Int32 Length { Int32 get() override; };
             virtual void SetIncluded(Int32 index, Boolean value) override;
+            virtual Int32 MapToIndex(UInt32 codePoint) override;
 
             static Int32 GetRecommendedMapSize(Int32 charCount);
         };
