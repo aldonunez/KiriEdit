@@ -4,13 +4,18 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Text;
 using System.Globalization;
+using System.Text;
 using System.Windows.Forms;
 using KiriFT.Drawing;
+using InteropServices = System.Runtime.InteropServices;
 
 namespace KiriEdit
 {
     public partial class CharMapView : UserControl, IView
     {
+        [InteropServices.DllImport("getuname.dll", SetLastError = true, CharSet = InteropServices.CharSet.Unicode)]
+        private static extern int GetUName(UInt16 wCharCode, StringBuilder lpbuf);
+
         private const uint FirstCodePoint = '!';
         private const uint LastCodePoint = 0xFFFF;
         private const int CharSetSize = (int) (LastCodePoint - FirstCodePoint + 1);
@@ -18,6 +23,7 @@ namespace KiriEdit
         private List<CharListItem> _charListItems;
         private StringComparer _stringComparer = StringComparer.Ordinal;
         private PrivateFontCollection _fontCollection;
+        private StringBuilder _unameBuilder = new StringBuilder(1024);
 
         public Project Project { get; set; }
         public Control Control => this;
@@ -264,7 +270,24 @@ namespace KiriEdit
                 return;
 
             uint codePoint = charGrid.CharSet.MapToCodePoint(charGrid.SelectedIndex);
-            charDescriptionLabel.Text = string.Format("U+{0:X4}", codePoint);
+            string unicodeName = null;
+
+            if (codePoint <= 0xFFFF)
+            {
+                int nameLength = GetUName((ushort) codePoint, _unameBuilder);
+
+                if (InteropServices.Marshal.GetLastWin32Error() == 0)
+                    unicodeName = _unameBuilder.ToString(0, nameLength);
+            }
+
+            if (unicodeName != null)
+            {
+                charDescriptionLabel.Text = string.Format("U+{0:X4}: {1}", codePoint, unicodeName);
+            }
+            else
+            {
+                charDescriptionLabel.Text = string.Format("U+{0:X4}", codePoint);
+            }
         }
 
         private void addCharacterMenuItem_Click(object sender, EventArgs e)
