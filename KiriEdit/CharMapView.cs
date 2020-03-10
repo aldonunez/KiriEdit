@@ -16,6 +16,9 @@ namespace KiriEdit
         [InteropServices.DllImport("getuname.dll", SetLastError = true, CharSet = InteropServices.CharSet.Unicode)]
         private static extern int GetUName(UInt16 wCharCode, StringBuilder lpbuf);
 
+        [InteropServices.DllImport("kernel32.dll")]
+        private static extern void SetLastError(int error);
+
         private const uint FirstCodePoint = '!';
         private const uint LastCodePoint = 0xFFFF;
         private const int CharSetSize = (int) (LastCodePoint - FirstCodePoint + 1);
@@ -24,6 +27,8 @@ namespace KiriEdit
         private StringComparer _stringComparer = StringComparer.Ordinal;
         private PrivateFontCollection _fontCollection;
         private StringBuilder _unameBuilder = new StringBuilder(1024);
+
+        // As of Windows 10.0.18363.657, the longest string returned by GetUName is 83 characters for en-US.
 
         public Project Project { get; set; }
         public Control Control => this;
@@ -274,6 +279,7 @@ namespace KiriEdit
 
             if (codePoint <= 0xFFFF)
             {
+                SetLastError(0);
                 int nameLength = GetUName((ushort) codePoint, _unameBuilder);
 
                 if (InteropServices.Marshal.GetLastWin32Error() == 0)
