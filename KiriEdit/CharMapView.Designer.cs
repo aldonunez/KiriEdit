@@ -84,7 +84,7 @@
             this.splitContainer1.Panel2.Controls.Add(this.charGrid);
             this.splitContainer1.Panel2.Controls.Add(this.panel2);
             this.splitContainer1.Panel2.Controls.Add(this.panel1);
-            this.splitContainer1.Panel2.Padding = new System.Windows.Forms.Padding(8, 0, 8, 8);
+            this.splitContainer1.Panel2.Padding = new System.Windows.Forms.Padding(8, 0, 8, 0);
             this.splitContainer1.Panel2MinSize = 300;
             this.splitContainer1.Size = new System.Drawing.Size(427, 265);
             this.splitContainer1.SplitterDistance = 121;
@@ -152,37 +152,36 @@
             this.charGrid.Margin = new System.Windows.Forms.Padding(2);
             this.charGrid.Name = "charGrid";
             this.charGrid.OnCharacterColor = System.Drawing.Color.Red;
-            this.charGrid.Size = new System.Drawing.Size(285, 172);
+            this.charGrid.Size = new System.Drawing.Size(285, 170);
             this.charGrid.TabIndex = 0;
             this.charGrid.SelectedIndexChanged += new System.EventHandler(this.charGrid_SelectedIndexChanged);
             this.charGrid.MouseUp += new System.Windows.Forms.MouseEventHandler(this.CharGrid_MouseUp);
             // 
             // panel2
             // 
-            this.panel2.AutoSize = true;
-            this.panel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.panel2.Controls.Add(this.charDescriptionLabel);
             this.panel2.Controls.Add(this.findCharButton);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel2.Location = new System.Drawing.Point(8, 204);
+            this.panel2.Location = new System.Drawing.Point(8, 202);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(285, 53);
+            this.panel2.Padding = new System.Windows.Forms.Padding(0, 3, 0, 3);
+            this.panel2.Size = new System.Drawing.Size(285, 63);
             this.panel2.TabIndex = 2;
             // 
             // charDescriptionLabel
             // 
-            this.charDescriptionLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.charDescriptionLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.charDescriptionLabel.Location = new System.Drawing.Point(3, 30);
+            this.charDescriptionLabel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.charDescriptionLabel.Location = new System.Drawing.Point(0, 37);
+            this.charDescriptionLabel.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.charDescriptionLabel.Name = "charDescriptionLabel";
-            this.charDescriptionLabel.Size = new System.Drawing.Size(279, 23);
+            this.charDescriptionLabel.Size = new System.Drawing.Size(285, 23);
             this.charDescriptionLabel.TabIndex = 1;
             this.charDescriptionLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // findCharButton
             // 
-            this.findCharButton.Location = new System.Drawing.Point(4, 4);
+            this.findCharButton.Location = new System.Drawing.Point(3, 6);
             this.findCharButton.Name = "findCharButton";
             this.findCharButton.Size = new System.Drawing.Size(75, 23);
             this.findCharButton.TabIndex = 0;
@@ -242,7 +241,6 @@
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
-            this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.toolStrip1.ResumeLayout(false);
