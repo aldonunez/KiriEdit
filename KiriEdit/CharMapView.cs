@@ -65,15 +65,17 @@ namespace KiriEdit
             return true;
         }
 
+        // TODO: Support characters outside of basic multilingual plane.
+
         private void AddCharacter(uint codePoint)
         {
+            Project.Characters.Add(codePoint);
+
             _charListItems.Add(MakeCharListItem(codePoint));
             SortCharacterList();
 
             ModifyResidencyMap(charGrid.CharSet, codePoint, ResidencyAction.Add);
             charGrid.Refresh();
-
-            Project.Characters.Add(codePoint);
         }
 
         private void deleteListCharButton_Click(object sender, EventArgs e)
@@ -86,14 +88,14 @@ namespace KiriEdit
             if (!ConfirmDeleteCharacter(listItem))
                 return;
 
+            Project.Characters.Delete(listItem.CodePoint);
+
             _charListItems.Remove(listItem);
             charListBox.Items.Remove(listItem);
             // No need to sort after deleting an item.
 
             ModifyResidencyMap(charGrid.CharSet, listItem.CodePoint, ResidencyAction.Remove);
             charGrid.Refresh();
-
-            Project.Characters.Delete(listItem.CodePoint);
         }
 
         private bool ConfirmDeleteCharacter(CharListItem listItem)

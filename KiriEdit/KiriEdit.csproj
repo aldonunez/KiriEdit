@@ -101,6 +101,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FigureDocument.cs" />
     <Compile Include="CharacterGrid.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -115,6 +116,7 @@
       <DependentUpon>CharMapView.cs</DependentUpon>
     </Compile>
     <Compile Include="CharUtils.cs" />
+    <Compile Include="FigureItem.cs" />
     <Compile Include="FigureUtils.cs" />
     <Compile Include="FolderSelectDialog.cs" />
     <Compile Include="ShellForm.cs">

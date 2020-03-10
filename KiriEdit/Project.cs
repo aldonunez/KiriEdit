@@ -168,13 +168,13 @@ namespace KiriEdit
 
             public void Add(uint codePoint)
             {
-                CharacterItem.AddStorage(_project, codePoint);
+                CharacterItem.Add(_project, codePoint);
                 AddInternal(codePoint);
             }
 
             public void Delete(uint codePoint)
             {
-                CharacterItem.DeleteStorage(_project, codePoint);
+                CharacterItem.Delete(_project, codePoint);
                 RemoveInternal(codePoint);
             }
         }
