@@ -13,32 +13,39 @@ namespace KiriEdit
         private const string MasterFileName = "master.kefigm";
         private const string FigureSearchPattern = "*.kefig";
 
-        //public uint CodePoint { get; set; }
-        public string RootPath { get; set; }
+        private List<FigureItem> _figureItems = new List<FigureItem>();
+
+        public uint CodePoint { get; }
+        public string RootPath { get; }
         // TODO: Use MasterFigureItem
         public FigureItem MasterFigureItem { get; }
-        public IList<FigureItem> PieceFigureItems { get; }
+        public IReadOnlyList<FigureItem> PieceFigureItems => _figureItems;
 
-        public CharacterItem(Project project, uint codePoint)
+        private CharacterItem(Project project, uint codePoint, bool enumPieces = false)
         {
             string charRoot = GetRootPath(project, codePoint);
-            var charRootInfo = new DirectoryInfo(charRoot);
-            var figureItems = new List<FigureItem>();
             string masterPath = Path.Combine(charRoot, MasterFileName);
 
-            foreach (var fileInfo in charRootInfo.EnumerateFiles(FigureSearchPattern))
-            {
-                figureItems.Add(new FigureItem(fileInfo.FullName));
-            }
+            if (enumPieces)
+                FillPieces(charRoot);
 
-            //CodePoint = codePoint;
+            CodePoint = codePoint;
             RootPath = charRoot;
             // TODO: Use MasterFigureItem
             MasterFigureItem = new FigureItem(masterPath);
-            PieceFigureItems = figureItems;
         }
 
-        public static IEnumerable<uint> EnumerateCharacterItems(Project project)
+        private void FillPieces(string rootPath)
+        {
+            var charRootInfo = new DirectoryInfo(rootPath);
+
+            foreach (var fileInfo in charRootInfo.EnumerateFiles(FigureSearchPattern))
+            {
+                _figureItems.Add(new FigureItem(fileInfo.FullName));
+            }
+        }
+
+        public static IEnumerable<CharacterItem> EnumerateCharacterItems(Project project)
         {
             var charsFolderInfo = new DirectoryInfo(project.CharactersFolderPath);
 
@@ -50,7 +57,9 @@ namespace KiriEdit
                 if (!uint.TryParse(substring, NumberStyles.HexNumber, null, out number))
                     continue;
 
-                yield return number;
+                var item = new CharacterItem(project, number, true);
+
+                yield return item;
             }
 
             yield break;
@@ -68,12 +77,13 @@ namespace KiriEdit
             return charPath;
         }
 
-        public static bool Add(Project project, uint codePoint)
+        public static CharacterItem Add(Project project, uint codePoint)
         {
             string rootPath = GetRootPath(project, codePoint);
 
+            // TODO: still needed?
             if (Directory.Exists(rootPath))
-                return false;
+                return null;
 
             string figurePath = Path.Combine(rootPath, MasterFileName);
 
@@ -99,7 +109,9 @@ namespace KiriEdit
                 Directory.Delete(rootPath, true);
             }
 
-            return true;
+            var characterItem = new CharacterItem(project, codePoint);
+
+            return characterItem;
         }
 
         public static void Delete(Project project, uint codePoint)
@@ -159,7 +171,7 @@ namespace KiriEdit
             if (File.Exists(figurePath))
                 throw new ApplicationException();
 
-            foreach (var item in PieceFigureItems)
+            foreach (var item in _figureItems)
             {
                 if (name.Equals(item.Name, StringComparison.OrdinalIgnoreCase))
                     throw new ApplicationException();
@@ -175,7 +187,7 @@ namespace KiriEdit
             pieceDoc.Figure = masterDoc.Figure;
             figureItem.Save(pieceDoc);
 
-            PieceFigureItems.Add(figureItem);
+            _figureItems.Add(figureItem);
 
             return figureItem;
         }
@@ -189,7 +201,7 @@ namespace KiriEdit
                 if (name.Equals(item.Name, StringComparison.OrdinalIgnoreCase))
                 {
                     File.Delete(item.Path);
-                    PieceFigureItems.RemoveAt(i);
+                    _figureItems.RemoveAt(i);
                     break;
                 }
             }

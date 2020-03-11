@@ -113,9 +113,9 @@ namespace KiriEdit
 
             Project project = new Project(projectFile);
 
-            foreach (var codePoint in CharacterItem.EnumerateCharacterItems(project))
+            foreach (var item in CharacterItem.EnumerateCharacterItems(project))
             {
-                project.Characters.Add(codePoint);
+                project.Characters.Add(item);
             }
 
             return project;
@@ -157,7 +157,7 @@ namespace KiriEdit
 
         //--------------------------------------------------------------------
 
-        public class CharacterItemCollection : ItemSet<uint>
+        public class CharacterItemCollection : ItemSet<uint, CharacterItem>
         {
             private Project _project;
 
@@ -166,10 +166,16 @@ namespace KiriEdit
                 _project = project;
             }
 
-            public void Add(uint codePoint)
+            public CharacterItem Add(uint codePoint)
             {
-                CharacterItem.Add(_project, codePoint);
-                AddInternal(codePoint);
+                var item = CharacterItem.Add(_project, codePoint);
+                AddInternal(codePoint, item);
+                return item;
+            }
+
+            public void Add(CharacterItem item)
+            {
+                AddInternal(item.CodePoint, item);
             }
 
             public void Delete(uint codePoint)
@@ -179,34 +185,37 @@ namespace KiriEdit
             }
         }
 
-        public class ItemSet<T> : INotifyCollectionChanged, IEnumerable<T>
+        public class ItemSet<K, V> : INotifyCollectionChanged, IEnumerable<V>
         {
-            private HashSet<T> _set = new HashSet<T>();
+            private Dictionary<K, V> _set = new Dictionary<K, V>();
 
             public event NotifyCollectionChangedEventHandler CollectionChanged;
 
             public int Count { get => _set.Count; }
 
-            protected void AddInternal(T value)
+            protected void AddInternal(K key, V value)
             {
-                _set.Add(value);
+                _set.Add(key, value);
                 OnCollectionChanged(NotifyCollectionChangedAction.Add, value);
             }
 
-            protected void RemoveInternal(T value)
+            protected void RemoveInternal(K key)
             {
-                _set.Remove(value);
-                OnCollectionChanged(NotifyCollectionChangedAction.Remove, value);
+                if (_set.TryGetValue(key, out V value))
+                {
+                    _set.Remove(key);
+                    OnCollectionChanged(NotifyCollectionChangedAction.Remove, value);
+                }
             }
 
-            public bool Contains(T value)
+            public bool Contains(K key)
             {
-                return _set.Contains(value);
+                return _set.ContainsKey(key);
             }
 
-            public IEnumerator<T> GetEnumerator()
+            public IEnumerator<V> GetEnumerator()
             {
-                return _set.GetEnumerator();
+                return _set.Values.GetEnumerator();
             }
 
             IEnumerator IEnumerable.GetEnumerator()
@@ -214,7 +223,7 @@ namespace KiriEdit
                 return _set.GetEnumerator();
             }
 
-            private void OnCollectionChanged(NotifyCollectionChangedAction action, T value)
+            private void OnCollectionChanged(NotifyCollectionChangedAction action, V value)
             {
                 if (CollectionChanged != null)
                 {

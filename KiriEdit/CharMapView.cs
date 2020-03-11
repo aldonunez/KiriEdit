@@ -69,9 +69,9 @@ namespace KiriEdit
 
         private void AddCharacter(uint codePoint)
         {
-            Project.Characters.Add(codePoint);
+            var item = Project.Characters.Add(codePoint);
 
-            _charListItems.Add(MakeCharListItem(codePoint));
+            _charListItems.Add(MakeCharListItem(item));
             SortCharacterList();
 
             ModifyResidencyMap(charGrid.CharSet, codePoint, ResidencyAction.Add);
@@ -195,9 +195,9 @@ namespace KiriEdit
 
             _charListItems = new List<CharListItem>(Project.Characters.Count);
 
-            foreach (uint codePoint in Project.Characters)
+            foreach (var item in Project.Characters)
             {
-                _charListItems.Add(MakeCharListItem(codePoint));
+                _charListItems.Add(MakeCharListItem(item));
             }
 
             SortCharacterList();
@@ -220,9 +220,13 @@ namespace KiriEdit
             return _stringComparer.Compare(a.String, b.String);
         }
 
-        private static CharListItem MakeCharListItem(uint codePoint)
+        private static CharListItem MakeCharListItem(CharacterItem item)
         {
-            var text = string.Format("U+{0:X6} - {1}", codePoint, CharUtils.GetString(codePoint));
+            var codePoint = item.CodePoint;
+            var text = string.Format("U+{0:X6} - {1} ({2})",
+                codePoint,
+                CharUtils.GetString(codePoint),
+                item.PieceFigureItems.Count);
             return new CharListItem(text, codePoint);
         }
 
