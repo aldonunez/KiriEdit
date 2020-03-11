@@ -39,7 +39,6 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CharMapView));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.charListBox = new System.Windows.Forms.ListBox();
             this.sortComboBox = new System.Windows.Forms.ComboBox();
@@ -127,7 +126,7 @@
             // addListCharButton
             // 
             this.addListCharButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.addListCharButton.Image = ((System.Drawing.Image)(resources.GetObject("addListCharButton.Image")));
+            this.addListCharButton.Image = global::KiriEdit.Properties.Resources.Add_16x;
             this.addListCharButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.addListCharButton.Name = "addListCharButton";
             this.addListCharButton.Size = new System.Drawing.Size(28, 28);
@@ -137,7 +136,7 @@
             // deleteListCharButton
             // 
             this.deleteListCharButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.deleteListCharButton.Image = ((System.Drawing.Image)(resources.GetObject("deleteListCharButton.Image")));
+            this.deleteListCharButton.Image = global::KiriEdit.Properties.Resources.Trash_16x;
             this.deleteListCharButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.deleteListCharButton.Name = "deleteListCharButton";
             this.deleteListCharButton.Size = new System.Drawing.Size(28, 28);
