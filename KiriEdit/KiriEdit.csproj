@@ -116,6 +116,12 @@
       <DependentUpon>CharMapView.cs</DependentUpon>
     </Compile>
     <Compile Include="CharUtils.cs" />
+    <Compile Include="FigureEditView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FigureEditView.Designer.cs">
+      <DependentUpon>FigureEditView.cs</DependentUpon>
+    </Compile>
     <Compile Include="FigureItem.cs" />
     <Compile Include="FigureUtils.cs" />
     <Compile Include="FolderSelectDialog.cs" />
@@ -148,6 +154,9 @@
     <EmbeddedResource Include="CharMapView.resx">
       <DependentUpon>CharMapView.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FigureEditView.resx">
+      <DependentUpon>FigureEditView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ShellForm.resx">
       <DependentUpon>ShellForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -165,6 +174,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.manifest" />
     <None Include="packages.config" />
@@ -190,6 +200,12 @@
       <Project>{c098da70-c98b-4267-be80-31c147545cf2}</Project>
       <Name>TryFreetype</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Add_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Trash_16x.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
