@@ -21,9 +21,13 @@ namespace KiriEdit
             InitializeComponent();
             Text = AppTitle;
 
+            // Docking is finicky. So, suspend layout, add the control, and bring it forward.
+            SuspendLayout();
             _docHost = documentContainer.MakeControl();
             _docHost.Dock = DockStyle.Fill;
             this.Controls.Add(_docHost);
+            _docHost.BringToFront();
+            ResumeLayout();
 
             EnterNothingMode();
 
