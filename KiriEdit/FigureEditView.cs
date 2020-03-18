@@ -26,8 +26,10 @@ namespace KiriEdit
 
         public bool IsDirty { get; set; }
 
-        public void Save()
+        public bool Save()
         {
+            // TODO:
+            return true;
         }
     }
 }

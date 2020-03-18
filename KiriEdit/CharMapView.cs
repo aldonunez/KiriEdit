@@ -238,9 +238,10 @@ namespace KiriEdit
             return new CharListItem(text, codePoint);
         }
 
-        public void Save()
+        public bool Save()
         {
             // Nothing to do.
+            return true;
         }
 
         // Assumes that the map is all zero.

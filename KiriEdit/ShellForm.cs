@@ -14,17 +14,16 @@ namespace KiriEdit
 
         private Project _project;
 
-        // TODO: rename to _docHost.
-        private Control hostPanel;
+        private Control _docHost;
 
         public ShellForm()
         {
             InitializeComponent();
             Text = AppTitle;
 
-            hostPanel = documentContainer.MakeControl();
-            hostPanel.Dock = DockStyle.Fill;
-            this.Controls.Add(hostPanel);
+            _docHost = documentContainer.MakeControl();
+            _docHost.Dock = DockStyle.Fill;
+            this.Controls.Add(_docHost);
 
             EnterNothingMode();
 
@@ -84,8 +83,26 @@ namespace KiriEdit
 
         private void saveAllMenuItem_Click(object sender, EventArgs e)
         {
-            SaveItem();
+            SaveAll();
+        }
+
+        private bool SaveAll()
+        {
+            IView[] dirtyViews = documentContainer.GetDirtyViews();
+
+            return SaveAll(dirtyViews);
+        }
+
+        private bool SaveAll(IEnumerable<IView> dirtyViews)
+        {
+            foreach (var view in dirtyViews)
+            {
+                if (!view.Save())
+                    return false;
+            }
+
             SaveProject();
+            return true;
         }
 
         private void NewProject()
@@ -163,7 +180,7 @@ namespace KiriEdit
 
         private void UpdateViewHostingState()
         {
-            if (hostPanel.Controls.Count == 0)
+            if (_docHost.Controls.Count == 0)
             {
                 saveItemMenuItem.Enabled = false;
             }
@@ -189,9 +206,8 @@ namespace KiriEdit
                 {
                     case DialogResult.Yes:
                         // Save, then close.
-                        // TODO:
-                        //SaveItem();
-                        SaveProject();
+                        if (!SaveAll(dirtyViews))
+                            return false;
                         break;
 
                     case DialogResult.No:
@@ -295,6 +311,6 @@ namespace KiriEdit
         Control Control { get; }
         string DocumentName { get; }
         bool IsDirty { get; }
-        void Save();
+        bool Save();
     }
 }
