@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KiriEdit", "KiriEdit\KiriEd
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KiriFT", "KiriFT\KiriFT.vcxproj", "{01868F96-B1F9-4A0D-8991-CD3F52039B43}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KiriProj", "KiriProj\KiriProj.csproj", "{74B30FB3-5FB4-4257-AFC6-B041696266D9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,6 +72,18 @@ Global
 		{01868F96-B1F9-4A0D-8991-CD3F52039B43}.Release|x64.Build.0 = Release|x64
 		{01868F96-B1F9-4A0D-8991-CD3F52039B43}.Release|x86.ActiveCfg = Release|Win32
 		{01868F96-B1F9-4A0D-8991-CD3F52039B43}.Release|x86.Build.0 = Release|Win32
+		{74B30FB3-5FB4-4257-AFC6-B041696266D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74B30FB3-5FB4-4257-AFC6-B041696266D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74B30FB3-5FB4-4257-AFC6-B041696266D9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{74B30FB3-5FB4-4257-AFC6-B041696266D9}.Debug|x64.Build.0 = Debug|Any CPU
+		{74B30FB3-5FB4-4257-AFC6-B041696266D9}.Debug|x86.ActiveCfg = Debug|x86
+		{74B30FB3-5FB4-4257-AFC6-B041696266D9}.Debug|x86.Build.0 = Debug|x86
+		{74B30FB3-5FB4-4257-AFC6-B041696266D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74B30FB3-5FB4-4257-AFC6-B041696266D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74B30FB3-5FB4-4257-AFC6-B041696266D9}.Release|x64.ActiveCfg = Release|Any CPU
+		{74B30FB3-5FB4-4257-AFC6-B041696266D9}.Release|x64.Build.0 = Release|Any CPU
+		{74B30FB3-5FB4-4257-AFC6-B041696266D9}.Release|x86.ActiveCfg = Release|Any CPU
+		{74B30FB3-5FB4-4257-AFC6-B041696266D9}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

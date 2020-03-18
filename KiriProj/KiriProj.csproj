@@ -4,19 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{21F85D6C-B15F-464E-97EF-5EA57593CE8A}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <RootNamespace>KiriEdit</RootNamespace>
-    <AssemblyName>KiriEdit</AssemblyName>
+    <ProjectGuid>{74B30FB3-5FB4-4257-AFC6-B041696266D9}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>KiriProj</RootNamespace>
+    <AssemblyName>KiriProj</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -26,7 +23,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -43,7 +39,6 @@
     <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
@@ -54,12 +49,11 @@
     <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="KiriFT">
+      <HintPath>..\bin\Win32\Debug\KiriFT.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.1.1.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
@@ -94,116 +88,27 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CharacterGrid.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="CharacterGrid.Designer.cs">
-      <DependentUpon>CharacterGrid.cs</DependentUpon>
-    </Compile>
-    <Compile Include="CharMapView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="CharMapView.Designer.cs">
-      <DependentUpon>CharMapView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="CharUtils.cs" />
-    <Compile Include="FigureEditView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="FigureEditView.Designer.cs">
-      <DependentUpon>FigureEditView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FolderSelectDialog.cs" />
-    <Compile Include="ShellForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ShellForm.Designer.cs">
-      <DependentUpon>ShellForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="InputCharacterForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="InputCharacterForm.Designer.cs">
-      <DependentUpon>InputCharacterForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="NewProjectForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="NewProjectForm.Designer.cs">
-      <DependentUpon>NewProjectForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Program.cs" />
+    <Compile Include="CharacterItem.cs" />
+    <Compile Include="FigureDocument.cs" />
+    <Compile Include="FigureItem.cs" />
+    <Compile Include="FigureUtils.cs" />
+    <Compile Include="Project.cs" />
+    <Compile Include="ProjectFile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Reflector.cs" />
-    <EmbeddedResource Include="CharacterGrid.resx">
-      <DependentUpon>CharacterGrid.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CharMapView.resx">
-      <DependentUpon>CharMapView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FigureEditView.resx">
-      <DependentUpon>FigureEditView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ShellForm.resx">
-      <DependentUpon>ShellForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="InputCharacterForm.resx">
-      <DependentUpon>InputCharacterForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="NewProjectForm.resx">
-      <DependentUpon>NewProjectForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <None Include="app.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\KiriFT\KiriFT.vcxproj">
-      <Project>{01868f96-b1f9-4a0d-8991-cd3f52039b43}</Project>
-      <Name>KiriFT</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\KiriProj\KiriProj.csproj">
-      <Project>{74b30fb3-5fb4-4257-afc6-b041696266d9}</Project>
-      <Name>KiriProj</Name>
-    </ProjectReference>
     <ProjectReference Include="..\TryFreetype\TryFreetype.csproj">
       <Project>{c098da70-c98b-4267-be80-31c147545cf2}</Project>
       <Name>TryFreetype</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Add_16x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Trash_16x.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
