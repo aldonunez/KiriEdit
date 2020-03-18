@@ -39,7 +39,7 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.hostPanel = new System.Windows.Forms.Panel();
+            this.documentContainer = new KiriEdit.StackDocumentContainer();
             this.mainMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -136,21 +136,11 @@
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
             // 
-            // hostPanel
-            // 
-            this.hostPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.hostPanel.Location = new System.Drawing.Point(0, 24);
-            this.hostPanel.Margin = new System.Windows.Forms.Padding(2);
-            this.hostPanel.Name = "hostPanel";
-            this.hostPanel.Size = new System.Drawing.Size(533, 246);
-            this.hostPanel.TabIndex = 2;
-            // 
             // ShellForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(533, 292);
-            this.Controls.Add(this.hostPanel);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.mainMenuStrip);
             this.MainMenuStrip = this.mainMenuStrip;
@@ -179,7 +169,7 @@
         private System.Windows.Forms.ToolStripMenuItem saveAllMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeProjectMenuItem;
         private System.Windows.Forms.StatusStrip statusStrip1;
-        private System.Windows.Forms.Panel hostPanel;
+        private StackDocumentContainer documentContainer;
     }
 }
 

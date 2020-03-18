@@ -35,9 +35,17 @@ namespace KiriEdit
         public string DocumentName => "test";
         public bool IsDirty => false;
 
+        public IShell Shell { get; set; }
+
         public CharMapView()
         {
             InitializeComponent();
+            charListBox.DoubleClick += CharListBox_DoubleClick;
+        }
+
+        private void CharListBox_DoubleClick(object sender, EventArgs e)
+        {
+            Shell.OpenItem(charListBox.SelectedItem);
         }
 
         private void addListCharButton_Click(object sender, EventArgs e)

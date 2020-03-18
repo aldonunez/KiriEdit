@@ -10,11 +10,24 @@ using System.Windows.Forms;
 
 namespace KiriEdit
 {
-    public partial class FigureEditView : UserControl
+    public partial class FigureEditView : UserControl, IView
     {
         public FigureEditView()
         {
             InitializeComponent();
+        }
+
+        public IShell Shell { get; set; }
+        public Project Project { get; set; }
+
+        public Control Control { get => this; }
+
+        public string DocumentName { get; set; }
+
+        public bool IsDirty { get; set; }
+
+        public void Save()
+        {
         }
     }
 }

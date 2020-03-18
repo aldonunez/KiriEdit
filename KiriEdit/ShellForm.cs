@@ -1,24 +1,32 @@
 ﻿using KiriFT;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Windows.Forms;
 
 namespace KiriEdit
 {
-    public partial class ShellForm : Form
+    public partial class ShellForm : Form, IShell
     {
         // TODO: put this somewhere else
         public const string AppTitle = "KiriEdit";
 
         private Project _project;
-        private IView _view;
+
+        // TODO: rename to _docHost.
+        private Control hostPanel;
 
         public ShellForm()
         {
             InitializeComponent();
-            EnterNothingMode();
             Text = AppTitle;
+
+            hostPanel = documentContainer.MakeControl();
+            hostPanel.Dock = DockStyle.Fill;
+            this.Controls.Add(hostPanel);
+
+            EnterNothingMode();
 
             KeyPress += ShellForm_KeyPress;
         }
@@ -27,19 +35,20 @@ namespace KiriEdit
         {
             if (e.KeyChar == 'A' || e.KeyChar == 'a')
             {
-                if (_project == null || _view != null)
-                    return;
-
-                SetView(new CharMapView());
+                if (_project != null
+                    && documentContainer.FindView(typeof(CharMapView)) == null)
+                {
+                    AddView(new CharMapView());
+                }
             }
         }
 
-        private void SetView(IView view)
+        private void AddView(IView view)
         {
             view.Project = _project;
-            hostPanel.Controls.Add(view.Control);
-            view.Control.Dock = DockStyle.Fill;
-            _view = view;
+            view.Shell = this;
+
+            documentContainer.AddView(view);
         }
 
         private void ShellForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -127,12 +136,7 @@ namespace KiriEdit
             closeProjectMenuItem.Enabled = false;
             saveAllMenuItem.Enabled = false;
 
-            if (_view != null)
-            {
-                hostPanel.Controls.Clear();
-                _view.Control.Dispose();
-                _view = null;
-            }
+            documentContainer.Clear();
 
             UpdateViewHostingState();
             Text = AppTitle;
@@ -174,7 +178,9 @@ namespace KiriEdit
             if (_project == null)
                 return true;
 
-            if (_project.IsDirty || (_view != null && _view.IsDirty))
+            IView[] dirtyViews = documentContainer.GetDirtyViews();
+
+            if (_project.IsDirty || dirtyViews.Length > 0)
             {
                 var message = "There are unsaved items. Save?";
                 var result = MessageBox.Show(message, AppTitle, MessageBoxButtons.YesNoCancel);
@@ -183,7 +189,8 @@ namespace KiriEdit
                 {
                     case DialogResult.Yes:
                         // Save, then close.
-                        SaveItem();
+                        // TODO:
+                        //SaveItem();
                         SaveProject();
                         break;
 
@@ -201,10 +208,10 @@ namespace KiriEdit
 
         private void SaveItem()
         {
-            if (_view == null)
-                return;
-
-            _view.Save();
+            if (documentContainer.Count > 0)
+            {
+                documentContainer.CurrentView.Save();
+            }
         }
 
         private void SaveProject()
@@ -269,6 +276,12 @@ namespace KiriEdit
             string message = "The project could not be loaded due to missing files or settings.";
             MessageBox.Show(message, AppTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
+
+        public void OpenItem(object item)
+        {
+            var view = new FigureEditView();
+            AddView(view);
+        }
     }
 
     internal interface IApplication
@@ -277,6 +290,7 @@ namespace KiriEdit
 
     internal interface IView
     {
+        IShell Shell { get; set; }
         Project Project { get; set; }
         Control Control { get; }
         string DocumentName { get; }
