@@ -13,15 +13,57 @@ namespace KiriEdit
 
         private Project _project;
         private MdiDocumentContainer _documentContainer;
+        private ToolStripMenuItem[] _windowListMenuItems;
 
         public ShellForm()
         {
             InitializeComponent();
             Text = AppTitle;
 
+            _windowListMenuItems = new ToolStripMenuItem[]
+                {
+                    window0MenuItem,
+                    window1MenuItem,
+                    window2MenuItem,
+                    window3MenuItem,
+                };
+
             _documentContainer = new MdiDocumentContainer(this);
+            _documentContainer.ViewsChanged += _documentContainer_ViewsChanged;
 
             EnterNothingMode();
+        }
+
+        private void _documentContainer_ViewsChanged(object sender, ViewsChangedEventArgs e)
+        {
+            RebuildWindowListMenu();
+        }
+
+        private void RebuildWindowListMenu()
+        {
+            IView[] views = _documentContainer.GetViews();
+            int i = 0;
+            int validItemCount = _windowListMenuItems.Length;
+
+            if (views.Length < validItemCount)
+                validItemCount = views.Length;
+
+            for (; i < validItemCount; i++)
+            {
+                string dirtyStar = views[i].IsDirty ? "*" : "";
+
+                _windowListMenuItems[i].Tag = views[i];
+                _windowListMenuItems[i].Visible = true;
+                _windowListMenuItems[i].Text = string.Format("{0} {1}{2}",
+                    i + 1,
+                    views[i].DocumentName,
+                    dirtyStar);
+            }
+
+            for (; i < _windowListMenuItems.Length; i++)
+            {
+                _windowListMenuItems[i].Visible = false;
+            }
         }
 
         private void AddView(IView view)
@@ -296,6 +338,16 @@ namespace KiriEdit
         private void closeAllDocumentsMenuItem_Click(object sender, EventArgs e)
         {
             _documentContainer.Clear();
+        }
+
+        private void windowXMenuItem_Click(object sender, EventArgs e)
+        {
+            var menuItem = (ToolStripMenuItem) sender;
+
+            if (menuItem.Tag == null)
+                return;
+
+            _documentContainer.Activate((IView) menuItem.Tag);
         }
     }
 

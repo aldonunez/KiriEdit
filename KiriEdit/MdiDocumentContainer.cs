@@ -5,19 +5,45 @@ using System.Windows.Forms;
 
 namespace KiriEdit
 {
+    internal enum ViewsChangedAction
+    {
+        Added,
+        Removed,
+    }
+
+    internal class ViewsChangedEventArgs
+    {
+        public IView View { get; }
+        public ViewsChangedAction Action { get; }
+
+        public ViewsChangedEventArgs(IView view, ViewsChangedAction action)
+        {
+            View = view;
+            Action = action;
+        }
+    }
+
+    internal delegate void ViewsChangedEventHandler(object sender, ViewsChangedEventArgs e);
+
     internal class MdiDocumentContainer
     {
         private Form _form;
         private List<IView> _views = new List<IView>();
 
         internal int Count => _views.Count;
-
         internal IView CurrentView => (IView) _form.ActiveMdiChild;
+
+        public event ViewsChangedEventHandler ViewsChanged;
 
         public MdiDocumentContainer(Form form)
         {
             _form = form;
             _form.IsMdiContainer = true;
+        }
+
+        internal IView[] GetViews()
+        {
+            return _views.ToArray();
         }
 
         internal void AddView(IView view)
@@ -36,6 +62,8 @@ namespace KiriEdit
                 _views.Remove(view);
                 throw;
             }
+
+            ViewsChanged?.Invoke(this, new ViewsChangedEventArgs(view, ViewsChangedAction.Added));
         }
 
         private void Form_FormClosed(object sender, FormClosedEventArgs e)
@@ -45,6 +73,8 @@ namespace KiriEdit
 
             IView view = (IView) sender;
             _views.Remove(view);
+
+            ViewsChanged?.Invoke(this, new ViewsChangedEventArgs(view, ViewsChangedAction.Removed));
         }
 
         public void Clear()
@@ -67,6 +97,12 @@ namespace KiriEdit
         internal IView[] GetDirtyViews()
         {
             return _views.Where(view => view.IsDirty).ToArray();
+        }
+
+        internal void Activate(IView menuItem)
+        {
+            var viewForm = (Form) menuItem;
+            viewForm.Activate();
         }
     }
 }

@@ -43,6 +43,11 @@
             this.windowMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeAllDocumentsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.window0MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.window1MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.window2MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.window3MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.windowsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.mainMenuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -151,7 +156,12 @@
             // 
             this.windowMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.closeAllDocumentsMenuItem,
-            this.toolStripSeparator3});
+            this.toolStripSeparator3,
+            this.window0MenuItem,
+            this.window1MenuItem,
+            this.window2MenuItem,
+            this.window3MenuItem,
+            this.windowsMenuItem});
             this.windowMenuItem.Name = "windowMenuItem";
             this.windowMenuItem.Size = new System.Drawing.Size(63, 22);
             this.windowMenuItem.Text = "&Window";
@@ -167,6 +177,48 @@
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(181, 6);
+            // 
+            // window0MenuItem
+            // 
+            this.window0MenuItem.Name = "window0MenuItem";
+            this.window0MenuItem.Size = new System.Drawing.Size(184, 22);
+            this.window0MenuItem.Tag = "";
+            this.window0MenuItem.Text = "Window0";
+            this.window0MenuItem.Visible = false;
+            this.window0MenuItem.Click += new System.EventHandler(this.windowXMenuItem_Click);
+            // 
+            // window1MenuItem
+            // 
+            this.window1MenuItem.Name = "window1MenuItem";
+            this.window1MenuItem.Size = new System.Drawing.Size(184, 22);
+            this.window1MenuItem.Tag = "";
+            this.window1MenuItem.Text = "Window1";
+            this.window1MenuItem.Visible = false;
+            this.window1MenuItem.Click += new System.EventHandler(this.windowXMenuItem_Click);
+            // 
+            // window2MenuItem
+            // 
+            this.window2MenuItem.Name = "window2MenuItem";
+            this.window2MenuItem.Size = new System.Drawing.Size(184, 22);
+            this.window2MenuItem.Tag = "";
+            this.window2MenuItem.Text = "Window2";
+            this.window2MenuItem.Visible = false;
+            this.window2MenuItem.Click += new System.EventHandler(this.windowXMenuItem_Click);
+            // 
+            // window3MenuItem
+            // 
+            this.window3MenuItem.Name = "window3MenuItem";
+            this.window3MenuItem.Size = new System.Drawing.Size(184, 22);
+            this.window3MenuItem.Tag = "";
+            this.window3MenuItem.Text = "Window3";
+            this.window3MenuItem.Visible = false;
+            this.window3MenuItem.Click += new System.EventHandler(this.windowXMenuItem_Click);
+            // 
+            // windowsMenuItem
+            // 
+            this.windowsMenuItem.Name = "windowsMenuItem";
+            this.windowsMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.windowsMenuItem.Text = "Windows ...";
             // 
             // statusStrip1
             // 
@@ -217,6 +269,11 @@
         private System.Windows.Forms.ToolStripMenuItem windowMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeAllDocumentsMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripMenuItem window0MenuItem;
+        private System.Windows.Forms.ToolStripMenuItem window1MenuItem;
+        private System.Windows.Forms.ToolStripMenuItem window2MenuItem;
+        private System.Windows.Forms.ToolStripMenuItem window3MenuItem;
+        private System.Windows.Forms.ToolStripMenuItem windowsMenuItem;
     }
 }
 
