@@ -143,9 +143,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reflector.cs" />
-    <Compile Include="StackDocumentContainer.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <EmbeddedResource Include="CharacterGrid.resx">
       <DependentUpon>CharacterGrid.cs</DependentUpon>
     </EmbeddedResource>

@@ -39,7 +39,6 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.documentContainer = new KiriEdit.StackDocumentContainer();
             this.mainMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -143,6 +142,7 @@
             this.ClientSize = new System.Drawing.Size(533, 292);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.mainMenuStrip);
+            this.IsMdiContainer = true;
             this.MainMenuStrip = this.mainMenuStrip;
             this.Margin = new System.Windows.Forms.Padding(2);
             this.MinimumSize = new System.Drawing.Size(500, 300);
@@ -169,7 +169,6 @@
         private System.Windows.Forms.ToolStripMenuItem saveAllMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeProjectMenuItem;
         private System.Windows.Forms.StatusStrip statusStrip1;
-        private StackDocumentContainer documentContainer;
     }
 }
 

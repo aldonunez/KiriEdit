@@ -11,7 +11,7 @@ using InteropServices = System.Runtime.InteropServices;
 
 namespace KiriEdit
 {
-    public partial class CharMapView : UserControl, IView
+    public partial class CharMapView : Form, IView
     {
         [InteropServices.DllImport("getuname.dll", SetLastError = true, CharSet = InteropServices.CharSet.Unicode)]
         private static extern int GetUName(UInt16 wCharCode, StringBuilder lpbuf);
@@ -31,7 +31,7 @@ namespace KiriEdit
         // As of Windows 10.0.18363.657, the longest string returned by GetUName is 83 characters for en-US.
 
         public Project Project { get; set; }
-        public Control Control => this;
+        public Form Form => this;
         public string DocumentName => "test";
         public bool IsDirty => false;
 

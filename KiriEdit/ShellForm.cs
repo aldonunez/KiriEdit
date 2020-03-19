@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Windows.Forms;
 
@@ -14,20 +15,10 @@ namespace KiriEdit
 
         private Project _project;
 
-        private Control _docHost;
-
         public ShellForm()
         {
             InitializeComponent();
             Text = AppTitle;
-
-            // Docking is finicky. So, suspend layout, add the control, and bring it forward.
-            SuspendLayout();
-            _docHost = documentContainer.MakeControl();
-            _docHost.Dock = DockStyle.Fill;
-            this.Controls.Add(_docHost);
-            _docHost.BringToFront();
-            ResumeLayout();
 
             EnterNothingMode();
 
@@ -39,7 +30,7 @@ namespace KiriEdit
             if (e.KeyChar == 'A' || e.KeyChar == 'a')
             {
                 if (_project != null
-                    && documentContainer.FindView(typeof(CharMapView)) == null)
+                    && FindView(typeof(CharMapView)) == null)
                 {
                     AddView(new CharMapView());
                 }
@@ -51,7 +42,7 @@ namespace KiriEdit
             view.Project = _project;
             view.Shell = this;
 
-            documentContainer.AddView(view);
+            AddView2(view);
         }
 
         private void ShellForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -92,7 +83,7 @@ namespace KiriEdit
 
         private bool SaveAll()
         {
-            IView[] dirtyViews = documentContainer.GetDirtyViews();
+            IView[] dirtyViews = GetDirtyViews();
 
             return SaveAll(dirtyViews);
         }
@@ -157,7 +148,7 @@ namespace KiriEdit
             closeProjectMenuItem.Enabled = false;
             saveAllMenuItem.Enabled = false;
 
-            documentContainer.Clear();
+            DocumentClear();
 
             UpdateViewHostingState();
             Text = AppTitle;
@@ -180,11 +171,13 @@ namespace KiriEdit
             Text = baseName + " - " + AppTitle;
 
             _project = project;
+
+            AddView(new CharMapView());
         }
 
         private void UpdateViewHostingState()
         {
-            if (_docHost.Controls.Count == 0)
+            if (DocumentCount == 0)
             {
                 saveItemMenuItem.Enabled = false;
             }
@@ -199,7 +192,7 @@ namespace KiriEdit
             if (_project == null)
                 return true;
 
-            IView[] dirtyViews = documentContainer.GetDirtyViews();
+            IView[] dirtyViews = GetDirtyViews();
 
             if (_project.IsDirty || dirtyViews.Length > 0)
             {
@@ -228,9 +221,9 @@ namespace KiriEdit
 
         private void SaveItem()
         {
-            if (documentContainer.Count > 0)
+            if (DocumentCount > 0)
             {
-                documentContainer.CurrentView.Save();
+                DocumentCurrentView.Save();
             }
         }
 
@@ -302,6 +295,49 @@ namespace KiriEdit
             var view = new FigureEditView();
             AddView(view);
         }
+
+
+        //------------------------------------------------------------------------
+
+        private Stack<IView> _views = new Stack<IView>();
+
+        internal int DocumentCount => _views.Count;
+
+        internal IView DocumentCurrentView => (_views.Count > 0) ? _views.Peek() : null;
+
+        internal void AddView2(IView view)
+        {
+            IView prevView = null;
+
+            if (_views.Count > 0)
+                prevView = _views.Peek();
+
+            _views.Push(view);
+
+            view.Form.MdiParent = this;
+            view.Form.WindowState = FormWindowState.Maximized;
+            view.Form.Show();
+        }
+
+        public void DocumentClear()
+        {
+            foreach (var view in _views)
+            {
+                view.Form.Close();
+            }
+
+            _views.Clear();
+        }
+
+        internal IView FindView(Type viewType)
+        {
+            return _views.FirstOrDefault(view => view.GetType() == viewType);
+        }
+
+        internal IView[] GetDirtyViews()
+        {
+            return _views.Where(view => view.IsDirty).ToArray();
+        }
     }
 
     internal interface IApplication
@@ -312,7 +348,7 @@ namespace KiriEdit
     {
         IShell Shell { get; set; }
         Project Project { get; set; }
-        Control Control { get; }
+        Form Form { get; }
         string DocumentName { get; }
         bool IsDirty { get; }
         bool Save();

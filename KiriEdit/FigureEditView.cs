@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace KiriEdit
 {
-    public partial class FigureEditView : UserControl, IView
+    public partial class FigureEditView : Form, IView
     {
         public FigureEditView()
         {
@@ -20,7 +20,7 @@ namespace KiriEdit
         public IShell Shell { get; set; }
         public Project Project { get; set; }
 
-        public Control Control { get => this; }
+        public Form Form { get => this; }
 
         public string DocumentName { get; set; }
 

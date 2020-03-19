@@ -143,7 +143,7 @@
             this.Controls.Add(this.splitContainer1);
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "FigureEditView";
-            this.Size = new System.Drawing.Size(391, 250);
+            this.ClientSize = new System.Drawing.Size(391, 250);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();

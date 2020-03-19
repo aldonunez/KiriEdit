@@ -235,7 +235,7 @@
             this.Controls.Add(this.splitContainer1);
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "CharMapView";
-            this.Size = new System.Drawing.Size(427, 265);
+            this.ClientSize = new System.Drawing.Size(427, 265);
             this.Load += new System.EventHandler(this.CharMapView_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
