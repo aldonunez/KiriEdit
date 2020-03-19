@@ -122,6 +122,7 @@
     </Compile>
     <Compile Include="FolderSelectDialog.cs" />
     <Compile Include="IShell.cs" />
+    <Compile Include="MdiDocumentContainer.cs" />
     <Compile Include="ShellForm.cs">
       <SubType>Form</SubType>
     </Compile>

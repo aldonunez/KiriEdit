@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text.Json;
 using System.Windows.Forms;
 
 namespace KiriEdit
@@ -14,27 +12,16 @@ namespace KiriEdit
         public const string AppTitle = "KiriEdit";
 
         private Project _project;
+        private MdiDocumentContainer _documentContainer;
 
         public ShellForm()
         {
             InitializeComponent();
             Text = AppTitle;
 
+            _documentContainer = new MdiDocumentContainer(this);
+
             EnterNothingMode();
-
-            KeyPress += ShellForm_KeyPress;
-        }
-
-        private void ShellForm_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (e.KeyChar == 'A' || e.KeyChar == 'a')
-            {
-                if (_project != null
-                    && FindView(typeof(CharMapView)) == null)
-                {
-                    AddView(new CharMapView());
-                }
-            }
         }
 
         private void AddView(IView view)
@@ -42,7 +29,7 @@ namespace KiriEdit
             view.Project = _project;
             view.Shell = this;
 
-            AddView2(view);
+            _documentContainer.AddView(view);
         }
 
         private void ShellForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -83,7 +70,7 @@ namespace KiriEdit
 
         private bool SaveAll()
         {
-            IView[] dirtyViews = GetDirtyViews();
+            IView[] dirtyViews = _documentContainer.GetDirtyViews();
 
             return SaveAll(dirtyViews);
         }
@@ -148,7 +135,7 @@ namespace KiriEdit
             closeProjectMenuItem.Enabled = false;
             saveAllMenuItem.Enabled = false;
 
-            DocumentClear();
+            _documentContainer.Clear();
 
             UpdateViewHostingState();
             Text = AppTitle;
@@ -177,7 +164,7 @@ namespace KiriEdit
 
         private void UpdateViewHostingState()
         {
-            if (DocumentCount == 0)
+            if (_documentContainer.Count == 0)
             {
                 saveItemMenuItem.Enabled = false;
             }
@@ -192,7 +179,7 @@ namespace KiriEdit
             if (_project == null)
                 return true;
 
-            IView[] dirtyViews = GetDirtyViews();
+            IView[] dirtyViews = _documentContainer.GetDirtyViews();
 
             if (_project.IsDirty || dirtyViews.Length > 0)
             {
@@ -221,9 +208,9 @@ namespace KiriEdit
 
         private void SaveItem()
         {
-            if (DocumentCount > 0)
+            if (_documentContainer.Count > 0)
             {
-                DocumentCurrentView.Save();
+                _documentContainer.CurrentView.Save();
             }
         }
 
@@ -295,53 +282,6 @@ namespace KiriEdit
             var view = new FigureEditView();
             AddView(view);
         }
-
-
-        //------------------------------------------------------------------------
-
-        private Stack<IView> _views = new Stack<IView>();
-
-        internal int DocumentCount => _views.Count;
-
-        internal IView DocumentCurrentView => (_views.Count > 0) ? _views.Peek() : null;
-
-        internal void AddView2(IView view)
-        {
-            IView prevView = null;
-
-            if (_views.Count > 0)
-                prevView = _views.Peek();
-
-            _views.Push(view);
-
-            view.Form.MdiParent = this;
-            view.Form.WindowState = FormWindowState.Maximized;
-            view.Form.Show();
-        }
-
-        public void DocumentClear()
-        {
-            foreach (var view in _views)
-            {
-                view.Form.Close();
-            }
-
-            _views.Clear();
-        }
-
-        internal IView FindView(Type viewType)
-        {
-            return _views.FirstOrDefault(view => view.GetType() == viewType);
-        }
-
-        internal IView[] GetDirtyViews()
-        {
-            return _views.Where(view => view.IsDirty).ToArray();
-        }
-    }
-
-    internal interface IApplication
-    {
     }
 
     internal interface IView
