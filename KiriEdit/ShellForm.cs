@@ -30,8 +30,14 @@ namespace KiriEdit
 
             _documentContainer = new MdiDocumentContainer(this);
             _documentContainer.ViewsChanged += _documentContainer_ViewsChanged;
+            _documentContainer.ViewActivate += _documentContainer_ViewActivate;
 
             EnterNothingMode();
+        }
+
+        private void _documentContainer_ViewActivate(object sender, EventArgs e)
+        {
+            RebuildWindowListMenu();
         }
 
         private void _documentContainer_ViewsChanged(object sender, ViewsChangedEventArgs e)
@@ -41,24 +47,27 @@ namespace KiriEdit
 
         private void RebuildWindowListMenu()
         {
-            IView[] views = _documentContainer.GetViews();
+            IEnumerator<IView> viewEnumerator = _documentContainer.EnumerateViews();
             int i = 0;
-            int validItemCount = _windowListMenuItems.Length;
 
-            if (views.Length < validItemCount)
-                validItemCount = views.Length;
-
-            for (; i < validItemCount; i++)
+            for (; i < _windowListMenuItems.Length; i++)
             {
-                string dirtyStar = views[i].IsDirty ? "*" : "";
+                if (!viewEnumerator.MoveNext())
+                    break;
 
-                _windowListMenuItems[i].Tag = views[i];
+                var view = viewEnumerator.Current;
+                string dirtyStar = view.IsDirty ? "*" : "";
+
+                _windowListMenuItems[i].Tag = view;
                 _windowListMenuItems[i].Visible = true;
                 _windowListMenuItems[i].Text = string.Format("{0} {1}{2}",
                     i + 1,
-                    views[i].DocumentName,
+                    view.DocumentName,
                     dirtyStar);
             }
+
+            if (i > 0)
+                _windowListMenuItems[0].Checked = true;
 
             for (; i < _windowListMenuItems.Length; i++)
             {

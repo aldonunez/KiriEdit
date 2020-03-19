@@ -34,11 +34,31 @@ namespace KiriEdit
         internal IView CurrentView => (IView) _form.ActiveMdiChild;
 
         public event ViewsChangedEventHandler ViewsChanged;
+        public event EventHandler ViewActivate;
 
         public MdiDocumentContainer(Form form)
         {
             _form = form;
             _form.IsMdiContainer = true;
+            _form.MdiChildActivate += _form_MdiChildActivate;
+        }
+
+        private void _form_MdiChildActivate(object sender, EventArgs e)
+        {
+            IView activeView = (IView) _form.ActiveMdiChild;
+
+            if (activeView != null && _views.Count > 0 && activeView != _views[0])
+            {
+                int oldIndex = _views.LastIndexOf(activeView);
+
+                if (oldIndex >= 0)
+                {
+                    _views.RemoveAt(oldIndex);
+                    _views.Insert(0, activeView);
+                }
+            }
+
+            ViewActivate?.Invoke(this, EventArgs.Empty);
         }
 
         internal IView[] GetViews()
@@ -75,6 +95,11 @@ namespace KiriEdit
             _views.Remove(view);
 
             ViewsChanged?.Invoke(this, new ViewsChangedEventArgs(view, ViewsChangedAction.Removed));
+        }
+
+        internal IEnumerator<IView> EnumerateViews()
+        {
+            return _views.GetEnumerator();
         }
 
         public void Clear()
