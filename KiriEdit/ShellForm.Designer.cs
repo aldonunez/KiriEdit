@@ -54,14 +54,12 @@
             // 
             // mainMenuStrip
             // 
-            this.mainMenuStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.mainMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileMenuItem,
             this.viewMenuItem,
             this.windowMenuItem});
             this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.mainMenuStrip.Name = "mainMenuStrip";
-            this.mainMenuStrip.Padding = new System.Windows.Forms.Padding(4, 1, 0, 1);
             this.mainMenuStrip.Size = new System.Drawing.Size(533, 24);
             this.mainMenuStrip.TabIndex = 0;
             this.mainMenuStrip.Text = "menuStrip1";
@@ -78,7 +76,7 @@
             this.toolStripSeparator1,
             this.exitMenuItem});
             this.fileMenuItem.Name = "fileMenuItem";
-            this.fileMenuItem.Size = new System.Drawing.Size(37, 22);
+            this.fileMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileMenuItem.Text = "&File";
             // 
             // newProjectMenuItem
@@ -142,7 +140,7 @@
             this.viewMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.characterMapMenuItem});
             this.viewMenuItem.Name = "viewMenuItem";
-            this.viewMenuItem.Size = new System.Drawing.Size(44, 22);
+            this.viewMenuItem.Size = new System.Drawing.Size(44, 20);
             this.viewMenuItem.Text = "&View";
             // 
             // characterMapMenuItem
@@ -163,7 +161,7 @@
             this.window3MenuItem,
             this.windowsMenuItem});
             this.windowMenuItem.Name = "windowMenuItem";
-            this.windowMenuItem.Size = new System.Drawing.Size(63, 22);
+            this.windowMenuItem.Size = new System.Drawing.Size(63, 20);
             this.windowMenuItem.Text = "&Window";
             // 
             // closeAllDocumentsMenuItem
@@ -182,8 +180,7 @@
             // 
             this.window0MenuItem.Name = "window0MenuItem";
             this.window0MenuItem.Size = new System.Drawing.Size(184, 22);
-            this.window0MenuItem.Tag = "";
-            this.window0MenuItem.Text = "Window0";
+            this.window0MenuItem.Text = "Window 0";
             this.window0MenuItem.Visible = false;
             this.window0MenuItem.Click += new System.EventHandler(this.windowXMenuItem_Click);
             // 
@@ -191,8 +188,7 @@
             // 
             this.window1MenuItem.Name = "window1MenuItem";
             this.window1MenuItem.Size = new System.Drawing.Size(184, 22);
-            this.window1MenuItem.Tag = "";
-            this.window1MenuItem.Text = "Window1";
+            this.window1MenuItem.Text = "Window 1";
             this.window1MenuItem.Visible = false;
             this.window1MenuItem.Click += new System.EventHandler(this.windowXMenuItem_Click);
             // 
@@ -200,8 +196,7 @@
             // 
             this.window2MenuItem.Name = "window2MenuItem";
             this.window2MenuItem.Size = new System.Drawing.Size(184, 22);
-            this.window2MenuItem.Tag = "";
-            this.window2MenuItem.Text = "Window2";
+            this.window2MenuItem.Text = "Window 2";
             this.window2MenuItem.Visible = false;
             this.window2MenuItem.Click += new System.EventHandler(this.windowXMenuItem_Click);
             // 
@@ -209,8 +204,7 @@
             // 
             this.window3MenuItem.Name = "window3MenuItem";
             this.window3MenuItem.Size = new System.Drawing.Size(184, 22);
-            this.window3MenuItem.Tag = "";
-            this.window3MenuItem.Text = "Window3";
+            this.window3MenuItem.Text = "Window 3";
             this.window3MenuItem.Visible = false;
             this.window3MenuItem.Click += new System.EventHandler(this.windowXMenuItem_Click);
             // 
@@ -222,10 +216,8 @@
             // 
             // statusStrip1
             // 
-            this.statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.statusStrip1.Location = new System.Drawing.Point(0, 270);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 9, 0);
             this.statusStrip1.Size = new System.Drawing.Size(533, 22);
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
@@ -239,7 +231,6 @@
             this.Controls.Add(this.mainMenuStrip);
             this.IsMdiContainer = true;
             this.MainMenuStrip = this.mainMenuStrip;
-            this.Margin = new System.Windows.Forms.Padding(2);
             this.MinimumSize = new System.Drawing.Size(500, 300);
             this.Name = "ShellForm";
             this.Text = "Form1";
