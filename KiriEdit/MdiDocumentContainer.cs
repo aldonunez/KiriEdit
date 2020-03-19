@@ -8,11 +8,11 @@ namespace KiriEdit
     internal class MdiDocumentContainer
     {
         private Form _form;
-        private Stack<IView> _views = new Stack<IView>();
+        private List<IView> _views = new List<IView>();
 
         internal int Count => _views.Count;
 
-        internal IView CurrentView => (_views.Count > 0) ? _views.Peek() : null;
+        internal IView CurrentView => (IView) _form.ActiveMdiChild;
 
         public MdiDocumentContainer(Form form)
         {
@@ -22,16 +22,36 @@ namespace KiriEdit
 
         internal void AddView(IView view)
         {
-            _views.Push(view);
+            _views.Add(view);
 
-            view.Form.MdiParent = _form;
-            view.Form.WindowState = FormWindowState.Maximized;
-            view.Form.Show();
+            try
+            {
+                view.Form.MdiParent = _form;
+                view.Form.WindowState = FormWindowState.Maximized;
+                view.Form.FormClosed += Form_FormClosed;
+                view.Form.Show();
+            }
+            catch
+            {
+                _views.Remove(view);
+                throw;
+            }
+        }
+
+        private void Form_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Form form = (Form) sender;
+            form.FormClosed -= Form_FormClosed;
+
+            IView view = (IView) sender;
+            _views.Remove(view);
         }
 
         public void Clear()
         {
-            foreach (var view in _views)
+            IView[] views = _views.ToArray();
+
+            foreach (var view in views)
             {
                 view.Form.Close();
             }

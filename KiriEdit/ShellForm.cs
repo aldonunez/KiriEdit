@@ -134,6 +134,7 @@ namespace KiriEdit
             openProjectMenuItem.Enabled = true;
             closeProjectMenuItem.Enabled = false;
             saveAllMenuItem.Enabled = false;
+            characterMapMenuItem.Enabled = false;
 
             _documentContainer.Clear();
 
@@ -152,6 +153,7 @@ namespace KiriEdit
             openProjectMenuItem.Enabled = false;
             closeProjectMenuItem.Enabled = true;
             saveAllMenuItem.Enabled = true;
+            characterMapMenuItem.Enabled = true;
 
             UpdateViewHostingState();
             string baseName = project.Name;
@@ -281,6 +283,19 @@ namespace KiriEdit
         {
             var view = new FigureEditView();
             AddView(view);
+        }
+
+        private void characterMapMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_documentContainer.FindView(typeof(CharMapView)) == null)
+            {
+                AddView(new CharMapView());
+            }
+        }
+
+        private void closeAllDocumentsMenuItem_Click(object sender, EventArgs e)
+        {
+            _documentContainer.Clear();
         }
     }
 
