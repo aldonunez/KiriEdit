@@ -52,7 +52,9 @@ namespace KiriEdit
         private void CharListBox_DoubleClick(object sender, EventArgs e)
         {
             var charListItem = (CharListItem) charListBox.SelectedItem;
-            Shell.OpenItem(charListItem.CharacterItem);
+
+            if (charListItem != null)
+                Shell.OpenItem(charListItem.CharacterItem);
         }
 
         private void addListCharButton_Click(object sender, EventArgs e)

@@ -125,7 +125,7 @@
             this.addPieceButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.addPieceButton.Name = "addPieceButton";
             this.addPieceButton.Size = new System.Drawing.Size(23, 22);
-            this.addPieceButton.Text = "toolStripButton1";
+            this.addPieceButton.Text = "Add piece";
             // 
             // deletePieceButton
             // 
@@ -134,7 +134,7 @@
             this.deletePieceButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.deletePieceButton.Name = "deletePieceButton";
             this.deletePieceButton.Size = new System.Drawing.Size(23, 22);
-            this.deletePieceButton.Text = "toolStripButton2";
+            this.deletePieceButton.Text = "Delete piece";
             // 
             // FigureEditView
             // 
