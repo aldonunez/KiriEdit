@@ -11,6 +11,13 @@ namespace KiriEdit
 
         public FigureEditView()
         {
+            // The left pane of the SplitContainer has a docked panel that holds all of the other
+            // controls, not counting the ToolStrip.
+            //
+            // I had to do this, because anchoring individual controls inside the pane didn't work.
+            // The right anchor didn't do anything, and the bottom anchor made the ListView's
+            // height collapse.
+
             InitializeComponent();
         }
 

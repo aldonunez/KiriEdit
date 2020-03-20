@@ -36,11 +36,13 @@
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.addPieceButton = new System.Windows.Forms.ToolStripButton();
             this.deletePieceButton = new System.Windows.Forms.ToolStripButton();
+            this.panel1 = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.masterPictureBox)).BeginInit();
             this.toolStrip1.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -51,10 +53,7 @@
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.piecesLabel);
-            this.splitContainer1.Panel1.Controls.Add(this.masterPictureBox);
-            this.splitContainer1.Panel1.Controls.Add(this.masterLabel);
-            this.splitContainer1.Panel1.Controls.Add(this.piecesListView);
+            this.splitContainer1.Panel1.Controls.Add(this.panel1);
             this.splitContainer1.Panel1.Controls.Add(this.toolStrip1);
             this.splitContainer1.Size = new System.Drawing.Size(391, 250);
             this.splitContainer1.SplitterDistance = 130;
@@ -64,7 +63,8 @@
             // piecesLabel
             // 
             this.piecesLabel.AutoSize = true;
-            this.piecesLabel.Location = new System.Drawing.Point(3, 119);
+            this.piecesLabel.Location = new System.Drawing.Point(3, 100);
+            this.piecesLabel.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.piecesLabel.Name = "piecesLabel";
             this.piecesLabel.Size = new System.Drawing.Size(42, 13);
             this.piecesLabel.TabIndex = 4;
@@ -78,9 +78,9 @@
             this.masterPictureBox.BackColor = System.Drawing.Color.White;
             this.masterPictureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.masterPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.masterPictureBox.Location = new System.Drawing.Point(0, 41);
+            this.masterPictureBox.Location = new System.Drawing.Point(3, 19);
             this.masterPictureBox.Name = "masterPictureBox";
-            this.masterPictureBox.Size = new System.Drawing.Size(130, 75);
+            this.masterPictureBox.Size = new System.Drawing.Size(124, 75);
             this.masterPictureBox.TabIndex = 3;
             this.masterPictureBox.TabStop = false;
             this.masterPictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.masterPictureBox_Paint);
@@ -88,7 +88,8 @@
             // masterLabel
             // 
             this.masterLabel.AutoSize = true;
-            this.masterLabel.Location = new System.Drawing.Point(3, 25);
+            this.masterLabel.Location = new System.Drawing.Point(3, 3);
+            this.masterLabel.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.masterLabel.Name = "masterLabel";
             this.masterLabel.Size = new System.Drawing.Size(42, 13);
             this.masterLabel.TabIndex = 2;
@@ -101,9 +102,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.piecesListView.HideSelection = false;
-            this.piecesListView.Location = new System.Drawing.Point(0, 135);
+            this.piecesListView.Location = new System.Drawing.Point(3, 116);
             this.piecesListView.Name = "piecesListView";
-            this.piecesListView.Size = new System.Drawing.Size(130, 112);
+            this.piecesListView.Size = new System.Drawing.Size(124, 97);
             this.piecesListView.TabIndex = 1;
             this.piecesListView.UseCompatibleStateImageBehavior = false;
             // 
@@ -136,6 +137,18 @@
             this.deletePieceButton.Size = new System.Drawing.Size(23, 22);
             this.deletePieceButton.Text = "Delete piece";
             // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.masterLabel);
+            this.panel1.Controls.Add(this.piecesListView);
+            this.panel1.Controls.Add(this.masterPictureBox);
+            this.panel1.Controls.Add(this.piecesLabel);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(0, 25);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(130, 225);
+            this.panel1.TabIndex = 0;
+            // 
             // FigureEditView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -151,6 +164,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.masterPictureBox)).EndInit();
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -165,5 +180,6 @@
         private System.Windows.Forms.PictureBox masterPictureBox;
         private System.Windows.Forms.Label masterLabel;
         private System.Windows.Forms.Label piecesLabel;
+        private System.Windows.Forms.Panel panel1;
     }
 }
