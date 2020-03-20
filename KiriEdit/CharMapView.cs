@@ -36,16 +36,23 @@ namespace KiriEdit
         public bool IsDirty => false;
 
         public IShell Shell { get; set; }
+        public object ProjectItem { get; set; }
 
         public CharMapView()
         {
             InitializeComponent();
-            charListBox.DoubleClick += CharListBox_DoubleClick;
+        }
+
+        private void CharListBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+                CharListBox_DoubleClick(sender, e);
         }
 
         private void CharListBox_DoubleClick(object sender, EventArgs e)
         {
-            Shell.OpenItem(charListBox.SelectedItem);
+            var charListItem = (CharListItem) charListBox.SelectedItem;
+            Shell.OpenItem(charListItem.CharacterItem);
         }
 
         private void addListCharButton_Click(object sender, EventArgs e)
@@ -235,7 +242,7 @@ namespace KiriEdit
                 codePoint,
                 CharUtils.GetString(codePoint),
                 item.PieceFigureItems.Count);
-            return new CharListItem(text, codePoint);
+            return new CharListItem(text, codePoint, item);
         }
 
         public bool Save()
@@ -372,12 +379,14 @@ namespace KiriEdit
             public string Text;
             public uint CodePoint;
             public string String;
+            public CharacterItem CharacterItem;
 
-            public CharListItem(string text, uint codePoint)
+            public CharListItem(string text, uint codePoint, CharacterItem characterItem)
             {
                 Text = text;
                 CodePoint = codePoint;
                 String = CharUtils.GetString(codePoint);
+                CharacterItem = characterItem;
             }
 
             public override string ToString()

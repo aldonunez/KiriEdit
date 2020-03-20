@@ -46,6 +46,7 @@
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
             this.splitContainer1.Name = "splitContainer1";
             // 
@@ -83,6 +84,7 @@
             this.masterPictureBox.Size = new System.Drawing.Size(130, 75);
             this.masterPictureBox.TabIndex = 3;
             this.masterPictureBox.TabStop = false;
+            this.masterPictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.masterPictureBox_Paint);
             // 
             // masterLabel
             // 
@@ -139,9 +141,10 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(391, 250);
             this.Controls.Add(this.splitContainer1);
             this.Name = "FigureEditView";
-            this.ClientSize = new System.Drawing.Size(391, 250);
+            this.Load += new System.EventHandler(this.FigureEditView_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();

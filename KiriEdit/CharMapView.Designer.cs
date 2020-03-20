@@ -45,7 +45,6 @@
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.addListCharButton = new System.Windows.Forms.ToolStripButton();
             this.deleteListCharButton = new System.Windows.Forms.ToolStripButton();
-            this.charGrid = new KiriEdit.CharacterGrid();
             this.panel2 = new System.Windows.Forms.Panel();
             this.charDescriptionLabel = new System.Windows.Forms.Label();
             this.findCharButton = new System.Windows.Forms.Button();
@@ -54,6 +53,7 @@
             this.characterContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addCharacterMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteCharacterMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.charGrid = new KiriEdit.CharacterGrid();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -67,6 +67,7 @@
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
             this.splitContainer1.Name = "splitContainer1";
             // 
@@ -98,6 +99,8 @@
             this.charListBox.Size = new System.Drawing.Size(121, 219);
             this.charListBox.TabIndex = 2;
             this.charListBox.SelectedIndexChanged += new System.EventHandler(this.charListBox_SelectedIndexChanged);
+            this.charListBox.DoubleClick += new System.EventHandler(this.CharListBox_DoubleClick);
+            this.charListBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.CharListBox_KeyUp);
             // 
             // sortComboBox
             // 
@@ -138,19 +141,6 @@
             this.deleteListCharButton.Size = new System.Drawing.Size(23, 22);
             this.deleteListCharButton.Text = "Delete character";
             this.deleteListCharButton.Click += new System.EventHandler(this.deleteListCharButton_Click);
-            // 
-            // charGrid
-            // 
-            this.charGrid.Columns = 20;
-            this.charGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.charGrid.Location = new System.Drawing.Point(8, 32);
-            this.charGrid.Margin = new System.Windows.Forms.Padding(2);
-            this.charGrid.Name = "charGrid";
-            this.charGrid.OnCharacterColor = System.Drawing.Color.Red;
-            this.charGrid.Size = new System.Drawing.Size(285, 170);
-            this.charGrid.TabIndex = 0;
-            this.charGrid.SelectedIndexChanged += new System.EventHandler(this.charGrid_SelectedIndexChanged);
-            this.charGrid.MouseUp += new System.Windows.Forms.MouseEventHandler(this.CharGrid_MouseUp);
             // 
             // panel2
             // 
@@ -223,6 +213,19 @@
             this.deleteCharacterMenuItem.Size = new System.Drawing.Size(171, 22);
             this.deleteCharacterMenuItem.Text = "Delete character ...";
             this.deleteCharacterMenuItem.Click += new System.EventHandler(this.deleteCharacterMenuItem_Click);
+            // 
+            // charGrid
+            // 
+            this.charGrid.Columns = 20;
+            this.charGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.charGrid.Location = new System.Drawing.Point(8, 32);
+            this.charGrid.Margin = new System.Windows.Forms.Padding(2);
+            this.charGrid.Name = "charGrid";
+            this.charGrid.OnCharacterColor = System.Drawing.Color.Red;
+            this.charGrid.Size = new System.Drawing.Size(285, 170);
+            this.charGrid.TabIndex = 0;
+            this.charGrid.SelectedIndexChanged += new System.EventHandler(this.charGrid_SelectedIndexChanged);
+            this.charGrid.MouseUp += new System.Windows.Forms.MouseEventHandler(this.CharGrid_MouseUp);
             // 
             // CharMapView
             // 

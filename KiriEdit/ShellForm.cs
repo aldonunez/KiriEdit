@@ -333,6 +333,7 @@ namespace KiriEdit
         public void OpenItem(object item)
         {
             var view = new FigureEditView();
+            view.ProjectItem = item;
             AddView(view);
         }
 
@@ -364,6 +365,7 @@ namespace KiriEdit
     {
         IShell Shell { get; set; }
         Project Project { get; set; }
+        object ProjectItem { get; set; }
         Form Form { get; }
         string DocumentName { get; }
         bool IsDirty { get; }
