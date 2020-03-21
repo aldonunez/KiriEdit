@@ -58,6 +58,11 @@ namespace KiriEdit
         private void FigureEditView_Load(object sender, EventArgs e)
         {
             _document = _characterItem.MasterFigureItem.Open();
+
+            foreach (var pieceItem in _characterItem.PieceFigureItems)
+            {
+                LoadPiece(pieceItem);
+            }
         }
 
         private void masterPictureBox_Paint(object sender, PaintEventArgs e)
