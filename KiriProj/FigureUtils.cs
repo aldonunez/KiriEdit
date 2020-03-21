@@ -33,13 +33,13 @@ namespace KiriEdit
 
                 shapes[i] = shape;
 
-                shape.OuterContour = figure.Contours.IndexOf(toolShape.OuterContour);
+                shape.Contours = new int[toolShape.InnerContours.Length + 1];
 
-                shape.InnerContours = new int[toolShape.InnerContours.Length];
+                shape.Contours[0] = figure.Contours.IndexOf(toolShape.OuterContour);
 
                 for (int j = 0; j < toolShape.InnerContours.Length; j++)
                 {
-                    shape.InnerContours[j] = figure.Contours.IndexOf(toolShape.InnerContours[j]);
+                    shape.Contours[j + 1] = figure.Contours.IndexOf(toolShape.InnerContours[j]);
                 }
             }
 

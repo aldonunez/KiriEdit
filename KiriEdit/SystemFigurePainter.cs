@@ -87,13 +87,7 @@ namespace KiriEdit
                 if (shape.Enabled != enabled)
                     continue;
 
-                _graphicsPath.StartFigure();
-                MoveTo(figure.Contours[shape.OuterContour].FirstPoint);
-                _figureWalker.WalkContour(figure.Contours[shape.OuterContour]);
-                _graphicsPath.CloseFigure();
-
-
-                foreach (var contourIndex in shape.InnerContours)
+                foreach (var contourIndex in shape.Contours)
                 {
                     _graphicsPath.StartFigure();
                     MoveTo(figure.Contours[contourIndex].FirstPoint);

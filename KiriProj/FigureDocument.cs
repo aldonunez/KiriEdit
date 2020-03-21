@@ -12,9 +12,9 @@ namespace KiriEdit
         public class Shape
         {
             public bool Enabled { get; set; }
-            // TODO: consider making one array of contours and the first element is the outer contour.
-            public int OuterContour { get; set; }
-            public int[] InnerContours { get; set; }
+
+            // The outer contour is first.
+            public int[] Contours { get; set; }
         }
 
         [JsonConverter(typeof(FigureConverter))]
