@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
+using TryFreetype.Model;
 
 namespace KiriEdit
 {
@@ -8,6 +10,7 @@ namespace KiriEdit
     {
         private CharacterItem _characterItem;
         private FigureDocument _document;
+        private ImageList _imageList;
 
         public FigureEditView()
         {
@@ -19,6 +22,11 @@ namespace KiriEdit
             // height collapse.
 
             InitializeComponent();
+
+            _imageList = new ImageList();
+            _imageList.ImageSize = new Size(64, 64);
+            piecesListView.MultiSelect = false;
+            piecesListView.LargeImageList = _imageList;
         }
 
         public IShell Shell { get; set; }
@@ -64,10 +72,96 @@ namespace KiriEdit
                 width,
                 height);
 
-            using (var painter = new SystemFigurePainter(_document.Figure, e.Graphics, rect))
+            using (var painter = new SystemFigurePainter(_document, e.Graphics, rect, FigurePainterSection.Full))
             {
-                painter.Paint();
+                painter.Fill();
             }
+        }
+
+        private void addPieceButton_Click(object sender, EventArgs e)
+        {
+            AddPiece();
+        }
+
+        private void deletePieceButton_Click(object sender, EventArgs e)
+        {
+            if (piecesListView.SelectedItems.Count > 0)
+                DeletePiece(piecesListView.SelectedItems[0]);
+        }
+
+        private void AddPiece()
+        {
+            // TODO: make this an instance method
+            string fileName = CharacterItem.FindNextFileName(Project, _characterItem.CodePoint);
+            string name = Path.GetFileNameWithoutExtension(fileName);
+
+            FigureItem figureItem = _characterItem.AddItem(name);
+
+            LoadPiece(figureItem);
+        }
+
+        private void LoadPiece(FigureItem figureItem)
+        {
+            var pieceDoc = figureItem.Open();
+
+            var rect = new Rectangle(0, 0, 64, 64);
+
+            Bitmap bitmap = new Bitmap(rect.Width, rect.Height);
+
+            try
+            {
+                using (var g = Graphics.FromImage(bitmap))
+                {
+                    using (var painter = new SystemFigurePainter(pieceDoc, g, rect, FigurePainterSection.Enabled))
+                    {
+                        painter.Fill();
+                        painter.Draw();
+                    }
+                    using (var painter = new SystemFigurePainter(pieceDoc, g, rect, FigurePainterSection.Disabled))
+                    {
+                        painter.Draw();
+                    }
+                }
+
+                _imageList.Images.Add(figureItem.Name, bitmap);
+                bitmap.Save(@"C:\Temp\x.png");
+                bitmap = null;
+            }
+            catch
+            {
+                if (bitmap != null)
+                    bitmap.Dispose();
+                throw;
+            }
+
+            string name = figureItem.Name;
+
+            var listItem = piecesListView.Items.Add(name, name, name);
+
+            listItem.Tag = figureItem;
+        }
+
+        private void DeletePiece(ListViewItem listViewItem)
+        {
+            var figureItem = (FigureItem) listViewItem.Tag;
+
+            if (!ConfirmDeletePiece(figureItem))
+                return;
+
+            _characterItem.DeleteItem(figureItem.Name);
+
+            piecesListView.Items.Remove(listViewItem);
+        }
+
+        private bool ConfirmDeletePiece(FigureItem figureItem)
+        {
+            string message = string.Format("'{0}' will be deleted permanently.", figureItem.Name);
+            DialogResult result = MessageBox.Show(message, ShellForm.AppTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+
+            if (result == DialogResult.OK)
+                return true;
+
+            return false;
         }
     }
 }

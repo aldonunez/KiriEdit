@@ -7,17 +7,30 @@ using System.Drawing.Drawing2D;
 
 namespace KiriEdit
 {
+    public enum FigurePainterSection
+    {
+        Enabled,
+        Disabled,
+        Full,
+    }
+
     public class SystemFigurePainter : IDisposable
     {
-        private Figure _figure;
+        private FigureDocument _document;
         private FigureWalker _figureWalker;
         private Graphics _graphics;
         private GraphicsPath _graphicsPath;
         private int _x, _y;
+        private FigurePainterSection _section;
 
-        public SystemFigurePainter(Figure figure, Graphics g, Rectangle rect)
+        public SystemFigurePainter(
+            FigureDocument document,
+            Graphics g,
+            Rectangle rect,
+            FigurePainterSection section)
         {
-            _figure = figure;
+            _document = document;
+            _section = section;
 
             _figureWalker = new FigureWalker();
             _figureWalker.LineTo += LineTo;
@@ -27,18 +40,19 @@ namespace KiriEdit
             _graphics = g;
             _graphicsPath = new GraphicsPath();
 
-            float pixWidth = (int) (figure.Width / 64f);
-            float pixHeight = (int) (figure.Height / 64f);
+            float pixWidth = (int) (document.Figure.Width / 64f);
+            float pixHeight = (int) Math.Ceiling(document.Figure.Height / 64f);
 
-            float scale = rect.Height / pixHeight;
+            float scale = (rect.Height - 1) / pixHeight;
 
-            int bmpWidth = (int) (pixWidth * scale);
-            int bmpHeight = (int) (pixHeight * scale);
+            int bmpWidth = rect.Width;
+            int bmpHeight = rect.Height;
 
+            g.ResetTransform();
             g.ScaleTransform(scale / 64f, -scale / 64f, MatrixOrder.Append);
             g.TranslateTransform(
-                rect.X + (float) -figure.OffsetX * scale / 64f,
-                rect.Y + (bmpHeight - 1) + (float) figure.OffsetY * scale / 64f,
+                rect.X + (float) -document.Figure.OffsetX * scale / 64f,
+                rect.Y + (bmpHeight - 1) + (float) document.Figure.OffsetY * scale / 64f,
                 MatrixOrder.Append);
         }
 
@@ -51,9 +65,9 @@ namespace KiriEdit
             }
         }
 
-        public void Paint()
+        private void PaintFull()
         {
-            foreach (var contour in _figure.Contours)
+            foreach (var contour in _document.Figure.Contours)
             {
                 _graphicsPath.StartFigure();
                 MoveTo(contour.FirstPoint);
@@ -62,6 +76,63 @@ namespace KiriEdit
             }
 
             _graphicsPath.CloseAllFigures();
+        }
+
+        private void PaintPart(bool enabled)
+        {
+            Figure figure = _document.Figure;
+
+            foreach (var shape in _document.Shapes)
+            {
+                if (shape.Enabled != enabled)
+                    continue;
+
+                _graphicsPath.StartFigure();
+                MoveTo(figure.Contours[shape.OuterContour].FirstPoint);
+                _figureWalker.WalkContour(figure.Contours[shape.OuterContour]);
+                _graphicsPath.CloseFigure();
+
+
+                foreach (var contourIndex in shape.InnerContours)
+                {
+                    _graphicsPath.StartFigure();
+                    MoveTo(figure.Contours[contourIndex].FirstPoint);
+                    _figureWalker.WalkContour(figure.Contours[contourIndex]);
+                    _graphicsPath.CloseFigure();
+                }
+            }
+        }
+
+        private void Paint()
+        {
+            if (_graphicsPath.PointCount != 0)
+                return;
+
+            switch (_section)
+            {
+                case FigurePainterSection.Full:
+                    PaintFull();
+                    break;
+
+                case FigurePainterSection.Enabled:
+                    PaintPart(true);
+                    break;
+
+                case FigurePainterSection.Disabled:
+                    PaintPart(false);
+                    break;
+            }
+        }
+
+        public void Draw()
+        {
+            Paint();
+            _graphics.DrawPath(Pens.Red, _graphicsPath);
+        }
+
+        public void Fill()
+        {
+            Paint();
             _graphics.FillPath(Brushes.Black, _graphicsPath);
         }
 

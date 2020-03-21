@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using TryFreetype;
 using TryFreetype.Model;
 
 namespace KiriEdit
@@ -92,9 +93,11 @@ namespace KiriEdit
                 project.FaceIndex,
                 codePoint);
 
+            var shapes = FigureUtils.CalculateShapes(figure);
             var document = new FigureDocument();
 
             document.Figure = figure;
+            document.Shapes = shapes;
 
             var figureItem = new FigureItem(figurePath);
 
@@ -121,7 +124,7 @@ namespace KiriEdit
             Directory.Delete(rootPath, true);
         }
 
-        public static string FindNextGenericName(Project project, uint codePoint)
+        public static string FindNextFileName(Project project, uint codePoint)
         {
             string rootPath = GetRootPath(project, codePoint);
 
@@ -173,7 +176,7 @@ namespace KiriEdit
 
             foreach (var item in _figureItems)
             {
-                if (name.Equals(item.Name, StringComparison.OrdinalIgnoreCase))
+                if (fileName.Equals(item.Name, StringComparison.OrdinalIgnoreCase))
                     throw new ApplicationException();
             }
 
@@ -185,6 +188,7 @@ namespace KiriEdit
             FigureDocument pieceDoc = new FigureDocument();
 
             pieceDoc.Figure = masterDoc.Figure;
+            pieceDoc.Shapes = masterDoc.Shapes;
             figureItem.Save(pieceDoc);
 
             _figureItems.Add(figureItem);

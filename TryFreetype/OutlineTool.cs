@@ -9,6 +9,7 @@ namespace TryFreetype
     {
         public class Shape
         {
+            // TODO: consider making one array of contours and the first element is the outer contour.
             public Contour OuterContour { get; }
             public Contour[] InnerContours { get; }
 

@@ -9,11 +9,18 @@ namespace KiriEdit
 {
     public class FigureDocument
     {
+        public class Shape
+        {
+            public bool Enabled { get; set; }
+            // TODO: consider making one array of contours and the first element is the outer contour.
+            public int OuterContour { get; set; }
+            public int[] InnerContours { get; set; }
+        }
+
         [JsonConverter(typeof(FigureConverter))]
         public Figure Figure { get; set; }
 
-        // TODO: shapes
-        // TODO: enabled shape references
+        public Shape[] Shapes { get; set; }
     }
 
     internal class FigureConverter : JsonConverter<Figure>

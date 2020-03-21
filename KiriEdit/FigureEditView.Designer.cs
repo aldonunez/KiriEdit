@@ -127,6 +127,7 @@
             this.addPieceButton.Name = "addPieceButton";
             this.addPieceButton.Size = new System.Drawing.Size(23, 22);
             this.addPieceButton.Text = "Add piece";
+            this.addPieceButton.Click += new System.EventHandler(this.addPieceButton_Click);
             // 
             // deletePieceButton
             // 
@@ -136,6 +137,7 @@
             this.deletePieceButton.Name = "deletePieceButton";
             this.deletePieceButton.Size = new System.Drawing.Size(23, 22);
             this.deletePieceButton.Text = "Delete piece";
+            this.deletePieceButton.Click += new System.EventHandler(this.deletePieceButton_Click);
             // 
             // panel1
             // 
