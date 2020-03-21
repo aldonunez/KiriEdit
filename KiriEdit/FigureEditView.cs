@@ -42,6 +42,14 @@ namespace KiriEdit
             }
         }
 
+        protected override void ScaleControl(SizeF factor, BoundsSpecified specified)
+        {
+            base.ScaleControl(factor, specified);
+
+            int side = (int) Math.Round(32 * factor.Height);
+            piecesImageList.ImageSize = new Size(side, side);
+        }
+
         public bool Save()
         {
             // TODO:
@@ -102,7 +110,7 @@ namespace KiriEdit
         {
             var pieceDoc = figureItem.Open();
 
-            var rect = new Rectangle(0, 0, 64, 64);
+            var rect = new Rectangle(Point.Empty, piecesImageList.ImageSize);
 
             Bitmap bitmap = new Bitmap(rect.Width, rect.Height);
 

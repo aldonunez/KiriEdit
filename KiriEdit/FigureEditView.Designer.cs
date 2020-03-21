@@ -158,7 +158,7 @@
             // piecesImageList
             // 
             this.piecesImageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
-            this.piecesImageList.ImageSize = new System.Drawing.Size(64, 64);
+            this.piecesImageList.ImageSize = new System.Drawing.Size(32, 32);
             this.piecesImageList.TransparentColor = System.Drawing.Color.Transparent;
             // 
             // FigureEditView
