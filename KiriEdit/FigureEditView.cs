@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using TryFreetype.Model;
 
 namespace KiriEdit
 {
@@ -10,7 +9,6 @@ namespace KiriEdit
     {
         private CharacterItem _characterItem;
         private FigureDocument _document;
-        private ImageList _imageList;
 
         public FigureEditView()
         {
@@ -22,11 +20,6 @@ namespace KiriEdit
             // height collapse.
 
             InitializeComponent();
-
-            _imageList = new ImageList();
-            _imageList.ImageSize = new Size(64, 64);
-            piecesListView.MultiSelect = false;
-            piecesListView.LargeImageList = _imageList;
         }
 
         public IShell Shell { get; set; }
@@ -128,7 +121,7 @@ namespace KiriEdit
                     }
                 }
 
-                _imageList.Images.Add(figureItem.Name, bitmap);
+                piecesImageList.Images.Add(figureItem.Name, bitmap);
                 bitmap.Save(@"C:\Temp\x.png");
                 bitmap = null;
             }
@@ -156,7 +149,7 @@ namespace KiriEdit
             _characterItem.DeleteItem(figureItem.Name);
 
             piecesListView.Items.Remove(listViewItem);
-            _imageList.Images.RemoveByKey(figureItem.Name);
+            piecesImageList.Images.RemoveByKey(figureItem.Name);
         }
 
         private bool ConfirmDeletePiece(FigureItem figureItem)

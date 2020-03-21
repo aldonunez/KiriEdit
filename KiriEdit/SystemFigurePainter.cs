@@ -22,6 +22,7 @@ namespace KiriEdit
         private GraphicsPath _graphicsPath;
         private int _x, _y;
         private FigurePainterSection _section;
+        private bool _preparedPath;
 
         public SystemFigurePainter(
             FigureDocument document,
@@ -89,9 +90,13 @@ namespace KiriEdit
 
                 foreach (var contourIndex in shape.Contours)
                 {
+                    Contour contour = figure.Contours[contourIndex];
+
                     _graphicsPath.StartFigure();
-                    MoveTo(figure.Contours[contourIndex].FirstPoint);
-                    _figureWalker.WalkContour(figure.Contours[contourIndex]);
+
+                    MoveTo(contour.FirstPoint);
+                    _figureWalker.WalkContour(contour);
+
                     _graphicsPath.CloseFigure();
                 }
             }
@@ -99,7 +104,7 @@ namespace KiriEdit
 
         private void Paint()
         {
-            if (_graphicsPath.PointCount != 0)
+            if (_preparedPath)
                 return;
 
             switch (_section)
@@ -116,6 +121,8 @@ namespace KiriEdit
                     PaintPart(false);
                     break;
             }
+
+            _preparedPath = true;
         }
 
         public void Draw()
