@@ -156,6 +156,7 @@ namespace KiriEdit
             _characterItem.DeleteItem(figureItem.Name);
 
             piecesListView.Items.Remove(listViewItem);
+            _imageList.Images.RemoveByKey(figureItem.Name);
         }
 
         private bool ConfirmDeletePiece(FigureItem figureItem)

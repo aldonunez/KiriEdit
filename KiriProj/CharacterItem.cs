@@ -206,7 +206,7 @@ namespace KiriEdit
                 {
                     File.Delete(item.Path);
                     _figureItems.RemoveAt(i);
-                    break;
+                    return;
                 }
             }
 
