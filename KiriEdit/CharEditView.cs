@@ -8,7 +8,7 @@ namespace KiriEdit
     public partial class CharEditView : Form, IView
     {
         private CharacterItem _characterItem;
-        private FigureDocument _document;
+        private FigureDocument _masterDoc;
 
         public CharEditView()
         {
@@ -58,7 +58,7 @@ namespace KiriEdit
 
         private void FigureEditView_Load(object sender, EventArgs e)
         {
-            _document = _characterItem.MasterFigureItem.Open();
+            _masterDoc = _characterItem.MasterFigureItem.Open();
 
             foreach (var pieceItem in _characterItem.PieceFigureItems)
             {
@@ -78,7 +78,7 @@ namespace KiriEdit
                 width,
                 height);
 
-            using (var painter = new SystemFigurePainter(_document, e.Graphics, rect, FigurePainterSection.Full))
+            using (var painter = new SystemFigurePainter(_masterDoc, e.Graphics, rect, FigurePainterSection.Full))
             {
                 painter.Fill();
             }

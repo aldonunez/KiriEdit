@@ -33,7 +33,7 @@ namespace KiriEdit
             CodePoint = codePoint;
             RootPath = charRoot;
             // TODO: Use MasterFigureItem
-            MasterFigureItem = new FigureItem(masterPath);
+            MasterFigureItem = new FigureItem(masterPath, this);
         }
 
         private void FillPieces(string rootPath)
@@ -42,7 +42,7 @@ namespace KiriEdit
 
             foreach (var fileInfo in charRootInfo.EnumerateFiles(FigureSearchPattern))
             {
-                _figureItems.Add(new FigureItem(fileInfo.FullName));
+                _figureItems.Add(new FigureItem(fileInfo.FullName, this));
             }
         }
 
@@ -99,7 +99,8 @@ namespace KiriEdit
             document.Figure = figure;
             document.Shapes = shapes;
 
-            var figureItem = new FigureItem(figurePath);
+            var characterItem = new CharacterItem(project, codePoint);
+            var figureItem = new FigureItem(figurePath, characterItem);
 
             try
             {
@@ -111,8 +112,6 @@ namespace KiriEdit
             {
                 Directory.Delete(rootPath, true);
             }
-
-            var characterItem = new CharacterItem(project, codePoint);
 
             return characterItem;
         }
@@ -182,7 +181,7 @@ namespace KiriEdit
 
             // Make the new item with a copy of the master figure.
 
-            var figureItem = new FigureItem(figurePath);
+            var figureItem = new FigureItem(figurePath, this);
 
             FigureDocument masterDoc = MasterFigureItem.Open();
             FigureDocument pieceDoc = new FigureDocument();

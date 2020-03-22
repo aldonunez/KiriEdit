@@ -10,13 +10,15 @@ namespace KiriEdit
         public string Name { get; }
         public string Path { get; }
         public bool IsDirty { get; set; }
+        public CharacterItem Parent { get; set; }
 
-        public FigureItem(string path)
+        public FigureItem(string path, CharacterItem parent)
         {
             string baseName = System.IO.Path.GetFileNameWithoutExtension(path);
 
             Name = baseName;
             Path = path;
+            Parent = parent;
         }
 
         public void Save(FigureDocument document)

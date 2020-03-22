@@ -120,6 +120,12 @@
       <DependentUpon>CharMapView.cs</DependentUpon>
     </Compile>
     <Compile Include="CharUtils.cs" />
+    <Compile Include="FigureEditView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FigureEditView.Designer.cs">
+      <DependentUpon>FigureEditView.cs</DependentUpon>
+    </Compile>
     <Compile Include="FolderSelectDialog.cs" />
     <Compile Include="IShell.cs" />
     <Compile Include="MdiDocumentContainer.cs" />
@@ -153,6 +159,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="CharMapView.resx">
       <DependentUpon>CharMapView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FigureEditView.resx">
+      <DependentUpon>FigureEditView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ShellForm.resx">
       <DependentUpon>ShellForm.cs</DependentUpon>
