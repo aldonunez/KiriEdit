@@ -9,6 +9,7 @@ namespace KiriEdit
         private FigureItem _figureItem;
         private FigureDocument _document;
         private bool _shown;
+        private Rectangle _rectangle;
 
         public FigureItem FigureItem
         {
@@ -60,6 +61,12 @@ namespace KiriEdit
             if (_document == null || !IsHandleCreated)
                 return;
 
+            if (canvas.BackgroundImage != null)
+            {
+                canvas.BackgroundImage.Dispose();
+                canvas.BackgroundImage = null;
+            }
+
             Size picBoxSize = canvas.ClientSize;
             int height = (int) (picBoxSize.Height * 0.80f);
             int width = (int) (height * 32f / 37f);
@@ -85,6 +92,7 @@ namespace KiriEdit
             }
 
             canvas.BackgroundImage = bitmap;
+            _rectangle = rect;
         }
     }
 }
