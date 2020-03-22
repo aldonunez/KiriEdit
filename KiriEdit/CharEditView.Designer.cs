@@ -1,6 +1,6 @@
 ﻿namespace KiriEdit
 {
-    partial class FigureEditView
+    partial class CharEditView
     {
         /// <summary> 
         /// Required designer variable.

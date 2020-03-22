@@ -5,12 +5,12 @@ using System.Windows.Forms;
 
 namespace KiriEdit
 {
-    public partial class FigureEditView : Form, IView
+    public partial class CharEditView : Form, IView
     {
         private CharacterItem _characterItem;
         private FigureDocument _document;
 
-        public FigureEditView()
+        public CharEditView()
         {
             // The left pane of the SplitContainer has a docked panel that holds all of the other
             // controls, not counting the ToolStrip.
