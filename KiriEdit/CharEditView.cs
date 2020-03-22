@@ -221,5 +221,12 @@ namespace KiriEdit
         {
             piecesListView.Focus();
         }
+
+        private void piecesListView_ItemActivate(object sender, EventArgs e)
+        {
+            var figureItem = (FigureItem) piecesListView.SelectedItems[0].Tag;
+
+            Shell.OpenItem(figureItem);
+        }
     }
 }

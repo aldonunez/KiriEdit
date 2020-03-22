@@ -332,7 +332,15 @@ namespace KiriEdit
 
         public void OpenItem(object item)
         {
-            var view = new CharEditView();
+            IView view;
+
+            if (item is CharacterItem)
+                view = new CharEditView();
+            else if (item is FigureItem)
+                view = new FigureEditView();
+            else
+                throw new ApplicationException();
+
             view.ProjectItem = item;
             AddView(view);
         }

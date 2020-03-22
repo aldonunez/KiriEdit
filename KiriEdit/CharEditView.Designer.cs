@@ -174,6 +174,7 @@
             this.piecesListView.Size = new System.Drawing.Size(256, 250);
             this.piecesListView.TabIndex = 1;
             this.piecesListView.UseCompatibleStateImageBehavior = false;
+            this.piecesListView.ItemActivate += new System.EventHandler(this.piecesListView_ItemActivate);
             // 
             // piecesImageList
             // 
