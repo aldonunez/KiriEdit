@@ -64,6 +64,52 @@ namespace KiriEdit
             {
                 LoadPiece(pieceItem);
             }
+
+            LoadProgressPicture();
+        }
+
+        private void LoadProgressPicture()
+        {
+            Image oldImage = progressPictureBox.BackgroundImage;
+
+            if (oldImage != null)
+            {
+                progressPictureBox.BackgroundImage = null;
+                oldImage.Dispose();
+            }
+
+            Size picBoxSize = masterPictureBox.ClientSize;
+            int height = (int) (picBoxSize.Height * 0.80f);
+            int width = (int) (height * 32f / 37f);
+
+            Rectangle rect = new Rectangle(0, 0, width, height);
+
+            Bitmap bitmap = new Bitmap(width, height);
+
+            using (var graphics = Graphics.FromImage(bitmap))
+            {
+                foreach (var pieceItem in _characterItem.PieceFigureItems)
+                {
+                    PaintPiece(pieceItem, graphics, rect);
+                }
+            }
+
+            progressPictureBox.BackgroundImage = bitmap;
+        }
+
+        private void PaintPiece(FigureItem pieceItem, Graphics graphics, Rectangle rect)
+        {
+            var pieceDoc = pieceItem.Open();
+
+            using (var painter = new SystemFigurePainter(pieceDoc, graphics, rect, FigurePainterSection.Enabled))
+            {
+                painter.Fill();
+                painter.Draw();
+            }
+            using (var painter = new SystemFigurePainter(pieceDoc, graphics, rect, FigurePainterSection.Disabled))
+            {
+                painter.Draw();
+            }
         }
 
         private void masterPictureBox_Paint(object sender, PaintEventArgs e)
@@ -169,6 +215,11 @@ namespace KiriEdit
                 return true;
 
             return false;
+        }
+
+        private void CharEditView_Shown(object sender, EventArgs e)
+        {
+            piecesListView.Focus();
         }
     }
 }

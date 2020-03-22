@@ -31,18 +31,21 @@
             this.components = new System.ComponentModel.Container();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.progressPictureBox = new System.Windows.Forms.PictureBox();
             this.masterLabel = new System.Windows.Forms.Label();
-            this.piecesListView = new System.Windows.Forms.ListView();
             this.masterPictureBox = new System.Windows.Forms.PictureBox();
             this.piecesLabel = new System.Windows.Forms.Label();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.addPieceButton = new System.Windows.Forms.ToolStripButton();
             this.deletePieceButton = new System.Windows.Forms.ToolStripButton();
+            this.piecesListView = new System.Windows.Forms.ListView();
             this.piecesImageList = new System.Windows.Forms.ImageList(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.progressPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.masterPictureBox)).BeginInit();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -57,6 +60,10 @@
             // 
             this.splitContainer1.Panel1.Controls.Add(this.panel1);
             this.splitContainer1.Panel1.Controls.Add(this.toolStrip1);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.piecesListView);
             this.splitContainer1.Size = new System.Drawing.Size(391, 250);
             this.splitContainer1.SplitterDistance = 130;
             this.splitContainer1.SplitterWidth = 5;
@@ -64,8 +71,8 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.progressPictureBox);
             this.panel1.Controls.Add(this.masterLabel);
-            this.panel1.Controls.Add(this.piecesListView);
             this.panel1.Controls.Add(this.masterPictureBox);
             this.panel1.Controls.Add(this.piecesLabel);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -73,6 +80,20 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(130, 225);
             this.panel1.TabIndex = 0;
+            // 
+            // progressPictureBox
+            // 
+            this.progressPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.progressPictureBox.BackColor = System.Drawing.Color.White;
+            this.progressPictureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.progressPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.progressPictureBox.Location = new System.Drawing.Point(3, 116);
+            this.progressPictureBox.Name = "progressPictureBox";
+            this.progressPictureBox.Size = new System.Drawing.Size(124, 75);
+            this.progressPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.progressPictureBox.TabIndex = 5;
+            this.progressPictureBox.TabStop = false;
             // 
             // masterLabel
             // 
@@ -85,20 +106,6 @@
             this.masterLabel.Text = "Master:";
             this.masterLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // piecesListView
-            // 
-            this.piecesListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.piecesListView.HideSelection = false;
-            this.piecesListView.LargeImageList = this.piecesImageList;
-            this.piecesListView.Location = new System.Drawing.Point(3, 116);
-            this.piecesListView.MultiSelect = false;
-            this.piecesListView.Name = "piecesListView";
-            this.piecesListView.Size = new System.Drawing.Size(124, 97);
-            this.piecesListView.TabIndex = 1;
-            this.piecesListView.UseCompatibleStateImageBehavior = false;
-            // 
             // masterPictureBox
             // 
             this.masterPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -109,6 +116,7 @@
             this.masterPictureBox.Location = new System.Drawing.Point(3, 19);
             this.masterPictureBox.Name = "masterPictureBox";
             this.masterPictureBox.Size = new System.Drawing.Size(124, 75);
+            this.masterPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.masterPictureBox.TabIndex = 3;
             this.masterPictureBox.TabStop = false;
             this.masterPictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.masterPictureBox_Paint);
@@ -119,9 +127,9 @@
             this.piecesLabel.Location = new System.Drawing.Point(3, 100);
             this.piecesLabel.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.piecesLabel.Name = "piecesLabel";
-            this.piecesLabel.Size = new System.Drawing.Size(42, 13);
+            this.piecesLabel.Size = new System.Drawing.Size(51, 13);
             this.piecesLabel.TabIndex = 4;
-            this.piecesLabel.Text = "Pieces:";
+            this.piecesLabel.Text = "Progress:";
             this.piecesLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // toolStrip1
@@ -155,26 +163,41 @@
             this.deletePieceButton.Text = "Delete piece";
             this.deletePieceButton.Click += new System.EventHandler(this.deletePieceButton_Click);
             // 
+            // piecesListView
+            // 
+            this.piecesListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.piecesListView.HideSelection = false;
+            this.piecesListView.LargeImageList = this.piecesImageList;
+            this.piecesListView.Location = new System.Drawing.Point(0, 0);
+            this.piecesListView.MultiSelect = false;
+            this.piecesListView.Name = "piecesListView";
+            this.piecesListView.Size = new System.Drawing.Size(256, 250);
+            this.piecesListView.TabIndex = 1;
+            this.piecesListView.UseCompatibleStateImageBehavior = false;
+            // 
             // piecesImageList
             // 
             this.piecesImageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
             this.piecesImageList.ImageSize = new System.Drawing.Size(32, 32);
             this.piecesImageList.TransparentColor = System.Drawing.Color.Transparent;
             // 
-            // FigureEditView
+            // CharEditView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(391, 250);
             this.Controls.Add(this.splitContainer1);
-            this.Name = "FigureEditView";
+            this.Name = "CharEditView";
             this.Load += new System.EventHandler(this.FigureEditView_Load);
+            this.Shown += new System.EventHandler(this.CharEditView_Shown);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
+            this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.progressPictureBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.masterPictureBox)).EndInit();
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
@@ -194,5 +217,6 @@
         private System.Windows.Forms.Label piecesLabel;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.ImageList piecesImageList;
+        private System.Windows.Forms.PictureBox progressPictureBox;
     }
 }
