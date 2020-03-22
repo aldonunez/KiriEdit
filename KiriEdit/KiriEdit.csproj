@@ -120,6 +120,12 @@
       <DependentUpon>CharMapView.cs</DependentUpon>
     </Compile>
     <Compile Include="CharUtils.cs" />
+    <Compile Include="FigureEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FigureEditor.Designer.cs">
+      <DependentUpon>FigureEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="FigureEditView.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -159,6 +165,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="CharMapView.resx">
       <DependentUpon>CharMapView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FigureEditor.resx">
+      <DependentUpon>FigureEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FigureEditView.resx">
       <DependentUpon>FigureEditView.cs</DependentUpon>

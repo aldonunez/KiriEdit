@@ -53,6 +53,8 @@ namespace KiriEdit
 
             LoadMasterPicture();
             LoadProgressPicture();
+
+            figureEditor.FigureItem = _figureItem;
         }
 
         private void LoadMasterPicture()
