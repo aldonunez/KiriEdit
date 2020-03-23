@@ -7,13 +7,6 @@ using System.Drawing.Drawing2D;
 
 namespace KiriEdit
 {
-    public enum FigurePainterSection
-    {
-        Enabled,
-        Disabled,
-        Full,
-    }
-
     public class SystemFigurePainter : IDisposable
     {
         private FigureDocument _document;
@@ -21,17 +14,10 @@ namespace KiriEdit
         private Graphics _graphics;
         private GraphicsPath _graphicsPath;
         private int _x, _y;
-        private FigurePainterSection _section;
-        private bool _preparedPath;
 
-        public SystemFigurePainter(
-            FigureDocument document,
-            Graphics g,
-            Rectangle rect,
-            FigurePainterSection section)
+        public SystemFigurePainter(FigureDocument document, Graphics g, Rectangle rect)
         {
             _document = document;
-            _section = section;
 
             _figureWalker = new FigureWalker();
             _figureWalker.LineTo += LineTo;
@@ -66,74 +52,47 @@ namespace KiriEdit
             }
         }
 
-        private void PaintFull()
+        private void PaintContour(Contour contour)
         {
+            _graphicsPath.StartFigure();
+
+            MoveTo(contour.FirstPoint);
+            _figureWalker.WalkContour(contour);
+
+            _graphicsPath.CloseFigure();
+        }
+
+        public void PaintFull()
+        {
+            _graphicsPath.Reset();
+
             foreach (var contour in _document.Figure.Contours)
             {
-                _graphicsPath.StartFigure();
-                MoveTo(contour.FirstPoint);
-
-                _figureWalker.WalkContour(contour);
+                PaintContour(contour);
             }
-
-            _graphicsPath.CloseAllFigures();
         }
 
-        private void PaintPart(bool enabled)
+        public void PaintShape(int index)
         {
+            _graphicsPath.Reset();
+
             Figure figure = _document.Figure;
 
-            foreach (var shape in _document.Shapes)
+            var shape = _document.Shapes[index];
+
+            foreach (var contourIndex in shape.Contours)
             {
-                if (shape.Enabled != enabled)
-                    continue;
-
-                foreach (var contourIndex in shape.Contours)
-                {
-                    Contour contour = figure.Contours[contourIndex];
-
-                    _graphicsPath.StartFigure();
-
-                    MoveTo(contour.FirstPoint);
-                    _figureWalker.WalkContour(contour);
-
-                    _graphicsPath.CloseFigure();
-                }
+                PaintContour(figure.Contours[contourIndex]);
             }
-        }
-
-        private void Paint()
-        {
-            if (_preparedPath)
-                return;
-
-            switch (_section)
-            {
-                case FigurePainterSection.Full:
-                    PaintFull();
-                    break;
-
-                case FigurePainterSection.Enabled:
-                    PaintPart(true);
-                    break;
-
-                case FigurePainterSection.Disabled:
-                    PaintPart(false);
-                    break;
-            }
-
-            _preparedPath = true;
         }
 
         public void Draw()
         {
-            Paint();
             _graphics.DrawPath(Pens.Red, _graphicsPath);
         }
 
         public void Fill()
         {
-            Paint();
             _graphics.FillPath(Brushes.Black, _graphicsPath);
         }
 

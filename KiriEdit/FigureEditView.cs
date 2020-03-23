@@ -70,8 +70,9 @@ namespace KiriEdit
             Bitmap bitmap = new Bitmap(width, height);
 
             using (var graphics = Graphics.FromImage(bitmap))
-            using (var painter = new SystemFigurePainter(masterDoc, graphics, rect, FigurePainterSection.Full))
+            using (var painter = new SystemFigurePainter(masterDoc, graphics, rect))
             {
+                painter.PaintFull();
                 painter.Fill();
             }
 
@@ -104,13 +105,18 @@ namespace KiriEdit
         {
             var pieceDoc = pieceItem.Open();
 
-            using (var painter = new SystemFigurePainter(pieceDoc, graphics, rect, FigurePainterSection.Enabled))
+            using (var painter = new SystemFigurePainter(pieceDoc, graphics, rect))
             {
-                painter.Fill();
-                painter.Draw();
-            }
-            using (var painter = new SystemFigurePainter(pieceDoc, graphics, rect, FigurePainterSection.Disabled))
-            {
+                for (int i = 0; i < pieceDoc.Shapes.Length; i++)
+                {
+                    if (pieceDoc.Shapes[i].Enabled)
+                    {
+                        painter.PaintShape(i);
+                        painter.Fill();
+                    }
+                }
+
+                painter.PaintFull();
                 painter.Draw();
             }
         }
@@ -127,13 +133,18 @@ namespace KiriEdit
                 width,
                 height);
 
-            using (var painter = new SystemFigurePainter(_document, e.Graphics, rect, FigurePainterSection.Enabled))
+            using (var painter = new SystemFigurePainter(_document, e.Graphics, rect))
             {
-                painter.Fill();
-                painter.Draw();
-            }
-            using (var painter = new SystemFigurePainter(_document, e.Graphics, rect, FigurePainterSection.Disabled))
-            {
+                for (int i = 0; i < _document.Shapes.Length; i++)
+                {
+                    if (_document.Shapes[i].Enabled)
+                    {
+                        painter.PaintShape(i);
+                        painter.Fill();
+                    }
+                }
+
+                painter.PaintFull();
                 painter.Draw();
             }
         }

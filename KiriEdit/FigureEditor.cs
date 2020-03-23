@@ -81,12 +81,18 @@ namespace KiriEdit
 
             using (var graphics = Graphics.FromImage(bitmap))
             {
-                using (var painter = new SystemFigurePainter(_document, graphics, rect, FigurePainterSection.Enabled))
+                using (var painter = new SystemFigurePainter(_document, graphics, rect))
                 {
-                    painter.Fill();
-                }
-                using (var painter = new SystemFigurePainter(_document, graphics, rect, FigurePainterSection.Full))
-                {
+                    for (int i = 0; i < _document.Shapes.Length; i++)
+                    {
+                        if (_document.Shapes[i].Enabled)
+                        {
+                            painter.PaintShape(i);
+                            painter.Fill();
+                        }
+                    }
+
+                    painter.PaintFull();
                     painter.Draw();
                 }
             }
