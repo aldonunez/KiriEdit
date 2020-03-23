@@ -11,11 +11,10 @@ namespace KiriEdit
     {
         private FigureDocument _document;
         private FigureWalker _figureWalker;
-        private Graphics _graphics;
         private GraphicsPath _graphicsPath;
         private int _x, _y;
 
-        public SystemFigurePainter(FigureDocument document, Graphics g, Rectangle rect)
+        public SystemFigurePainter(FigureDocument document)
         {
             _document = document;
 
@@ -24,23 +23,7 @@ namespace KiriEdit
             _figureWalker.ConicTo += ConicTo;
             _figureWalker.CubicTo += CubicTo;
 
-            _graphics = g;
             _graphicsPath = new GraphicsPath();
-
-            float pixWidth = (int) (document.Figure.Width / 64f);
-            float pixHeight = (int) Math.Ceiling(document.Figure.Height / 64f);
-
-            float scale = (rect.Height - 1) / pixHeight;
-
-            int bmpWidth = rect.Width;
-            int bmpHeight = rect.Height;
-
-            g.ResetTransform();
-            g.ScaleTransform(scale / 64f, -scale / 64f, MatrixOrder.Append);
-            g.TranslateTransform(
-                rect.X + (float) -document.Figure.OffsetX * scale / 64f,
-                rect.Y + (bmpHeight - 1) + (float) document.Figure.OffsetY * scale / 64f,
-                MatrixOrder.Append);
         }
 
         public void Dispose()
@@ -50,6 +33,24 @@ namespace KiriEdit
                 _graphicsPath.Dispose();
                 _graphicsPath = null;
             }
+        }
+
+        public void SetTransform(Graphics g, Rectangle rect)
+        {
+            float pixWidth = (int) (_document.Figure.Width / 64f);
+            float pixHeight = (int) Math.Ceiling(_document.Figure.Height / 64f);
+
+            float scale = (rect.Height - 1) / pixHeight;
+
+            int bmpWidth = rect.Width;
+            int bmpHeight = rect.Height;
+
+            g.ResetTransform();
+            g.ScaleTransform(scale / 64f, -scale / 64f, MatrixOrder.Append);
+            g.TranslateTransform(
+                rect.X + (float) -_document.Figure.OffsetX * scale / 64f,
+                rect.Y + (bmpHeight - 1) + (float) _document.Figure.OffsetY * scale / 64f,
+                MatrixOrder.Append);
         }
 
         private void PaintContour(Contour contour)
@@ -86,24 +87,24 @@ namespace KiriEdit
             }
         }
 
-        public void Draw()
+        public void Draw(Graphics g)
         {
-            Draw(Pens.Red);
+            Draw(g, Pens.Red);
         }
 
-        public void Draw(Pen pen)
+        public void Draw(Graphics g, Pen pen)
         {
-            _graphics.DrawPath(pen, _graphicsPath);
+            g.DrawPath(pen, _graphicsPath);
         }
 
-        public void Fill()
+        public void Fill(Graphics g)
         {
-            Fill(Brushes.Black);
+            Fill(g, Brushes.Black);
         }
 
-        public void Fill(Brush brush)
+        public void Fill(Graphics g, Brush brush)
         {
-            _graphics.FillPath(brush, _graphicsPath);
+            g.FillPath(brush, _graphicsPath);
         }
 
         private void BeginEdge()

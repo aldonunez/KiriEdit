@@ -10,6 +10,7 @@ namespace KiriEdit
         private FigureDocument _document;
         private bool _shown;
         private Rectangle _rectangle;
+        private Bitmap _shapeMask;
 
         public FigureItem FigureItem
         {
@@ -40,6 +41,21 @@ namespace KiriEdit
             InitializeComponent();
         }
 
+        private void Canvas_MouseClick(object sender, MouseEventArgs e)
+        {
+            Color color = _shapeMask.GetPixel(e.X, e.Y);
+
+            if (color.B == 0)
+                return;
+
+            int index = color.B - 1;
+
+            _document.Shapes[index].Enabled = !_document.Shapes[index].Enabled;
+
+            DrawCanvas();
+            canvas.Invalidate();
+        }
+
         private void FigureEditor_VisibleChanged(object sender, EventArgs e)
         {
             // Only handle this when shown for the first time.
@@ -67,6 +83,12 @@ namespace KiriEdit
                 canvas.BackgroundImage = null;
             }
 
+            if (_shapeMask != null)
+            {
+                _shapeMask.Dispose();
+                _shapeMask = null;
+            }
+
             Size picBoxSize = canvas.ClientSize;
             int height = (int) (picBoxSize.Height * 0.80f);
             int width = (int) (height * 32f / 37f);
@@ -77,31 +99,47 @@ namespace KiriEdit
                 width,
                 height);
 
-            Bitmap bitmap = new Bitmap(picBoxSize.Width, picBoxSize.Height);
-
-            DrawCanvas(bitmap, rect);
-
-            canvas.BackgroundImage = bitmap;
             _rectangle = rect;
+            _shapeMask = new Bitmap(picBoxSize.Width, picBoxSize.Height);
+            canvas.BackgroundImage = new Bitmap(picBoxSize.Width, picBoxSize.Height);
+
+            DrawCanvas();
         }
 
-        private void DrawCanvas(Bitmap bitmap, Rectangle rect)
+        private void DrawCanvas()
         {
-            using (var graphics = Graphics.FromImage(bitmap))
+            using (var graphics = Graphics.FromImage(canvas.BackgroundImage))
+            using (var maskGraphics = Graphics.FromImage(_shapeMask))
             {
-                using (var painter = new SystemFigurePainter(_document, graphics, rect))
+                graphics.Clear(Color.White);
+                maskGraphics.Clear(Color.Black);
+
+                using (var painter = new SystemFigurePainter(_document))
                 {
+                    painter.SetTransform(graphics, _rectangle);
+                    painter.SetTransform(maskGraphics, _rectangle);
+
                     for (int i = 0; i < _document.Shapes.Length; i++)
                     {
+                        Brush fillBrush;
+                        Color maskColor = Color.FromArgb(0, 0, i + 1);
+
                         if (_document.Shapes[i].Enabled)
+                            fillBrush = Brushes.Black;
+                        else
+                            fillBrush = Brushes.LightGray;
+
+                        painter.PaintShape(i);
+                        painter.Fill(graphics, fillBrush);
+
+                        using (var brush = new SolidBrush(maskColor))
                         {
-                            painter.PaintShape(i);
-                            painter.Fill();
+                            painter.Fill(maskGraphics, brush);
                         }
                     }
 
                     painter.PaintFull();
-                    painter.Draw();
+                    painter.Draw(graphics);
                 }
             }
         }

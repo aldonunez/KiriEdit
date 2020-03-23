@@ -49,6 +49,7 @@
             this.canvas.Size = new System.Drawing.Size(286, 230);
             this.canvas.TabIndex = 1;
             this.canvas.TabStop = false;
+            this.canvas.MouseClick += new System.Windows.Forms.MouseEventHandler(Canvas_MouseClick);
             // 
             // FigureEditor
             // 
