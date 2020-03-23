@@ -110,7 +110,6 @@
             this.progressPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.progressPictureBox.TabIndex = 5;
             this.progressPictureBox.TabStop = false;
-            this.progressPictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.progressPictureBox_Paint);
             // 
             // masterPictureBox
             // 

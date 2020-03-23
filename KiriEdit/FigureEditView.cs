@@ -94,8 +94,7 @@ namespace KiriEdit
             {
                 foreach (var pieceItem in _figureItem.Parent.PieceFigureItems)
                 {
-                    if (pieceItem != _figureItem)
-                        PaintPiece(pieceItem, graphics, rect);
+                    PaintPiece(pieceItem, graphics, rect);
                 }
             }
 
@@ -105,6 +104,13 @@ namespace KiriEdit
         private void PaintPiece(FigureItem pieceItem, Graphics graphics, Rectangle rect)
         {
             var pieceDoc = pieceItem.Open();
+            Brush brush;
+
+            // Draw this view's figure item differently.
+            if (pieceItem == _figureItem)
+                brush = Brushes.Red;
+            else
+                brush = Brushes.Black;
 
             using (var painter = new SystemFigurePainter(pieceDoc))
             {
@@ -115,42 +121,12 @@ namespace KiriEdit
                     if (pieceDoc.Shapes[i].Enabled)
                     {
                         painter.PaintShape(i);
-                        painter.Fill(graphics);
+                        painter.Fill(graphics, brush);
                     }
                 }
 
                 painter.PaintFull();
                 painter.Draw(graphics);
-            }
-        }
-
-        private void progressPictureBox_Paint(object sender, PaintEventArgs e)
-        {
-            Size picBoxSize = masterPictureBox.ClientSize;
-            int height = (int) (picBoxSize.Height * 0.80f);
-            int width = (int) (height * 32f / 37f);
-
-            Rectangle rect = new Rectangle(
-                (int) (picBoxSize.Width - width) / 2,
-                (int) (picBoxSize.Height - height) / 2,
-                width,
-                height);
-
-            using (var painter = new SystemFigurePainter(_document))
-            {
-                painter.SetTransform(e.Graphics, rect);
-
-                for (int i = 0; i < _document.Shapes.Length; i++)
-                {
-                    if (_document.Shapes[i].Enabled)
-                    {
-                        painter.PaintShape(i);
-                        painter.Fill(e.Graphics);
-                    }
-                }
-
-                painter.PaintFull();
-                painter.Draw(e.Graphics);
             }
         }
     }
