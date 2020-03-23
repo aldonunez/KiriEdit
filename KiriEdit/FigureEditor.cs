@@ -79,6 +79,14 @@ namespace KiriEdit
 
             Bitmap bitmap = new Bitmap(picBoxSize.Width, picBoxSize.Height);
 
+            DrawCanvas(bitmap, rect);
+
+            canvas.BackgroundImage = bitmap;
+            _rectangle = rect;
+        }
+
+        private void DrawCanvas(Bitmap bitmap, Rectangle rect)
+        {
             using (var graphics = Graphics.FromImage(bitmap))
             {
                 using (var painter = new SystemFigurePainter(_document, graphics, rect))
@@ -96,9 +104,6 @@ namespace KiriEdit
                     painter.Draw();
                 }
             }
-
-            canvas.BackgroundImage = bitmap;
-            _rectangle = rect;
         }
     }
 }

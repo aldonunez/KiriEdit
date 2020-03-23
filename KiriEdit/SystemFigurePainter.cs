@@ -88,12 +88,22 @@ namespace KiriEdit
 
         public void Draw()
         {
-            _graphics.DrawPath(Pens.Red, _graphicsPath);
+            Draw(Pens.Red);
+        }
+
+        public void Draw(Pen pen)
+        {
+            _graphics.DrawPath(pen, _graphicsPath);
         }
 
         public void Fill()
         {
-            _graphics.FillPath(Brushes.Black, _graphicsPath);
+            Fill(Brushes.Black);
+        }
+
+        public void Fill(Brush brush)
+        {
+            _graphics.FillPath(brush, _graphicsPath);
         }
 
         private void BeginEdge()
