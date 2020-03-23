@@ -35,14 +35,18 @@ namespace KiriEdit
             EnterNothingMode();
         }
 
+        // TODO: update the window list when a view is modified (dirty state)
+
         private void _documentContainer_ViewActivate(object sender, EventArgs e)
         {
             RebuildWindowListMenu();
+            UpdateViewHostingState();
         }
 
         private void _documentContainer_ViewsChanged(object sender, ViewsChangedEventArgs e)
         {
             RebuildWindowListMenu();
+            UpdateViewHostingState();
         }
 
         private void RebuildWindowListMenu()
@@ -62,7 +66,7 @@ namespace KiriEdit
                 _windowListMenuItems[i].Visible = true;
                 _windowListMenuItems[i].Text = string.Format("{0} {1}{2}",
                     i + 1,
-                    view.DocumentName,
+                    view.DocumentTitle,
                     dirtyStar);
             }
 
@@ -375,7 +379,7 @@ namespace KiriEdit
         Project Project { get; set; }
         object ProjectItem { get; set; }
         Form Form { get; }
-        string DocumentName { get; }
+        string DocumentTitle { get; }
         bool IsDirty { get; }
         bool Save();
     }

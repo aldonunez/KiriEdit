@@ -23,13 +23,15 @@ namespace KiriEdit
         }
 
         public IShell Shell { get; set; }
+
         public Project Project { get; set; }
 
         public Form Form { get => this; }
 
-        public string DocumentName { get; set; }
+        public string DocumentTitle { get; set; }
 
-        public bool IsDirty { get; set; }
+        public bool IsDirty => false;
+
         public object ProjectItem
         {
             get => _characterItem;
@@ -52,7 +54,7 @@ namespace KiriEdit
 
         public bool Save()
         {
-            // TODO:
+            // There's nothing to save, because all file changes are immediate.
             return true;
         }
 

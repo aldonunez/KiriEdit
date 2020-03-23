@@ -22,14 +22,15 @@ namespace KiriEdit
         }
 
         public IShell Shell { get; set; }
+
         public Project Project { get; set; }
 
         public Form Form { get => this; }
 
-        // TODO: DocumentTitle?
-        public string DocumentName => Text;
+        public string DocumentTitle => Text;
 
-        public bool IsDirty { get; private set; }
+        public bool IsDirty => _figureItem.IsDirty;
+
         public object ProjectItem
         {
             get => _figureItem;
@@ -47,7 +48,10 @@ namespace KiriEdit
 
         public bool Save()
         {
-            // TODO:
+            _figureItem.Save(figureEditor.Document);
+
+            UpdateTitle();
+
             return true;
         }
 

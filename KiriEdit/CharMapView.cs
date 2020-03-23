@@ -32,7 +32,7 @@ namespace KiriEdit
 
         public Project Project { get; set; }
         public Form Form => this;
-        public string DocumentName => Text;
+        public string DocumentTitle => Text;
         public bool IsDirty => false;
 
         public IShell Shell { get; set; }
