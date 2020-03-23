@@ -6,32 +6,24 @@ namespace KiriEdit
 {
     public partial class FigureEditor : UserControl
     {
-        private FigureItem _figureItem;
         private FigureDocument _document;
         private bool _shown;
         private Rectangle _rectangle;
         private Bitmap _shapeMask;
 
-        public FigureItem FigureItem
+        public event EventHandler Modified;
+
+        public FigureDocument Document
         {
-            get => _figureItem;
+            get => _document;
             set
             {
-                if (value != _figureItem)
+                if (value != _document)
                 {
-                    _figureItem = value;
+                    _document = value;
 
-                    if (_figureItem != null)
-                    {
-                        _document = _figureItem.Open();
-
-                        if (_shown)
-                            RebuildCanvas();
-                    }
-                    else
-                    {
-                        _document = null;
-                    }
+                    if (_shown)
+                        RebuildCanvas();
                 }
             }
         }
@@ -39,6 +31,11 @@ namespace KiriEdit
         public FigureEditor()
         {
             InitializeComponent();
+        }
+
+        private void OnModified()
+        {
+            Modified?.Invoke(this, EventArgs.Empty);
         }
 
         private void Canvas_MouseClick(object sender, MouseEventArgs e)
@@ -54,6 +51,8 @@ namespace KiriEdit
 
             DrawCanvas();
             canvas.Invalidate();
+
+            OnModified();
         }
 
         private void FigureEditor_VisibleChanged(object sender, EventArgs e)

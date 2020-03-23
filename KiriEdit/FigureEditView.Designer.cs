@@ -30,10 +30,10 @@
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.masterLabel = new System.Windows.Forms.Label();
-            this.progressLabel = new System.Windows.Forms.Label();
             this.progressPictureBox = new System.Windows.Forms.PictureBox();
+            this.masterLabel = new System.Windows.Forms.Label();
             this.masterPictureBox = new System.Windows.Forms.PictureBox();
+            this.progressLabel = new System.Windows.Forms.Label();
             this.figureEditor = new KiriEdit.FigureEditor();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -75,28 +75,6 @@
             this.panel1.Size = new System.Drawing.Size(130, 250);
             this.panel1.TabIndex = 0;
             // 
-            // masterLabel
-            // 
-            this.masterLabel.AutoSize = true;
-            this.masterLabel.Location = new System.Drawing.Point(3, 3);
-            this.masterLabel.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
-            this.masterLabel.Name = "masterLabel";
-            this.masterLabel.Size = new System.Drawing.Size(42, 13);
-            this.masterLabel.TabIndex = 2;
-            this.masterLabel.Text = "Master:";
-            this.masterLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // progressLabel
-            // 
-            this.progressLabel.AutoSize = true;
-            this.progressLabel.Location = new System.Drawing.Point(3, 100);
-            this.progressLabel.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
-            this.progressLabel.Name = "progressLabel";
-            this.progressLabel.Size = new System.Drawing.Size(51, 13);
-            this.progressLabel.TabIndex = 4;
-            this.progressLabel.Text = "Progress:";
-            this.progressLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
             // progressPictureBox
             // 
             this.progressPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -110,6 +88,17 @@
             this.progressPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.progressPictureBox.TabIndex = 5;
             this.progressPictureBox.TabStop = false;
+            // 
+            // masterLabel
+            // 
+            this.masterLabel.AutoSize = true;
+            this.masterLabel.Location = new System.Drawing.Point(3, 3);
+            this.masterLabel.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.masterLabel.Name = "masterLabel";
+            this.masterLabel.Size = new System.Drawing.Size(42, 13);
+            this.masterLabel.TabIndex = 2;
+            this.masterLabel.Text = "Master:";
+            this.masterLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // masterPictureBox
             // 
@@ -125,13 +114,26 @@
             this.masterPictureBox.TabIndex = 3;
             this.masterPictureBox.TabStop = false;
             // 
+            // progressLabel
+            // 
+            this.progressLabel.AutoSize = true;
+            this.progressLabel.Location = new System.Drawing.Point(3, 100);
+            this.progressLabel.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.progressLabel.Name = "progressLabel";
+            this.progressLabel.Size = new System.Drawing.Size(51, 13);
+            this.progressLabel.TabIndex = 4;
+            this.progressLabel.Text = "Progress:";
+            this.progressLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // figureEditor
             // 
             this.figureEditor.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.figureEditor.Document = null;
             this.figureEditor.Location = new System.Drawing.Point(0, 0);
             this.figureEditor.Name = "figureEditor";
             this.figureEditor.Size = new System.Drawing.Size(256, 250);
             this.figureEditor.TabIndex = 0;
+            this.figureEditor.Modified += new System.EventHandler(this.FigureEditor_Modified);
             // 
             // FigureEditView
             // 

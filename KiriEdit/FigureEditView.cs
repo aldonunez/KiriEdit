@@ -7,7 +7,7 @@ namespace KiriEdit
     public partial class FigureEditView : Form, IView
     {
         private FigureItem _figureItem;
-        private FigureDocument _document;
+        private string _title;
 
         public FigureEditView()
         {
@@ -26,9 +26,10 @@ namespace KiriEdit
 
         public Form Form { get => this; }
 
-        public string DocumentName { get; set; }
+        // TODO: DocumentTitle?
+        public string DocumentName => Text;
 
-        public bool IsDirty { get; set; }
+        public bool IsDirty { get; private set; }
         public object ProjectItem
         {
             get => _figureItem;
@@ -38,6 +39,9 @@ namespace KiriEdit
                     throw new ArgumentException();
 
                 _figureItem = (FigureItem) value;
+                _title = _figureItem.Name;
+
+                UpdateTitle();
             }
         }
 
@@ -47,14 +51,28 @@ namespace KiriEdit
             return true;
         }
 
+        private void FigureEditor_Modified(object sender, EventArgs e)
+        {
+            _figureItem.IsDirty = true;
+
+            LoadProgressPicture();
+            UpdateTitle();
+        }
+
+        private void UpdateTitle()
+        {
+            Text = _title;
+
+            if (_figureItem.IsDirty)
+                Text += "*";
+        }
+
         private void FigureEditView_Load(object sender, EventArgs e)
         {
-            _document = _figureItem.Open();
+            figureEditor.Document = _figureItem.Open();
 
             LoadMasterPicture();
             LoadProgressPicture();
-
-            figureEditor.FigureItem = _figureItem;
         }
 
         private void LoadMasterPicture()
@@ -82,6 +100,12 @@ namespace KiriEdit
 
         private void LoadProgressPicture()
         {
+            if (progressPictureBox.BackgroundImage != null)
+            {
+                progressPictureBox.BackgroundImage.Dispose();
+                progressPictureBox.BackgroundImage = null;
+            }
+
             Size picBoxSize = masterPictureBox.ClientSize;
             int height = (int) (picBoxSize.Height * 0.80f);
             int width = (int) (height * 32f / 37f);
@@ -99,18 +123,25 @@ namespace KiriEdit
             }
 
             progressPictureBox.BackgroundImage = bitmap;
+            progressPictureBox.Invalidate();
         }
 
         private void PaintPiece(FigureItem pieceItem, Graphics graphics, Rectangle rect)
         {
-            var pieceDoc = pieceItem.Open();
+            FigureDocument pieceDoc;
             Brush brush;
 
             // Draw this view's figure item differently.
             if (pieceItem == _figureItem)
+            {
                 brush = Brushes.Red;
+                pieceDoc = figureEditor.Document;
+            }
             else
+            {
                 brush = Brushes.Black;
+                pieceDoc = pieceItem.Open();
+            }
 
             using (var painter = new SystemFigurePainter(pieceDoc))
             {
