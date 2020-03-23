@@ -145,8 +145,27 @@ namespace TryFreetype
                         break;
 
                     case "conic":
+                        {
+                            int c1X = attrs[3].GetInteger();
+                            int c1Y = attrs[4].GetInteger();
+                            Point c1 = new Point(c1X, c1Y);
+                            ConicEdge conicEdge = new ConicEdge(pg0.Points[0], c1, pg1.Points[0]);
+                            edge = conicEdge;
+                        }
+                        break;
+
                     case "cubic":
-                        throw new NotImplementedException();
+                        {
+                            int c1X = attrs[3].GetInteger();
+                            int c1Y = attrs[4].GetInteger();
+                            int c2X = attrs[5].GetInteger();
+                            int c2Y = attrs[6].GetInteger();
+                            Point c1 = new Point(c1X, c1Y);
+                            Point c2 = new Point(c2X, c2Y);
+                            CubicEdge cubicEdge = new CubicEdge(pg0.Points[0], c1, c2, pg1.Points[0]);
+                            edge = cubicEdge;
+                        }
+                        break;
 
                     default:
                         throw new ApplicationException();
@@ -237,8 +256,27 @@ namespace TryFreetype
                         break;
 
                     case "conic":
+                        {
+                            int c1X = attrs[3].GetInteger();
+                            int c1Y = attrs[4].GetInteger();
+                            Point c1 = new Point(c1X, c1Y);
+                            ConicEdge conicEdge = new ConicEdge(p0, c1, p1);
+                            edge = conicEdge;
+                        }
+                        break;
+
                     case "cubic":
-                        throw new NotImplementedException();
+                        {
+                            int c1X = attrs[3].GetInteger();
+                            int c1Y = attrs[4].GetInteger();
+                            int c2X = attrs[5].GetInteger();
+                            int c2Y = attrs[6].GetInteger();
+                            Point c1 = new Point(c1X, c1Y);
+                            Point c2 = new Point(c2X, c2Y);
+                            CubicEdge cubicEdge = new CubicEdge(p0, c1, c2, p1);
+                            edge = cubicEdge;
+                        }
+                        break;
 
                     default:
                         throw new ApplicationException();

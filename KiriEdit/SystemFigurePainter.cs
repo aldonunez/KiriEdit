@@ -136,13 +136,20 @@ namespace KiriEdit
             BeginEdge();
             var control = ((ConicEdge) edge).Control1;
             var to = edge.P2;
-            // TODO: Not quadratic.
+            var c1 = new PointF(
+                (_x + 2 * control.X) / 3.0f,
+                (_y + 2 * control.Y) / 3.0f
+                );
+            var c2 = new PointF(
+                (to.X + 2 * control.X) / 3.0f,
+                (to.Y + 2 * control.Y) / 3.0f
+                );
             _graphicsPath.AddBeziers(
                 new PointF[]
                 {
                     new PointF((float) _x, (float) _y),
-                    new PointF((float) control.X, (float) control.Y),
-                    new PointF((float) control.X, (float) control.Y),
+                    c1,
+                    c2,
                     new PointF((float) to.X, (float) to.Y)
                 });
             _x = to.X;
