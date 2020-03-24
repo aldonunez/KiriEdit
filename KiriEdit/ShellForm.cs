@@ -35,17 +35,18 @@ namespace KiriEdit
             EnterNothingMode();
         }
 
-        // TODO: update the window list when a view is modified (dirty state)
+        private void WindowMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+            RebuildWindowListMenu();
+        }
 
         private void _documentContainer_ViewActivate(object sender, EventArgs e)
         {
-            RebuildWindowListMenu();
             UpdateViewHostingState();
         }
 
         private void _documentContainer_ViewsChanged(object sender, ViewsChangedEventArgs e)
         {
-            RebuildWindowListMenu();
             UpdateViewHostingState();
         }
 
@@ -60,14 +61,10 @@ namespace KiriEdit
                     break;
 
                 var view = viewEnumerator.Current;
-                string dirtyStar = view.IsDirty ? "*" : "";
 
                 _windowListMenuItems[i].Tag = view;
                 _windowListMenuItems[i].Visible = true;
-                _windowListMenuItems[i].Text = string.Format("{0} {1}{2}",
-                    i + 1,
-                    view.DocumentTitle,
-                    dirtyStar);
+                _windowListMenuItems[i].Text = string.Format("{0} {1}", i + 1, view.DocumentTitle);
             }
 
             if (i > 0)
