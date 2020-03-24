@@ -1,4 +1,4 @@
-﻿// Take from http://www.lyquidity.com/devblog/?p=136
+﻿// Taken from http://www.lyquidity.com/devblog/?p=136
 //
 // For KiriEdit, I implemented IDisposable.
 

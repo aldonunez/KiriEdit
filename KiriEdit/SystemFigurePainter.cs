@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using TryFreetype;
 using TryFreetype.Model;
 using Point = TryFreetype.Model.Point;
-using TryFreetype;
-using System.Drawing.Drawing2D;
 
 namespace KiriEdit
 {
@@ -37,12 +37,10 @@ namespace KiriEdit
 
         public void SetTransform(Graphics g, Rectangle rect)
         {
-            float pixWidth = (int) (_document.Figure.Width / 64f);
             float pixHeight = (int) Math.Ceiling(_document.Figure.Height / 64f);
 
             float scale = (rect.Height - 1) / pixHeight;
 
-            int bmpWidth = rect.Width;
             int bmpHeight = rect.Height;
 
             g.ResetTransform();

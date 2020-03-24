@@ -252,7 +252,7 @@ namespace KiriEdit
                         // Close without saving.
                         break;
 
-                    case DialogResult.Cancel:
+                    default:
                         return false;
                 }
             }
@@ -368,16 +368,5 @@ namespace KiriEdit
 
             _documentContainer.Activate((IView) menuItem.Tag);
         }
-    }
-
-    internal interface IView
-    {
-        IShell Shell { get; set; }
-        Project Project { get; set; }
-        object ProjectItem { get; set; }
-        Form Form { get; }
-        string DocumentTitle { get; }
-        bool IsDirty { get; }
-        bool Save();
     }
 }

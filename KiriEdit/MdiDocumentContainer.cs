@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
@@ -11,7 +12,7 @@ namespace KiriEdit
         Removed,
     }
 
-    internal class ViewsChangedEventArgs
+    internal class ViewsChangedEventArgs : EventArgs
     {
         public IView View { get; }
         public ViewsChangedAction Action { get; }
@@ -30,8 +31,8 @@ namespace KiriEdit
         private Form _form;
         private List<IView> _views = new List<IView>();
 
-        internal int Count => _views.Count;
-        internal IView CurrentView => (IView) _form.ActiveMdiChild;
+        public int Count => _views.Count;
+        public IView CurrentView => (IView) _form.ActiveMdiChild;
 
         public event ViewsChangedEventHandler ViewsChanged;
         public event EventHandler ViewActivate;
@@ -47,26 +48,21 @@ namespace KiriEdit
         {
             IView activeView = (IView) _form.ActiveMdiChild;
 
-            if (activeView != null && _views.Count > 0 && activeView != _views[0])
+            if (activeView != null && _views.Count > 0 && activeView != _views[_views.Count - 1])
             {
                 int oldIndex = _views.LastIndexOf(activeView);
 
                 if (oldIndex >= 0)
                 {
                     _views.RemoveAt(oldIndex);
-                    _views.Insert(0, activeView);
+                    _views.Add(activeView);
                 }
             }
 
             ViewActivate?.Invoke(this, EventArgs.Empty);
         }
 
-        internal IView[] GetViews()
-        {
-            return _views.ToArray();
-        }
-
-        internal void AddView(IView view)
+        public void AddView(IView view)
         {
             _views.Add(view);
 
@@ -97,9 +93,9 @@ namespace KiriEdit
             ViewsChanged?.Invoke(this, new ViewsChangedEventArgs(view, ViewsChangedAction.Removed));
         }
 
-        internal IEnumerator<IView> EnumerateViews()
+        public IEnumerator<IView> EnumerateViews()
         {
-            return _views.GetEnumerator();
+            return new ReverseViewEnumerator(_views);
         }
 
         public void Clear()
@@ -114,20 +110,58 @@ namespace KiriEdit
             _views.Clear();
         }
 
-        internal IView FindView(Type viewType)
+        public IView FindView(Type viewType)
         {
             return _views.FirstOrDefault(view => view.GetType() == viewType);
         }
 
-        internal IView[] GetDirtyViews()
+        public IView[] GetDirtyViews()
         {
             return _views.Where(view => view.IsDirty).ToArray();
         }
 
-        internal void Activate(IView menuItem)
+        public void Activate(IView view)
         {
-            var viewForm = (Form) menuItem;
+            var viewForm = (Form) view;
             viewForm.Activate();
         }
+
+
+        #region Inner classes
+
+        private struct ReverseViewEnumerator : IEnumerator<IView>
+        {
+            private List<IView> _views;
+            private int _index;
+
+            public IView Current => _views[_index];
+            object IEnumerator.Current => _views[_index];
+
+            public void Dispose()
+            {
+            }
+
+            public bool MoveNext()
+            {
+                if (_index <= 0)
+                    return false;
+
+                _index--;
+                return true;
+            }
+
+            public void Reset()
+            {
+                _index = _views.Count;
+            }
+
+            public ReverseViewEnumerator(List<IView> views)
+            {
+                _views = views;
+                _index = views.Count;
+            }
+        }
+
+        #endregion
     }
 }
