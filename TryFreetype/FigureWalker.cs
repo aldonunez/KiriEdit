@@ -202,15 +202,22 @@ namespace TryFreetype
             BeginEdge();
             var control = ((ConicEdge) edge).Control1;
             var to = edge.P2;
+            var c1 = new PointF(
+                ((float) x + 2 * control.X) / 3.0f,
+                ((float) y + 2 * control.Y) / 3.0f
+                );
+            var c2 = new PointF(
+                (to.X + 2 * control.X) / 3.0f,
+                (to.Y + 2 * control.Y) / 3.0f
+                );
             Console.WriteLine("ConicTo: {0},{1} {2},{3}", control.X, control.Y, to.X, to.Y);
-            // TODO: Not quadratic.
             g.DrawBeziers(
                 pen,
                 new PointF[]
                 {
                     new PointF((float) x, (float) y),
-                    new PointF((float) control.X, (float) control.Y),
-                    new PointF((float) control.X, (float) control.Y),
+                    c1,
+                    c2,
                     new PointF((float) to.X, (float) to.Y)
                 });
             x = to.X;
