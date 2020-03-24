@@ -22,13 +22,10 @@ namespace KiriEdit
         }
 
         public IShell Shell { get; set; }
-
         public Project Project { get; set; }
 
-        public Form Form { get => this; }
-
+        public Form Form => this;
         public string DocumentTitle => Text;
-
         public bool IsDirty => _figureItem.IsDirty;
 
         public object ProjectItem
@@ -40,7 +37,6 @@ namespace KiriEdit
                     throw new ArgumentException();
 
                 _figureItem = (FigureItem) value;
-                _title = _figureItem.Name;
 
                 _title = string.Format(
                     "U+{0:X6}  {1} : {2}",
@@ -91,7 +87,7 @@ namespace KiriEdit
             if (!IsDirty)
                 return true;
 
-            string message = string.Format("Do you want to save '{0}'?", DocumentTitle);
+            string message = string.Format("Do you want to save '{0}'?", _title);
             var result = MessageBox.Show(message, ShellForm.AppTitle, MessageBoxButtons.YesNoCancel);
 
             switch (result)

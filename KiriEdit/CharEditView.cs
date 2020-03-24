@@ -23,13 +23,10 @@ namespace KiriEdit
         }
 
         public IShell Shell { get; set; }
-
         public Project Project { get; set; }
 
-        public Form Form { get => this; }
-
-        public string DocumentTitle { get; set; }
-
+        public Form Form => this;
+        public string DocumentTitle => Text;
         public bool IsDirty => false;
 
         public object ProjectItem
@@ -43,12 +40,10 @@ namespace KiriEdit
                 _characterItem = (CharacterItem) value;
                 _characterItem.FigureItemModified += CharacterItem_FigureItemModified;
 
-                DocumentTitle = string.Format(
+                Text = string.Format(
                     "U+{0:X6}  {1}",
                     _characterItem.CodePoint,
                     CharUtils.GetString(_characterItem.CodePoint));
-
-                Text = DocumentTitle;
             }
         }
 
@@ -213,7 +208,6 @@ namespace KiriEdit
                 else
                     piecesImageList.Images[imageIndex] = bitmap;
 
-                bitmap.Save(@"C:\Temp\x.png");
                 bitmap = null;
             }
             catch
@@ -226,13 +220,13 @@ namespace KiriEdit
 
         private void LoadPiece(FigureItem figureItem)
         {
-            ReplacePieceImage(figureItem);
-
             string name = figureItem.Name;
 
             var listItem = piecesListView.Items.Add(name, name, name);
 
             listItem.Tag = figureItem;
+
+            ReplacePieceImage(figureItem);
         }
 
         private void DeletePiece(ListViewItem listViewItem)

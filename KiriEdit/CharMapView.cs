@@ -30,13 +30,13 @@ namespace KiriEdit
 
         // As of Windows 10.0.18363.657, the longest string returned by GetUName is 83 characters for en-US.
 
+        public IShell Shell { get; set; }
         public Project Project { get; set; }
+        public object ProjectItem { get; set; }
+
         public Form Form => this;
         public string DocumentTitle => Text;
         public bool IsDirty => false;
-
-        public IShell Shell { get; set; }
-        public object ProjectItem { get; set; }
 
         public CharMapView()
         {
@@ -92,7 +92,7 @@ namespace KiriEdit
             SortCharacterList();
 
             ModifyResidencyMap(charGrid.CharSet, codePoint, ResidencyAction.Add);
-            charGrid.Refresh();
+            charGrid.Invalidate();
         }
 
         private void deleteListCharButton_Click(object sender, EventArgs e)
@@ -112,7 +112,7 @@ namespace KiriEdit
             // No need to sort after deleting an item.
 
             ModifyResidencyMap(charGrid.CharSet, listItem.CodePoint, ResidencyAction.Remove);
-            charGrid.Refresh();
+            charGrid.Invalidate();
         }
 
         private bool ConfirmDeleteCharacter(CharListItem listItem)

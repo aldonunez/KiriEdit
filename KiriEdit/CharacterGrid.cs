@@ -193,13 +193,13 @@ namespace KiriEdit
             _renderArgs.OnColor = OnCharacterColor.ToArgb();
             _renderArgs.OffColor = OffCharacterColor.ToArgb();
 
+            UpdateFont();
+
             IntPtr hdc = e.Graphics.GetHdc();
 
             try
             {
                 _renderArgs.Hdc = hdc;
-
-                UpdateFont();
 
                 CharGridRenderer.Draw(_renderArgs, CharSet);
             }
