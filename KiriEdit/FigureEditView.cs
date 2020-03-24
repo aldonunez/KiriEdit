@@ -71,6 +71,38 @@ namespace KiriEdit
                 Text += "*";
         }
 
+        private void FigureEditView_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                if (!ConfirmClose())
+                    e.Cancel = true;
+            }
+        }
+
+        private bool ConfirmClose()
+        {
+            if (!IsDirty)
+                return true;
+
+            string message = string.Format("Do you want to save '{0}'?", DocumentTitle);
+            var result = MessageBox.Show(message, ShellForm.AppTitle, MessageBoxButtons.YesNoCancel);
+
+            switch (result)
+            {
+                case DialogResult.Yes:
+                    // Save, then close.
+                    return Save();
+
+                case DialogResult.No:
+                    // Close without saving.
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
+
         private void FigureEditView_Load(object sender, EventArgs e)
         {
             figureEditor.Document = _figureItem.Open();
