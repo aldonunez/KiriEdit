@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
@@ -7,12 +8,26 @@ using KiriFT;
 
 namespace KiriEdit
 {
+    public delegate void CharacterItemModifiedHandler(object sender, CharacterItemModifiedEventArgs e);
+
+    public class CharacterItemModifiedEventArgs : EventArgs
+    {
+        public CharacterItem CharacterItem { get; }
+
+        public CharacterItemModifiedEventArgs(CharacterItem characterItem)
+        {
+            CharacterItem = characterItem;
+        }
+    }
+
     public class Project
     {
         private ProjectFile ProjectFile { get; set; }
 
         private string _fullFontPath;
         private string _fullCharactersFolderPath;
+
+        public event CharacterItemModifiedHandler CharacterItemModified;
 
         public bool IsDirty { get => ProjectFile.IsDirty; }
         public string RootPath { get; private set; }
@@ -149,6 +164,16 @@ namespace KiriEdit
             using (var writer = new Utf8JsonWriter(stream, writerOptions))
             {
                 JsonSerializer.Serialize(writer, project, serializerOptions);
+            }
+        }
+
+        internal void NotifyItemModified(CharacterItem item)
+        {
+            if (CharacterItemModified != null)
+            {
+                var args = new CharacterItemModifiedEventArgs(item);
+
+                CharacterItemModified?.Invoke(this, args);
             }
         }
 

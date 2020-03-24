@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using TryFreetype;
 using TryFreetype.Model;
 
 namespace KiriEdit
 {
-    public delegate void FigureItemModifiedHandler(object sender, FigureItemModifiedEventArgs args);
+    public delegate void FigureItemModifiedHandler(object sender, FigureItemModifiedEventArgs e);
 
     public class FigureItemModifiedEventArgs : EventArgs
     {
@@ -30,6 +29,7 @@ namespace KiriEdit
 
         public event FigureItemModifiedHandler FigureItemModified;
 
+        public Project Project { get; }
         public uint CodePoint { get; }
         public string RootPath { get; }
         // TODO: Use MasterFigureItem
@@ -44,6 +44,7 @@ namespace KiriEdit
             if (enumPieces)
                 FillPieces(charRoot);
 
+            Project = project;
             CodePoint = codePoint;
             RootPath = charRoot;
             // TODO: Use MasterFigureItem
@@ -205,6 +206,7 @@ namespace KiriEdit
             figureItem.Save(pieceDoc);
 
             _figureItems.Add(figureItem);
+            Project.NotifyItemModified(this);
 
             return figureItem;
         }
@@ -219,6 +221,7 @@ namespace KiriEdit
                 {
                     File.Delete(item.Path);
                     _figureItems.RemoveAt(i);
+                    Project.NotifyItemModified(this);
                     return;
                 }
             }

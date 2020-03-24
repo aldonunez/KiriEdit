@@ -23,6 +23,7 @@ namespace KiriEdit
         private const uint LastCodePoint = 0xFFFF;
         private const int CharSetSize = (int) (LastCodePoint - FirstCodePoint + 1);
 
+        private Project _project;
         private List<CharListItem> _charListItems;
         private StringComparer _stringComparer = StringComparer.Ordinal;
         private PrivateFontCollection _fontCollection;
@@ -31,8 +32,17 @@ namespace KiriEdit
         // As of Windows 10.0.18363.657, the longest string returned by GetUName is 83 characters for en-US.
 
         public IShell Shell { get; set; }
-        public Project Project { get; set; }
         public object ProjectItem { get; set; }
+
+        public Project Project
+        {
+            get => _project;
+            set
+            {
+                _project = value;
+                _project.CharacterItemModified += project_CharacterItemModified;
+            }
+        }
 
         public Form Form => this;
         public string DocumentTitle => Text;
@@ -41,6 +51,23 @@ namespace KiriEdit
         public CharMapView()
         {
             InitializeComponent();
+        }
+
+        private void project_CharacterItemModified(object sender, CharacterItemModifiedEventArgs args)
+        {
+            var charItem = args.CharacterItem;
+
+            foreach (var listItem in _charListItems)
+            {
+                if (listItem.CodePoint == charItem.CodePoint)
+                {
+                    listItem.Text = MakeCharListItemText(charItem);
+                    // This hack forces the ListBox to refresh the text.
+                    charListBox.DrawMode = DrawMode.OwnerDrawFixed;
+                    charListBox.DrawMode = DrawMode.Normal;
+                    break;
+                }
+            }
         }
 
         private void CharListBox_KeyUp(object sender, KeyEventArgs e)
@@ -239,12 +266,18 @@ namespace KiriEdit
 
         private static CharListItem MakeCharListItem(CharacterItem item)
         {
+            var text = MakeCharListItemText(item);
+            return new CharListItem(text, item.CodePoint, item);
+        }
+
+        private static string MakeCharListItemText(CharacterItem item)
+        {
             var codePoint = item.CodePoint;
             var text = string.Format("U+{0:X6} - {1} ({2})",
                 codePoint,
                 CharUtils.GetString(codePoint),
                 item.PieceFigureItems.Count);
-            return new CharListItem(text, codePoint, item);
+            return text;
         }
 
         public bool Save()

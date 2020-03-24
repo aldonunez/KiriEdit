@@ -25,6 +25,12 @@
                     _fontCollection.Dispose();
                     _fontCollection = null;
                 }
+
+                if (_project != null)
+                {
+                    _project.CharacterItemModified -= project_CharacterItemModified;
+                    _project = null;
+                }
             }
 
             base.Dispose(disposing);
