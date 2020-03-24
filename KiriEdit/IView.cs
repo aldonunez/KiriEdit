@@ -7,9 +7,11 @@ namespace KiriEdit
         IShell Shell { get; set; }
         Project Project { get; set; }
         object ProjectItem { get; set; }
+
         Form Form { get; }
         string DocumentTitle { get; }
         bool IsDirty { get; }
+
         bool Save();
     }
 }

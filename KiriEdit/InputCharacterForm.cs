@@ -21,9 +21,13 @@ namespace KiriEdit
 
         private void charTextBox_TextChanged(object sender, EventArgs e)
         {
+            // Validate the input for the OK button.
+
             int codePointCount = CharUtils.GetCodePointCount(charTextBox.Text);
 
             okButton.Enabled = codePointCount == 1;
+
+            // Change the other control.
 
             if (_curChangingControl == null)
             {
@@ -48,6 +52,8 @@ namespace KiriEdit
 
         private void codepointTextBox_TextChanged(object sender, EventArgs e)
         {
+            // Change the other control.
+
             if (_curChangingControl == null)
             {
                 _curChangingControl = codePointTextBox;
@@ -75,7 +81,6 @@ namespace KiriEdit
 
         private void okButton_Click(object sender, EventArgs e)
         {
-            int codePointCount = CharUtils.GetCodePointCount(charTextBox.Text);
             uint codePoint = CharUtils.GetCodePoint(charTextBox.Text);
 
             if (ValidateChar != null && !ValidateChar(codePoint))

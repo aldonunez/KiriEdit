@@ -8,45 +8,11 @@ namespace KiriEdit
 {
     public partial class NewProjectForm : Form
     {
-        #region Inner classes
-
-        private class FontListItem
-        {
-            private string _itemText;
-
-            public int FaceIndex { get; }
-            public string Copyright { get; }
-
-            public FontListItem(Face face)
-            {
-                FaceIndex = face.FaceIndex;
-                _itemText = string.Format("{0} ({1})", face.FamilyName, face.StyleName);
-
-                uint count = face.GetSfntNameCount();
-
-                for (uint i = 0; i < count; i++)
-                {
-                    SfntName sfntName = face.GetSfntName(i);
-
-                    // TODO: what about the language ID?
-                    if (sfntName.NameId == 0)
-                    {
-                        Copyright = sfntName.String;
-                        break;
-                    }
-                }
-            }
-
-            public override string ToString()
-            {
-                return _itemText;
-            }
-        }
-
-        #endregion
-
-        private const string FontFilter = 
-            "TrueType files (*.ttf;*.ttc)|*.ttf;*.ttc|OpenType files (*.otf;*.otc)|*.otf;*.otc";
+        private const string FontFilter =
+            "TrueType and OpenType files (*.ttf;*.ttc;*.otf;*.otc)|*.ttf;*.ttc;*.otf;*.otc"
+            + "|TrueType files (*.ttf;*.ttc)|*.ttf;*.ttc"
+            + "|OpenType files (*.otf;*.otc)|*.otf;*.otc"
+            ;
 
         private Library _library = new Library();
 
@@ -147,7 +113,7 @@ namespace KiriEdit
                 }
                 catch (FreeTypeException)
                 {
-                    // Ignore the exception, sowe can get the next face.
+                    // Ignore the exception, so we can get the next face.
                 }
             }
 
@@ -256,5 +222,43 @@ namespace KiriEdit
                 okButton.Enabled = false;
             }
         }
+
+
+        #region Inner classes
+
+        private class FontListItem
+        {
+            private string _itemText;
+
+            public int FaceIndex { get; }
+            public string Copyright { get; }
+
+            public FontListItem(Face face)
+            {
+                FaceIndex = face.FaceIndex;
+                _itemText = string.Format("{0} ({1})", face.FamilyName, face.StyleName);
+
+                uint count = face.GetSfntNameCount();
+
+                for (uint i = 0; i < count; i++)
+                {
+                    SfntName sfntName = face.GetSfntName(i);
+
+                    // TODO: what about the language ID?
+                    if (sfntName.NameId == 0)
+                    {
+                        Copyright = sfntName.String;
+                        break;
+                    }
+                }
+            }
+
+            public override string ToString()
+            {
+                return _itemText;
+            }
+        }
+
+        #endregion
     }
 }
