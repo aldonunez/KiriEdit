@@ -17,6 +17,14 @@
             {
                 components.Dispose();
             }
+            if (disposing)
+            {
+                if (_characterItem != null)
+                {
+                    _characterItem.FigureItemModified -= CharacterItem_FigureItemModified;
+                    _characterItem = null;
+                }
+            }
             base.Dispose(disposing);
         }
 

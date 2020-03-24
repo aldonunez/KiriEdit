@@ -10,6 +10,7 @@ namespace KiriEdit
         public string Name { get; }
         public string Path { get; }
         public bool IsDirty { get; set; }
+
         public CharacterItem Parent { get; set; }
 
         public FigureItem(string path, CharacterItem parent)
@@ -36,6 +37,8 @@ namespace KiriEdit
             }
 
             IsDirty = false;
+
+            Parent.NotifyItemModified(this);
         }
 
         public FigureDocument Open()

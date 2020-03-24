@@ -7,6 +7,18 @@ using TryFreetype.Model;
 
 namespace KiriEdit
 {
+    public delegate void FigureItemModifiedHandler(object sender, FigureItemModifiedEventArgs args);
+
+    public class FigureItemModifiedEventArgs : EventArgs
+    {
+        public FigureItem FigureItem { get; }
+
+        public FigureItemModifiedEventArgs(FigureItem figureItem)
+        {
+            FigureItem = figureItem;
+        }
+    }
+
     public class CharacterItem
     {
         private const string CharacterFolderSearchPattern = "U_*";
@@ -15,6 +27,8 @@ namespace KiriEdit
         private const string FigureSearchPattern = "*.kefig";
 
         private List<FigureItem> _figureItems = new List<FigureItem>();
+
+        public event FigureItemModifiedHandler FigureItemModified;
 
         public uint CodePoint { get; }
         public string RootPath { get; }
@@ -210,6 +224,16 @@ namespace KiriEdit
             }
 
             throw new ApplicationException();
+        }
+
+        internal void NotifyItemModified(FigureItem figureItem)
+        {
+            if (FigureItemModified != null)
+            {
+                var args = new FigureItemModifiedEventArgs(figureItem);
+
+                FigureItemModified?.Invoke(this, args);
+            }
         }
     }
 }

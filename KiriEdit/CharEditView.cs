@@ -41,7 +41,13 @@ namespace KiriEdit
                     throw new ArgumentException();
 
                 _characterItem = (CharacterItem) value;
+                _characterItem.FigureItemModified += CharacterItem_FigureItemModified;
             }
+        }
+
+        private void CharacterItem_FigureItemModified(object sender, FigureItemModifiedEventArgs args)
+        {
+            LoadProgressPicture();
         }
 
         protected override void ScaleControl(SizeF factor, BoundsSpecified specified)
@@ -97,6 +103,7 @@ namespace KiriEdit
             }
 
             progressPictureBox.BackgroundImage = bitmap;
+            progressPictureBox.Invalidate();
         }
 
         private void PaintPiece(FigureItem pieceItem, Graphics graphics, Rectangle rect)
