@@ -42,6 +42,12 @@ namespace KiriEdit
                 _figureItem = (FigureItem) value;
                 _title = _figureItem.Name;
 
+                _title = string.Format(
+                    "U+{0:X6}  {1} : {2}",
+                    _figureItem.Parent.CodePoint,
+                    CharUtils.GetString(_figureItem.Parent.CodePoint),
+                    _figureItem.Name);
+
                 UpdateTitle();
             }
         }
