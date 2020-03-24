@@ -48,6 +48,7 @@ namespace KiriEdit
         private void CharacterItem_FigureItemModified(object sender, FigureItemModifiedEventArgs args)
         {
             LoadProgressPicture();
+            ReplacePieceImage(args.FigureItem);
         }
 
         protected override void ScaleControl(SizeF factor, BoundsSpecified specified)
@@ -170,7 +171,7 @@ namespace KiriEdit
             LoadPiece(figureItem);
         }
 
-        private void LoadPiece(FigureItem figureItem)
+        private void ReplacePieceImage(FigureItem figureItem)
         {
             var pieceDoc = figureItem.Open();
 
@@ -198,7 +199,13 @@ namespace KiriEdit
                     painter.Draw(g);
                 }
 
-                piecesImageList.Images.Add(figureItem.Name, bitmap);
+                int imageIndex = piecesImageList.Images.IndexOfKey(figureItem.Name);
+
+                if (imageIndex < 0)
+                    piecesImageList.Images.Add(figureItem.Name, bitmap);
+                else
+                    piecesImageList.Images[imageIndex] = bitmap;
+
                 bitmap.Save(@"C:\Temp\x.png");
                 bitmap = null;
             }
@@ -208,6 +215,11 @@ namespace KiriEdit
                     bitmap.Dispose();
                 throw;
             }
+        }
+
+        private void LoadPiece(FigureItem figureItem)
+        {
+            ReplacePieceImage(figureItem);
 
             string name = figureItem.Name;
 
