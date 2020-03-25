@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 using TryFreetype;
 using TryFreetype.Model;
 
-namespace KiriEdit
+namespace KiriProj
 {
     public class FigureDocument
     {

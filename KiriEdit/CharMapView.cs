@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Text;
 using System.Windows.Forms;
 using KiriFT.Drawing;
+using KiriProj;
 using InteropServices = System.Runtime.InteropServices;
 
 namespace KiriEdit

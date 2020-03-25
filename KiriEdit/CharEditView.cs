@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KiriProj;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;

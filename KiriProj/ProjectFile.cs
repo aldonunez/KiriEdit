@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace KiriEdit
+namespace KiriProj
 {
     public class ProjectFile
     {

@@ -6,7 +6,7 @@ using System.IO;
 using System.Text.Json;
 using KiriFT;
 
-namespace KiriEdit
+namespace KiriProj
 {
     public delegate void CharacterItemModifiedHandler(object sender, CharacterItemModifiedEventArgs e);
 
@@ -184,7 +184,7 @@ namespace KiriEdit
         {
             private Project _project;
 
-            public CharacterItemCollection(Project project)
+            internal CharacterItemCollection(Project project)
             {
                 _project = project;
             }

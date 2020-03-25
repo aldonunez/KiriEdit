@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using KiriProj;
+using System.Windows.Forms;
 
 namespace KiriEdit
 {

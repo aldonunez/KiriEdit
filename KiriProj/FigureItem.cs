@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text.Json;
 
-namespace KiriEdit
+namespace KiriProj
 {
     // TODO: Make a MasterFigureItem
 

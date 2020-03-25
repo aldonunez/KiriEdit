@@ -1,8 +1,7 @@
-﻿using System.IO;
-using TryFreetype;
+﻿using TryFreetype;
 using TryFreetype.Model;
 
-namespace KiriEdit
+namespace KiriProj
 {
     public static class FigureUtils
     {

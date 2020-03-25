@@ -4,7 +4,7 @@ using System.Globalization;
 using System.IO;
 using TryFreetype.Model;
 
-namespace KiriEdit
+namespace KiriProj
 {
     public delegate void FigureItemModifiedHandler(object sender, FigureItemModifiedEventArgs e);
 
