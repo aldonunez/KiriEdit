@@ -17,6 +17,14 @@
             {
                 components.Dispose();
             }
+            if (disposing)
+            {
+                if (_figureItem != null)
+                {
+                    _figureItem.Deleted -= _figureItem_Deleted;
+                    _figureItem = null;
+                }
+            }
             base.Dispose(disposing);
         }
 

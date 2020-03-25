@@ -8,6 +8,7 @@ namespace KiriEdit
     {
         private FigureItem _figureItem;
         private string _title;
+        private bool _deleted;
 
         public FigureEditView()
         {
@@ -37,6 +38,7 @@ namespace KiriEdit
                     throw new ArgumentException();
 
                 _figureItem = (FigureItem) value;
+                _figureItem.Deleted += _figureItem_Deleted;
 
                 _title = string.Format(
                     "U+{0:X6}  {1} : {2}",
@@ -46,6 +48,12 @@ namespace KiriEdit
 
                 UpdateTitle();
             }
+        }
+
+        private void _figureItem_Deleted(object sender, EventArgs e)
+        {
+            _deleted = true;
+            Close();
         }
 
         public bool Save()
@@ -75,7 +83,7 @@ namespace KiriEdit
 
         private void FigureEditView_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (e.CloseReason == CloseReason.UserClosing)
+            if (e.CloseReason == CloseReason.UserClosing && !_deleted)
             {
                 if (!ConfirmClose())
                     e.Cancel = true;

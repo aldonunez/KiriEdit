@@ -221,6 +221,7 @@ namespace KiriEdit
                 {
                     File.Delete(item.Path);
                     _figureItems.RemoveAt(i);
+                    item.Delete();
                     Project.NotifyItemModified(this);
                     return;
                 }

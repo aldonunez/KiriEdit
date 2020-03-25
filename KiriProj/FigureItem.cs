@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text.Json;
 
 namespace KiriEdit
@@ -12,6 +13,8 @@ namespace KiriEdit
         public bool IsDirty { get; set; }
 
         public CharacterItem Parent { get; set; }
+
+        public event EventHandler Deleted;
 
         public FigureItem(string path, CharacterItem parent)
         {
@@ -49,6 +52,11 @@ namespace KiriEdit
                 FigureDocument document = task.Result;
                 return document;
             }
+        }
+
+        internal void Delete()
+        {
+            Deleted?.Invoke(this, EventArgs.Empty);
         }
     }
 }
