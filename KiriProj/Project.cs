@@ -203,10 +203,12 @@ namespace KiriEdit
                 AddInternal(item.CodePoint, item);
             }
 
-            public void Delete(uint codePoint)
+            public void Delete(CharacterItem item)
             {
-                CharacterItem.Delete(_project, codePoint);
-                RemoveInternal(codePoint);
+                if (RemoveInternal(item.CodePoint))
+                {
+                    item.Delete();
+                }
             }
         }
 
@@ -224,13 +226,16 @@ namespace KiriEdit
                 OnCollectionChanged(NotifyCollectionChangedAction.Add, value);
             }
 
-            protected void RemoveInternal(K key)
+            protected bool RemoveInternal(K key)
             {
                 if (_set.TryGetValue(key, out V value))
                 {
                     _set.Remove(key);
                     OnCollectionChanged(NotifyCollectionChangedAction.Remove, value);
+                    return true;
                 }
+
+                return false;
             }
 
             public bool Contains(K key)

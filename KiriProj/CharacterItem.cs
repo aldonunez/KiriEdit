@@ -26,8 +26,10 @@ namespace KiriEdit
         private const string FigureSearchPattern = "*.kefig";
 
         private List<FigureItem> _figureItems = new List<FigureItem>();
+        private bool _deleted;
 
         public event FigureItemModifiedHandler FigureItemModified;
+        public event EventHandler Deleted;
 
         public Project Project { get; }
         public uint CodePoint { get; }
@@ -131,7 +133,7 @@ namespace KiriEdit
             return characterItem;
         }
 
-        public static void Delete(Project project, uint codePoint)
+        private static void Delete(Project project, uint codePoint)
         {
             string rootPath = GetRootPath(project, codePoint);
 
@@ -219,15 +221,47 @@ namespace KiriEdit
 
                 if (name.Equals(item.Name, StringComparison.OrdinalIgnoreCase))
                 {
-                    File.Delete(item.Path);
-                    _figureItems.RemoveAt(i);
-                    item.Delete();
-                    Project.NotifyItemModified(this);
+                    DeleteItem(item, i);
                     return;
                 }
             }
 
             throw new ApplicationException();
+        }
+
+        public void DeleteItem(FigureItem item)
+        {
+            int index = _figureItems.IndexOf(item);
+            DeleteItem(item, index);
+        }
+
+        public void DeleteItem(FigureItem item, int index)
+        {
+            File.Delete(item.Path);
+            _figureItems.RemoveAt(index);
+            item.Delete();
+
+            if (!_deleted)
+                Project.NotifyItemModified(this);
+        }
+
+        internal void Delete()
+        {
+            if (_deleted)
+                return;
+
+            _deleted = true;
+
+            var items = _figureItems.ToArray();
+
+            foreach (var figureItem in items)
+            {
+                DeleteItem(figureItem);
+            }
+
+            CharacterItem.Delete(Project, CodePoint);
+
+            Deleted?.Invoke(this, EventArgs.Empty);
         }
 
         internal void NotifyItemModified(FigureItem figureItem)

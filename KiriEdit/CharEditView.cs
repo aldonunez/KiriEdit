@@ -39,12 +39,18 @@ namespace KiriEdit
 
                 _characterItem = (CharacterItem) value;
                 _characterItem.FigureItemModified += CharacterItem_FigureItemModified;
+                _characterItem.Deleted += CharacterItem_Deleted;
 
                 Text = string.Format(
                     "U+{0:X6}  {1}",
                     _characterItem.CodePoint,
                     CharUtils.GetString(_characterItem.CodePoint));
             }
+        }
+
+        private void CharacterItem_Deleted(object sender, EventArgs e)
+        {
+            Close();
         }
 
         private void CharacterItem_FigureItemModified(object sender, FigureItemModifiedEventArgs args)

@@ -22,6 +22,7 @@
                 if (_characterItem != null)
                 {
                     _characterItem.FigureItemModified -= CharacterItem_FigureItemModified;
+                    _characterItem.Deleted -= CharacterItem_Deleted;
                     _characterItem = null;
                 }
             }

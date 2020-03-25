@@ -132,7 +132,7 @@ namespace KiriEdit
             if (!ConfirmDeleteCharacter(listItem))
                 return;
 
-            Project.Characters.Delete(listItem.CodePoint);
+            Project.Characters.Delete(listItem.CharacterItem);
 
             _charListItems.Remove(listItem);
             charListBox.Items.Remove(listItem);
