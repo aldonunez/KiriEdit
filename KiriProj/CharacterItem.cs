@@ -63,7 +63,7 @@ namespace KiriEdit
             }
         }
 
-        public static IEnumerable<CharacterItem> EnumerateCharacterItems(Project project)
+        internal static IEnumerable<CharacterItem> EnumerateCharacterItems(Project project)
         {
             var charsFolderInfo = new DirectoryInfo(project.CharactersFolderPath);
 
@@ -95,7 +95,7 @@ namespace KiriEdit
             return charPath;
         }
 
-        public static CharacterItem Make(Project project, uint codePoint)
+        internal static CharacterItem Make(Project project, uint codePoint)
         {
             string rootPath = GetRootPath(project, codePoint);
 

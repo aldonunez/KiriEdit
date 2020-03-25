@@ -12,7 +12,7 @@ namespace KiriEdit
         public string Path { get; }
         public bool IsDirty { get; set; }
 
-        public CharacterItem Parent { get; set; }
+        public CharacterItem Parent { get; private set; }
 
         public event EventHandler Deleted;
 
