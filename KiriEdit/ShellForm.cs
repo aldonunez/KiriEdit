@@ -15,6 +15,7 @@ namespace KiriEdit
         private Project _project;
         private MdiDocumentContainer _documentContainer;
         private ToolStripMenuItem[] _windowListMenuItems;
+        private Dictionary<object, IView> _runningDocTable = new Dictionary<object, IView>();
 
         public ShellForm()
         {
@@ -49,6 +50,18 @@ namespace KiriEdit
         private void _documentContainer_ViewsChanged(object sender, ViewsChangedEventArgs e)
         {
             UpdateViewHostingState();
+
+            if (e.View.ProjectItem != null)
+            {
+                if (e.Action == ViewsChangedAction.Added)
+                {
+                    _runningDocTable.Add(e.View.ProjectItem, e.View);
+                }
+                else if (e.Action == ViewsChangedAction.Removed)
+                {
+                    _runningDocTable.Remove(e.View.ProjectItem);
+                }
+            }
         }
 
         private void RebuildWindowListMenu()
@@ -336,22 +349,35 @@ namespace KiriEdit
         {
             IView view;
 
-            if (item is CharacterItem)
-                view = new CharEditView();
-            else if (item is FigureItem)
-                view = new FigureEditView();
+            if (_runningDocTable.TryGetValue(item, out view))
+            {
+                _documentContainer.Activate(view);
+            }
             else
-                throw new ApplicationException();
+            {
+                if (item is CharacterItem)
+                    view = new CharEditView();
+                else if (item is FigureItem)
+                    view = new FigureEditView();
+                else
+                    throw new ApplicationException();
 
-            view.ProjectItem = item;
-            AddView(view);
+                view.ProjectItem = item;
+                AddView(view);
+            }
         }
 
         private void characterMapMenuItem_Click(object sender, EventArgs e)
         {
-            if (_documentContainer.FindView(typeof(CharMapView)) == null)
+            IView view = _documentContainer.FindView(typeof(CharMapView));
+
+            if (view == null)
             {
                 AddView(new CharMapView());
+            }
+            else
+            {
+                _documentContainer.Activate(view);
             }
         }
 
