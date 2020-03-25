@@ -191,7 +191,7 @@ namespace KiriEdit
 
             public CharacterItem Add(uint codePoint)
             {
-                var item = CharacterItem.Add(_project, codePoint);
+                var item = CharacterItem.Make(_project, codePoint);
                 AddInternal(codePoint, item);
                 return item;
             }

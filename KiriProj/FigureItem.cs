@@ -16,7 +16,7 @@ namespace KiriEdit
 
         public event EventHandler Deleted;
 
-        public FigureItem(string path, CharacterItem parent)
+        internal FigureItem(string path, CharacterItem parent)
         {
             string baseName = System.IO.Path.GetFileNameWithoutExtension(path);
 
@@ -61,7 +61,7 @@ namespace KiriEdit
             Deleted?.Invoke(this, EventArgs.Empty);
         }
 
-        internal static FigureItem Add(CharacterItem characterItem, string name)
+        internal static FigureItem Make(CharacterItem characterItem, string name)
         {
             string fileName = name + ".kefig";
             string figurePath = System.IO.Path.Combine(characterItem.RootPath, fileName);

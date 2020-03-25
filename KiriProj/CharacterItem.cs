@@ -95,7 +95,7 @@ namespace KiriEdit
             return charPath;
         }
 
-        public static CharacterItem Add(Project project, uint codePoint)
+        public static CharacterItem Make(Project project, uint codePoint)
         {
             string rootPath = GetRootPath(project, codePoint);
 
@@ -190,7 +190,7 @@ namespace KiriEdit
                     throw new ApplicationException();
             }
 
-            var figureItem = FigureItem.Add(this, name);
+            var figureItem = FigureItem.Make(this, name);
 
             _figureItems.Add(figureItem);
             Project.NotifyItemModified(this);
