@@ -180,8 +180,6 @@ namespace KiriEdit
 
         #region Inner classes
 
-        //--------------------------------------------------------------------
-
         public class CharacterItemCollection : ItemSet<uint, CharacterItem>
         {
             private Project _project;

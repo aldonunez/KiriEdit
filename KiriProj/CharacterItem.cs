@@ -133,7 +133,7 @@ namespace KiriEdit
             return characterItem;
         }
 
-        private static void Delete(Project project, uint codePoint)
+        private static void DeleteTree(Project project, uint codePoint)
         {
             string rootPath = GetRootPath(project, codePoint);
 
@@ -182,30 +182,15 @@ namespace KiriEdit
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentException();
 
-            string fileName = name + ".kefig";
-            string figurePath = Path.Combine(RootPath, fileName);
-
-            // Fail if the item or file exist.
-
-            if (File.Exists(figurePath))
-                throw new ApplicationException();
+            // Fail if the item exists.
 
             foreach (var item in _figureItems)
             {
-                if (fileName.Equals(item.Name, StringComparison.OrdinalIgnoreCase))
+                if (name.Equals(item.Name, StringComparison.OrdinalIgnoreCase))
                     throw new ApplicationException();
             }
 
-            // Make the new item with a copy of the master figure.
-
-            var figureItem = new FigureItem(figurePath, this);
-
-            FigureDocument masterDoc = MasterFigureItem.Open();
-            FigureDocument pieceDoc = new FigureDocument();
-
-            pieceDoc.Figure = masterDoc.Figure;
-            pieceDoc.Shapes = masterDoc.Shapes;
-            figureItem.Save(pieceDoc);
+            var figureItem = FigureItem.Add(this, name);
 
             _figureItems.Add(figureItem);
             Project.NotifyItemModified(this);
@@ -237,7 +222,6 @@ namespace KiriEdit
 
         public void DeleteItem(FigureItem item, int index)
         {
-            File.Delete(item.Path);
             _figureItems.RemoveAt(index);
             item.Delete();
 
@@ -259,7 +243,7 @@ namespace KiriEdit
                 DeleteItem(figureItem);
             }
 
-            CharacterItem.Delete(Project, CodePoint);
+            CharacterItem.DeleteTree(Project, CodePoint);
 
             Deleted?.Invoke(this, EventArgs.Empty);
         }

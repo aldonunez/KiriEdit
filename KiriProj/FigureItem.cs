@@ -56,7 +56,30 @@ namespace KiriEdit
 
         internal void Delete()
         {
+            File.Delete(Path);
+
             Deleted?.Invoke(this, EventArgs.Empty);
+        }
+
+        internal static FigureItem Add(CharacterItem characterItem, string name)
+        {
+            string fileName = name + ".kefig";
+            string figurePath = System.IO.Path.Combine(characterItem.RootPath, fileName);
+
+            // Fail if the item or file exist.
+
+            if (File.Exists(figurePath))
+                throw new ApplicationException();
+
+            // Make the new item with a copy of the master figure.
+
+            var figureItem = new FigureItem(figurePath, characterItem);
+
+            FigureDocument pieceDoc = characterItem.MasterFigureItem.Open();
+
+            figureItem.Save(pieceDoc);
+
+            return figureItem;
         }
     }
 }
