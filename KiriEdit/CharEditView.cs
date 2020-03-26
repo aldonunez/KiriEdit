@@ -101,14 +101,7 @@ namespace KiriEdit
             int height = (int) (picBoxSize.Height * 0.80f);
             int width = height;
 
-            float figureWidthToHeight = _masterDoc.Figure.Width / (float) _masterDoc.Figure.Height;
-            int scaledWidth = (int) (width * figureWidthToHeight);
-
-            Rectangle rect = new Rectangle(
-                (width - scaledWidth) / 2,
-                0,
-                scaledWidth,
-                height);
+            Rectangle rect = SystemFigurePainter.CenterFigure(_masterDoc.Figure, new Size(width, height));
 
             Bitmap bitmap = new Bitmap(width, height);
 
@@ -152,14 +145,7 @@ namespace KiriEdit
             int height = (int) (picBoxSize.Height * 0.80f);
             int width = height;
 
-            float figureWidthToHeight = _masterDoc.Figure.Width / (float) _masterDoc.Figure.Height;
-            int scaledWidth = (int) (width * figureWidthToHeight);
-
-            Rectangle rect = new Rectangle(
-                (width - scaledWidth) / 2,
-                0,
-                scaledWidth,
-                height);
+            Rectangle rect = SystemFigurePainter.CenterFigure(_masterDoc.Figure, new Size(width, height));
 
             Bitmap bitmap = new Bitmap(width, height);
 
@@ -202,14 +188,7 @@ namespace KiriEdit
 
             var imageListSize = piecesImageList.ImageSize;
 
-            float figureWidthToHeight = pieceDoc.Figure.Width / (float) pieceDoc.Figure.Height;
-            int scaledWidth = (int) (imageListSize.Width * figureWidthToHeight);
-
-            var rect = new Rectangle(
-                (imageListSize.Width - scaledWidth) / 2,
-                0,
-                scaledWidth,
-                imageListSize.Height);
+            Rectangle rect = SystemFigurePainter.CenterFigure(_masterDoc.Figure, imageListSize);
 
             Bitmap bitmap = new Bitmap(imageListSize.Width, imageListSize.Height);
 

@@ -172,5 +172,22 @@ namespace KiriEdit
             _x = to.X;
             _y = to.Y;
         }
+
+        public static Rectangle CenterFigure(Figure figure, Size boundSize)
+        {
+            int height = boundSize.Height;
+            int width = boundSize.Width;
+
+            float figureWidthToHeight = figure.Width / (float) figure.Height;
+            int scaledWidth = (int) (width * figureWidthToHeight);
+
+            Rectangle rect = new Rectangle(
+                (width - scaledWidth) / 2,
+                0,
+                scaledWidth,
+                height);
+
+            return rect;
+        }
     }
 }

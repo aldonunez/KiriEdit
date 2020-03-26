@@ -130,14 +130,7 @@ namespace KiriEdit
             int height = (int) (picBoxSize.Height * 0.80f);
             int width = height;
 
-            float figureWidthToHeight = masterDoc.Figure.Width / (float) masterDoc.Figure.Height;
-            int scaledWidth = (int) (width * figureWidthToHeight);
-
-            Rectangle rect = new Rectangle(
-                (width - scaledWidth) / 2,
-                0,
-                scaledWidth,
-                height);
+            Rectangle rect = SystemFigurePainter.CenterFigure(masterDoc.Figure, new Size(width, height));
 
             Bitmap bitmap = new Bitmap(width, height);
 
@@ -166,14 +159,7 @@ namespace KiriEdit
             int height = (int) (picBoxSize.Height * 0.80f);
             int width = height;
 
-            float figureWidthToHeight = masterDoc.Figure.Width / (float) masterDoc.Figure.Height;
-            int scaledWidth = (int) (width * figureWidthToHeight);
-
-            Rectangle rect = new Rectangle(
-                (width - scaledWidth) / 2,
-                0,
-                scaledWidth,
-                height);
+            Rectangle rect = SystemFigurePainter.CenterFigure(masterDoc.Figure, new Size(width, height));
 
             Bitmap bitmap = new Bitmap(width, height);
 

@@ -93,14 +93,10 @@ namespace KiriEdit
             int height = (int) (picBoxSize.Height * 0.80f);
             int width = height;
 
-            float figureWidthToHeight = _document.Figure.Width / (float) _document.Figure.Height;
-            int scaledWidth = (int) (width * figureWidthToHeight);
+            Rectangle rect = SystemFigurePainter.CenterFigure(_document.Figure, new Size(width, height));
 
-            Rectangle rect = new Rectangle(
-                (int) (picBoxSize.Width - scaledWidth) / 2,
-                (int) (picBoxSize.Height - height) / 2,
-                scaledWidth,
-                height);
+            rect.X = (picBoxSize.Width - rect.Width) / 2;
+            rect.Y = (picBoxSize.Height - rect.Height) / 2;
 
             _rectangle = rect;
             _shapeMask = new Bitmap(picBoxSize.Width, picBoxSize.Height);
