@@ -246,11 +246,16 @@ namespace KiriFT
         return name;
     }
 
-    void Face::LoadChar(UInt32 ch)
+    void Face::LoadChar(UInt32 ch, Boolean noScale)
     {
         FT_Error error;
 
-        error = FT_Load_Char(m_face, ch, FT_LOAD_NO_BITMAP);
+        Int32 flags = FT_LOAD_NO_BITMAP;
+
+        if (noScale)
+            flags |= FT_LOAD_NO_SCALE;
+
+        error = FT_Load_Char(m_face, ch, flags);
         if (error)
             throw gcnew FreeTypeException(error);
     }

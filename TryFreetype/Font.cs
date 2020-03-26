@@ -43,9 +43,7 @@ namespace TryFreetype
             if (size <= 0)
                 throw new ArgumentOutOfRangeException(nameof(size));
 
-            _face.SetPixelSizes(0, (uint) size);
-
-            _face.LoadChar(character);
+            _face.LoadChar(character, true);
 
             var walker = new GlyphWalker(_face);
 

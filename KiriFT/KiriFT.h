@@ -109,7 +109,7 @@ namespace KiriFT
         UInt32 GetSfntNameCount();
         SfntName GetSfntName( UInt32 index );
 
-		void LoadChar(UInt32 ch);
+		void LoadChar(UInt32 ch, Boolean noScale);
 		void Decompose(OutlineHandlers^ handlers);
 
         static Int32 ParseLegacyStyle(String^ styleName);
