@@ -91,12 +91,15 @@ namespace KiriEdit
 
             Size picBoxSize = canvas.ClientSize;
             int height = (int) (picBoxSize.Height * 0.80f);
-            int width = (int) (height * 32f / 37f);
+            int width = height;
+
+            float figureWidthToHeight = _document.Figure.Width / (float) _document.Figure.Height;
+            int scaledWidth = (int) (width * figureWidthToHeight);
 
             Rectangle rect = new Rectangle(
-                (int) (picBoxSize.Width - width) / 2,
+                (int) (picBoxSize.Width - scaledWidth) / 2,
                 (int) (picBoxSize.Height - height) / 2,
-                width,
+                scaledWidth,
                 height);
 
             _rectangle = rect;

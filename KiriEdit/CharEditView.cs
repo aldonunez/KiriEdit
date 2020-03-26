@@ -98,9 +98,16 @@ namespace KiriEdit
 
             Size picBoxSize = masterPictureBox.ClientSize;
             int height = (int) (picBoxSize.Height * 0.80f);
-            int width = (int) (height * 32f / 37f);
+            int width = height;
 
-            Rectangle rect = new Rectangle(0, 0, width, height);
+            float figureWidthToHeight = _masterDoc.Figure.Width / (float) _masterDoc.Figure.Height;
+            int scaledWidth = (int) (width * figureWidthToHeight);
+
+            Rectangle rect = new Rectangle(
+                (width - scaledWidth) / 2,
+                0,
+                scaledWidth,
+                height);
 
             Bitmap bitmap = new Bitmap(width, height);
 
@@ -142,12 +149,15 @@ namespace KiriEdit
         {
             Size picBoxSize = masterPictureBox.ClientSize;
             int height = (int) (picBoxSize.Height * 0.80f);
-            int width = (int) (height * 32f / 37f);
+            int width = height;
+
+            float figureWidthToHeight = _masterDoc.Figure.Width / (float) _masterDoc.Figure.Height;
+            int scaledWidth = (int) (width * figureWidthToHeight);
 
             Rectangle rect = new Rectangle(
-                (int) (picBoxSize.Width - width) / 2,
+                (int) (picBoxSize.Width - scaledWidth) / 2,
                 (int) (picBoxSize.Height - height) / 2,
-                width,
+                scaledWidth,
                 height);
 
             using (var painter = new SystemFigurePainter(_masterDoc))
@@ -184,9 +194,18 @@ namespace KiriEdit
         {
             var pieceDoc = figureItem.Open();
 
-            var rect = new Rectangle(Point.Empty, piecesImageList.ImageSize);
+            var imageListSize = piecesImageList.ImageSize;
 
-            Bitmap bitmap = new Bitmap(rect.Width, rect.Height);
+            float figureWidthToHeight = pieceDoc.Figure.Width / (float) pieceDoc.Figure.Height;
+            int scaledWidth = (int) (imageListSize.Width * figureWidthToHeight);
+
+            var rect = new Rectangle(
+                (imageListSize.Width - scaledWidth) / 2,
+                0,
+                scaledWidth,
+                imageListSize.Height);
+
+            Bitmap bitmap = new Bitmap(imageListSize.Width, imageListSize.Height);
 
             try
             {

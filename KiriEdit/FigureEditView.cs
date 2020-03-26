@@ -128,9 +128,16 @@ namespace KiriEdit
 
             Size picBoxSize = masterPictureBox.ClientSize;
             int height = (int) (picBoxSize.Height * 0.80f);
-            int width = (int) (height * 32f / 37f);
+            int width = height;
 
-            Rectangle rect = new Rectangle(0, 0, width, height);
+            float figureWidthToHeight = masterDoc.Figure.Width / (float) masterDoc.Figure.Height;
+            int scaledWidth = (int) (width * figureWidthToHeight);
+
+            Rectangle rect = new Rectangle(
+                (width - scaledWidth) / 2,
+                0,
+                scaledWidth,
+                height);
 
             Bitmap bitmap = new Bitmap(width, height);
 
@@ -153,11 +160,20 @@ namespace KiriEdit
                 progressPictureBox.BackgroundImage = null;
             }
 
+            FigureDocument masterDoc = _figureItem.Parent.MasterFigureItem.Open();
+
             Size picBoxSize = masterPictureBox.ClientSize;
             int height = (int) (picBoxSize.Height * 0.80f);
-            int width = (int) (height * 32f / 37f);
+            int width = height;
 
-            Rectangle rect = new Rectangle(0, 0, width, height);
+            float figureWidthToHeight = masterDoc.Figure.Width / (float) masterDoc.Figure.Height;
+            int scaledWidth = (int) (width * figureWidthToHeight);
+
+            Rectangle rect = new Rectangle(
+                (width - scaledWidth) / 2,
+                0,
+                scaledWidth,
+                height);
 
             Bitmap bitmap = new Bitmap(width, height);
 
