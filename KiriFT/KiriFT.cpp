@@ -169,6 +169,18 @@ namespace KiriFT
             throw gcnew FreeTypeException(error);
     }
 
+    FTBBox^ Face::GetFaceBBox()
+    {
+        FTBBox^ bboxFT = gcnew FTBBox();
+
+        bboxFT->Left = m_face->bbox.xMin;
+        bboxFT->Bottom = m_face->bbox.yMin;
+        bboxFT->Right = m_face->bbox.xMax;
+        bboxFT->Top = m_face->bbox.yMax;
+
+        return bboxFT;
+    }
+
     FTBBox^ Face::GetBBox()
     {
         FT_Error error;

@@ -38,13 +38,17 @@ namespace TryFreetype
 
             CloseCurrentContour();
 
+            var faceBbox = face.GetFaceBBox();
             var bbox = face.GetBBox();
             var metrics = face.GetMetrics();
 
             int width = ((metrics.Width + 63) / 64) * 64;
-            int height = ((metrics.Height + 63) / 64) * 64;
+            int height = ((faceBbox.Top - faceBbox.Bottom + 63) / 64) * 64;
 
-            figure = new Figure(_pointGroups, new Cut[0], width, height, bbox.Left, bbox.Bottom);
+            int offsetX = bbox.Left;
+            int offsetY = faceBbox.Bottom;
+
+            figure = new Figure(_pointGroups, new Cut[0], width, height, offsetX, offsetY);
         }
 
         private void CloseCurrentContour()

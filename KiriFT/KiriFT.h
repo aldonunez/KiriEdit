@@ -104,6 +104,7 @@ namespace KiriFT
         property FaceFlags Flags { FaceFlags get(); }
 
 		void SetPixelSizes(UInt32 width, UInt32 height);
+		FTBBox^ GetFaceBBox();
 		FTBBox^ GetBBox();
 		FTGlyphMetrics^ GetMetrics();
         UInt32 GetSfntNameCount();
