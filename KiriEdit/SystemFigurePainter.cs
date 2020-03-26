@@ -38,17 +38,17 @@ namespace KiriEdit
 
         public void SetTransform(Graphics g, Rectangle rect)
         {
-            float pixHeight = (int) Math.Ceiling(_document.Figure.Height / 64f);
+            float pixHeight = _document.Figure.Height;
 
             float scale = (rect.Height - 1) / pixHeight;
 
             int bmpHeight = rect.Height;
 
             g.ResetTransform();
-            g.ScaleTransform(scale / 64f, -scale / 64f, MatrixOrder.Append);
+            g.ScaleTransform(scale, -scale, MatrixOrder.Append);
             g.TranslateTransform(
-                rect.X + (float) -_document.Figure.OffsetX * scale / 64f,
-                rect.Y + (bmpHeight - 1) + (float) _document.Figure.OffsetY * scale / 64f,
+                rect.X + (float) -_document.Figure.OffsetX * scale,
+                rect.Y + (bmpHeight - 1) + (float) _document.Figure.OffsetY * scale,
                 MatrixOrder.Append);
         }
 

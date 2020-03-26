@@ -12,6 +12,8 @@ namespace TryFreetype
 #endif
     class OutlineRenderer
     {
+        private const float Divisor = 8f;
+
         private Figure _figure;
         private FigureWalker _figureWalker;
         private int _x, _y;
@@ -34,8 +36,8 @@ namespace TryFreetype
             _figureWalker.ConicTo += ConicTo;
             _figureWalker.CubicTo += CubicTo;
 
-            int width = figure.Width / 64;
-            int height = figure.Height / 64;
+            int width = (int) (figure.Width / Divisor);
+            int height = (int) (figure.Height / Divisor);
 
             _maskBuf = new byte[height, width];
             _maskWidth = width;
@@ -156,12 +158,12 @@ namespace TryFreetype
 
         public double TransformX(int x)
         {
-            return (x - _figure.OffsetX) / 64.0;
+            return (x - _figure.OffsetX) / Divisor;
         }
 
         public double TransformY(int y)
         {
-            return (_figure.Height - y) / 64.0 - 1 + _figure.OffsetY / 64.0;
+            return (_figure.Height - y) / Divisor - 1 + _figure.OffsetY / Divisor;
         }
 
         private PointD TransformPoint(Point point)
