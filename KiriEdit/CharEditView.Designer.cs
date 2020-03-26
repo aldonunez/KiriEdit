@@ -170,7 +170,6 @@
             this.masterPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.masterPictureBox.TabIndex = 3;
             this.masterPictureBox.TabStop = false;
-            this.masterPictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.masterPictureBox_Paint);
             // 
             // addPieceButton
             // 

@@ -83,6 +83,7 @@ namespace KiriEdit
                 LoadPiece(pieceItem);
             }
 
+            LoadMasterPicture();
             LoadProgressPicture();
         }
 
@@ -145,7 +146,7 @@ namespace KiriEdit
             }
         }
 
-        private void masterPictureBox_Paint(object sender, PaintEventArgs e)
+        private void LoadMasterPicture()
         {
             Size picBoxSize = masterPictureBox.ClientSize;
             int height = (int) (picBoxSize.Height * 0.80f);
@@ -155,17 +156,22 @@ namespace KiriEdit
             int scaledWidth = (int) (width * figureWidthToHeight);
 
             Rectangle rect = new Rectangle(
-                (int) (picBoxSize.Width - scaledWidth) / 2,
-                (int) (picBoxSize.Height - height) / 2,
+                (width - scaledWidth) / 2,
+                0,
                 scaledWidth,
                 height);
 
+            Bitmap bitmap = new Bitmap(width, height);
+
+            using (var graphics = Graphics.FromImage(bitmap))
             using (var painter = new SystemFigurePainter(_masterDoc))
             {
-                painter.SetTransform(e.Graphics, rect);
+                painter.SetTransform(graphics, rect);
                 painter.PaintFull();
-                painter.Fill(e.Graphics);
+                painter.Fill(graphics);
             }
+
+            masterPictureBox.Image = bitmap;
         }
 
         private void addPieceButton_Click(object sender, EventArgs e)
