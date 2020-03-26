@@ -70,7 +70,7 @@ namespace KiriEdit
         {
             _figureItem.IsDirty = true;
 
-            LoadProgressPicture();
+            LoadProgressPicture(figureEditor.Document);
             UpdateTitle();
         }
 
@@ -118,16 +118,14 @@ namespace KiriEdit
         {
             figureEditor.Document = _figureItem.Open();
 
-            LoadMasterPicture();
-            LoadProgressPicture();
+            LoadMasterPicture(figureEditor.Document);
+            LoadProgressPicture(figureEditor.Document);
         }
 
-        private void LoadMasterPicture()
+        private void LoadMasterPicture(FigureDocument masterDoc)
         {
-            FigureDocument masterDoc = _figureItem.Parent.MasterFigureItem.Open();
-
             Size picBoxSize = masterPictureBox.ClientSize;
-            int height = (int) (picBoxSize.Height * 0.80f);
+            int height = (int) (picBoxSize.Height * 0.95f);
             int width = height;
 
             Rectangle rect = SystemFigurePainter.CenterFigure(masterDoc.Figure, new Size(width, height));
@@ -145,7 +143,7 @@ namespace KiriEdit
             masterPictureBox.Image = bitmap;
         }
 
-        private void LoadProgressPicture()
+        private void LoadProgressPicture(FigureDocument masterDoc)
         {
             if (progressPictureBox.BackgroundImage != null)
             {
@@ -153,10 +151,8 @@ namespace KiriEdit
                 progressPictureBox.BackgroundImage = null;
             }
 
-            FigureDocument masterDoc = _figureItem.Parent.MasterFigureItem.Open();
-
             Size picBoxSize = masterPictureBox.ClientSize;
-            int height = (int) (picBoxSize.Height * 0.80f);
+            int height = (int) (picBoxSize.Height * 0.95f);
             int width = height;
 
             Rectangle rect = SystemFigurePainter.CenterFigure(masterDoc.Figure, new Size(width, height));

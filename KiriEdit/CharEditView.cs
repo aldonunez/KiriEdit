@@ -64,7 +64,7 @@ namespace KiriEdit
         {
             base.ScaleControl(factor, specified);
 
-            int side = (int) Math.Round(32 * factor.Height);
+            int side = (int) Math.Round(48 * factor.Height);
             piecesImageList.ImageSize = new Size(side, side);
         }
 
@@ -98,7 +98,7 @@ namespace KiriEdit
             }
 
             Size picBoxSize = masterPictureBox.ClientSize;
-            int height = (int) (picBoxSize.Height * 0.80f);
+            int height = (int) (picBoxSize.Height * 0.95f);
             int width = height;
 
             Rectangle rect = SystemFigurePainter.CenterFigure(_masterDoc.Figure, new Size(width, height));
@@ -142,7 +142,7 @@ namespace KiriEdit
         private void LoadMasterPicture()
         {
             Size picBoxSize = masterPictureBox.ClientSize;
-            int height = (int) (picBoxSize.Height * 0.80f);
+            int height = (int) (picBoxSize.Height * 0.95f);
             int width = height;
 
             Rectangle rect = SystemFigurePainter.CenterFigure(_masterDoc.Figure, new Size(width, height));

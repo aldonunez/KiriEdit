@@ -90,9 +90,9 @@
             this.progressPictureBox.BackColor = System.Drawing.Color.White;
             this.progressPictureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.progressPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.progressPictureBox.Location = new System.Drawing.Point(3, 116);
+            this.progressPictureBox.Location = new System.Drawing.Point(3, 126);
             this.progressPictureBox.Name = "progressPictureBox";
-            this.progressPictureBox.Size = new System.Drawing.Size(124, 75);
+            this.progressPictureBox.Size = new System.Drawing.Size(124, 85);
             this.progressPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.progressPictureBox.TabIndex = 5;
             this.progressPictureBox.TabStop = false;
@@ -117,7 +117,7 @@
             this.masterPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.masterPictureBox.Location = new System.Drawing.Point(3, 19);
             this.masterPictureBox.Name = "masterPictureBox";
-            this.masterPictureBox.Size = new System.Drawing.Size(124, 75);
+            this.masterPictureBox.Size = new System.Drawing.Size(124, 85);
             this.masterPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.masterPictureBox.TabIndex = 3;
             this.masterPictureBox.TabStop = false;
@@ -125,7 +125,7 @@
             // progressLabel
             // 
             this.progressLabel.AutoSize = true;
-            this.progressLabel.Location = new System.Drawing.Point(3, 100);
+            this.progressLabel.Location = new System.Drawing.Point(3, 110);
             this.progressLabel.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.progressLabel.Name = "progressLabel";
             this.progressLabel.Size = new System.Drawing.Size(51, 13);
@@ -150,8 +150,8 @@
             this.ClientSize = new System.Drawing.Size(391, 250);
             this.Controls.Add(this.splitContainer1);
             this.Name = "FigureEditView";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FigureEditView_FormClosing);
             this.Load += new System.EventHandler(this.FigureEditView_Load);
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(FigureEditView_FormClosing);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
