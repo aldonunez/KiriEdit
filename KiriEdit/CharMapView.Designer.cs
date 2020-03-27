@@ -231,6 +231,7 @@
             this.charGrid.TabIndex = 0;
             this.charGrid.SelectedIndexChanged += new System.EventHandler(this.charGrid_SelectedIndexChanged);
             this.charGrid.MouseUp += new System.Windows.Forms.MouseEventHandler(this.CharGrid_MouseUp);
+            this.charGrid.DoubleClick += new System.EventHandler(this.CharGrid_DoubleClick);
             // 
             // CharMapView
             // 

@@ -367,20 +367,27 @@ namespace KiriEdit
 
         private void deleteCharacterMenuItem_Click(object sender, EventArgs e)
         {
+            CharListItem listItem = FindListItemByCharSetIndex();
+
+            if (listItem != null)
+                DeleteListItem(listItem);
+        }
+
+        private CharListItem FindListItemByCharSetIndex()
+        {
             int index = charGrid.SelectedIndex;
             if (index < 0)
-                return;
+                return null;
 
             uint codePoint = charGrid.CharSet.MapToCodePoint(index);
 
             foreach (var listItem in _charListItems)
             {
                 if (listItem.CodePoint == codePoint)
-                {
-                    DeleteListItem(listItem);
-                    break;
-                }
+                    return listItem;
             }
+
+            return null;
         }
 
         private void CharGrid_MouseUp(object sender, MouseEventArgs e)
@@ -405,6 +412,16 @@ namespace KiriEdit
                 }
 
                 characterContextMenu.Show(charGrid, e.X, e.Y);
+            }
+        }
+
+        private void CharGrid_DoubleClick(object sender, EventArgs e)
+        {
+            CharListItem listItem = FindListItemByCharSetIndex();
+
+            if (listItem != null)
+            {
+                Shell.OpenItem(listItem.CharacterItem);
             }
         }
 
