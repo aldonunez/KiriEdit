@@ -128,7 +128,7 @@ namespace KiriEdit
             int height = (int) (picBoxSize.Height * 0.95f);
             int width = height;
 
-            Rectangle rect = SystemFigurePainter.CenterFigure(masterDoc.Figure, new Size(width, height));
+            Rectangle rect = DrawingUtils.CenterFigure(masterDoc.Figure, new Size(width, height));
 
             Bitmap bitmap = new Bitmap(width, height);
 
@@ -155,7 +155,7 @@ namespace KiriEdit
             int height = (int) (picBoxSize.Height * 0.95f);
             int width = height;
 
-            Rectangle rect = SystemFigurePainter.CenterFigure(masterDoc.Figure, new Size(width, height));
+            Rectangle rect = DrawingUtils.CenterFigure(masterDoc.Figure, new Size(width, height));
 
             Bitmap bitmap = new Bitmap(width, height);
 
@@ -174,36 +174,21 @@ namespace KiriEdit
         private void PaintPiece(FigureItem pieceItem, Graphics graphics, Rectangle rect)
         {
             FigureDocument pieceDoc;
-            Brush brush;
+            bool standOut;
 
             // Draw this view's figure item differently.
             if (pieceItem == _figureItem)
             {
-                brush = Brushes.Red;
+                standOut = true;
                 pieceDoc = figureEditor.Document;
             }
             else
             {
-                brush = Brushes.Black;
+                standOut = false;
                 pieceDoc = pieceItem.Open();
             }
 
-            using (var painter = new SystemFigurePainter(pieceDoc))
-            {
-                painter.SetTransform(graphics, rect);
-
-                for (int i = 0; i < pieceDoc.Shapes.Length; i++)
-                {
-                    if (pieceDoc.Shapes[i].Enabled)
-                    {
-                        painter.PaintShape(i);
-                        painter.Fill(graphics, brush);
-                    }
-                }
-
-                painter.PaintFull();
-                painter.Draw(graphics);
-            }
+            DrawingUtils.PaintPiece(pieceDoc, graphics, rect, standOut);
         }
     }
 }

@@ -120,6 +120,7 @@
       <DependentUpon>CharMapView.cs</DependentUpon>
     </Compile>
     <Compile Include="CharUtils.cs" />
+    <Compile Include="DrawingUtils.cs" />
     <Compile Include="FigureEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>

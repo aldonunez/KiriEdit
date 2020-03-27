@@ -93,7 +93,7 @@ namespace KiriEdit
             int height = (int) (picBoxSize.Height * 0.95f);
             int width = height;
 
-            Rectangle rect = SystemFigurePainter.CenterFigure(_document.Figure, new Size(width, height));
+            Rectangle rect = DrawingUtils.CenterFigure(_document.Figure, new Size(width, height));
 
             rect.X = (picBoxSize.Width - rect.Width) / 2;
             rect.Y = (picBoxSize.Height - rect.Height) / 2;

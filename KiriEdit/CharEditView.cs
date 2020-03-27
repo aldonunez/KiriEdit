@@ -101,7 +101,7 @@ namespace KiriEdit
             int height = (int) (picBoxSize.Height * 0.95f);
             int width = height;
 
-            Rectangle rect = SystemFigurePainter.CenterFigure(_masterDoc.Figure, new Size(width, height));
+            Rectangle rect = DrawingUtils.CenterFigure(_masterDoc.Figure, new Size(width, height));
 
             Bitmap bitmap = new Bitmap(width, height);
 
@@ -121,22 +121,7 @@ namespace KiriEdit
         {
             var pieceDoc = pieceItem.Open();
 
-            using (var painter = new SystemFigurePainter(pieceDoc))
-            {
-                painter.SetTransform(graphics, rect);
-
-                for (int i = 0; i < pieceDoc.Shapes.Length; i++)
-                {
-                    if (pieceDoc.Shapes[i].Enabled)
-                    {
-                        painter.PaintShape(i);
-                        painter.Fill(graphics);
-                    }
-                }
-
-                painter.PaintFull();
-                painter.Draw(graphics);
-            }
+            DrawingUtils.PaintPiece(pieceDoc, graphics, rect);
         }
 
         private void LoadMasterPicture()
@@ -145,7 +130,7 @@ namespace KiriEdit
             int height = (int) (picBoxSize.Height * 0.95f);
             int width = height;
 
-            Rectangle rect = SystemFigurePainter.CenterFigure(_masterDoc.Figure, new Size(width, height));
+            Rectangle rect = DrawingUtils.CenterFigure(_masterDoc.Figure, new Size(width, height));
 
             Bitmap bitmap = new Bitmap(width, height);
 
@@ -188,28 +173,15 @@ namespace KiriEdit
 
             var imageListSize = piecesImageList.ImageSize;
 
-            Rectangle rect = SystemFigurePainter.CenterFigure(_masterDoc.Figure, imageListSize);
+            Rectangle rect = DrawingUtils.CenterFigure(_masterDoc.Figure, imageListSize);
 
             Bitmap bitmap = new Bitmap(imageListSize.Width, imageListSize.Height);
 
             try
             {
                 using (var g = Graphics.FromImage(bitmap))
-                using (var painter = new SystemFigurePainter(pieceDoc))
                 {
-                    painter.SetTransform(g, rect);
-
-                    for (int i = 0; i < pieceDoc.Shapes.Length; i++)
-                    {
-                        if (pieceDoc.Shapes[i].Enabled)
-                        {
-                            painter.PaintShape(i);
-                            painter.Fill(g);
-                        }
-                    }
-
-                    painter.PaintFull();
-                    painter.Draw(g);
+                    DrawingUtils.PaintPiece(pieceDoc, g, rect);
                 }
 
                 int imageIndex = piecesImageList.Images.IndexOfKey(figureItem.Name);
