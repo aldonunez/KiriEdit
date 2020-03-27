@@ -75,6 +75,8 @@ namespace KiriEdit
         {
             if (e.KeyCode == Keys.Enter)
                 CharListBox_DoubleClick(sender, e);
+            else if (e.KeyCode == Keys.Delete)
+                deleteListCharButton_Click(sender, e);
         }
 
         private void CharListBox_DoubleClick(object sender, EventArgs e)
@@ -125,7 +127,8 @@ namespace KiriEdit
 
         private void deleteListCharButton_Click(object sender, EventArgs e)
         {
-            DeleteListItem((CharListItem) charListBox.SelectedItem);
+            if (charListBox.SelectedIndex >= 0)
+                DeleteListItem((CharListItem) charListBox.SelectedItem);
         }
 
         private void DeleteListItem(CharListItem listItem)

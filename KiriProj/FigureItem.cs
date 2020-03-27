@@ -39,9 +39,12 @@ namespace KiriProj
                 JsonSerializer.Serialize(writer, document, serializerOptions);
             }
 
+            bool wasDirty = IsDirty;
+
             IsDirty = false;
 
-            Parent.NotifyItemModified(this);
+            if (wasDirty)
+                Parent.NotifyItemModified(this);
         }
 
         public FigureDocument Open()

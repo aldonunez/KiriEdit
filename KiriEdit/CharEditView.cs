@@ -168,6 +168,12 @@ namespace KiriEdit
                 DeletePiece(piecesListView.SelectedItems[0]);
         }
 
+        private void PiecesListView_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+                deletePieceButton_Click(sender, e);
+        }
+
         private void AddPiece()
         {
             // TODO: make this an instance method
@@ -177,6 +183,7 @@ namespace KiriEdit
             FigureItem figureItem = _characterItem.AddItem(name);
 
             LoadPiece(figureItem);
+            LoadProgressPicture();
         }
 
         private void ReplacePieceImage(FigureItem figureItem)
@@ -235,6 +242,8 @@ namespace KiriEdit
 
             piecesListView.Items.Remove(listViewItem);
             piecesImageList.Images.RemoveByKey(figureItem.Name);
+
+            LoadProgressPicture();
         }
 
         private bool ConfirmDeletePiece(FigureItem figureItem)

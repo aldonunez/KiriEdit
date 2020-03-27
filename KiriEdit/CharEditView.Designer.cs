@@ -185,6 +185,7 @@
             this.piecesListView.TabIndex = 1;
             this.piecesListView.UseCompatibleStateImageBehavior = false;
             this.piecesListView.ItemActivate += new System.EventHandler(this.piecesListView_ItemActivate);
+            this.piecesListView.KeyUp += new System.Windows.Forms.KeyEventHandler(this.PiecesListView_KeyUp);
             this.piecesListView.SelectedIndexChanged += new System.EventHandler(this.PiecesListView_SelectedIndexChanged);
             // 
             // piecesImageList
