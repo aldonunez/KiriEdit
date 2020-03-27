@@ -51,6 +51,7 @@
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.addListCharButton = new System.Windows.Forms.ToolStripButton();
             this.deleteListCharButton = new System.Windows.Forms.ToolStripButton();
+            this.charGrid = new KiriEdit.CharacterGrid();
             this.panel2 = new System.Windows.Forms.Panel();
             this.charDescriptionLabel = new System.Windows.Forms.Label();
             this.findCharButton = new System.Windows.Forms.Button();
@@ -59,7 +60,7 @@
             this.characterContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addCharacterMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteCharacterMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.charGrid = new KiriEdit.CharacterGrid();
+            this.editCharacterMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -147,6 +148,20 @@
             this.deleteListCharButton.Text = "Delete character";
             this.deleteListCharButton.Click += new System.EventHandler(this.deleteListCharButton_Click);
             // 
+            // charGrid
+            // 
+            this.charGrid.Columns = 20;
+            this.charGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.charGrid.Location = new System.Drawing.Point(8, 32);
+            this.charGrid.Margin = new System.Windows.Forms.Padding(2);
+            this.charGrid.Name = "charGrid";
+            this.charGrid.OnCharacterColor = System.Drawing.Color.Red;
+            this.charGrid.Size = new System.Drawing.Size(285, 170);
+            this.charGrid.TabIndex = 0;
+            this.charGrid.SelectedIndexChanged += new System.EventHandler(this.charGrid_SelectedIndexChanged);
+            this.charGrid.DoubleClick += new System.EventHandler(this.CharGrid_DoubleClick);
+            this.charGrid.MouseUp += new System.Windows.Forms.MouseEventHandler(this.CharGrid_MouseUp);
+            // 
             // panel2
             // 
             this.panel2.Controls.Add(this.charDescriptionLabel);
@@ -201,37 +216,31 @@
             // 
             this.characterContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addCharacterMenuItem,
-            this.deleteCharacterMenuItem});
+            this.deleteCharacterMenuItem,
+            this.editCharacterMenuItem});
             this.characterContextMenu.Name = "characterContextMenu";
-            this.characterContextMenu.Size = new System.Drawing.Size(172, 48);
+            this.characterContextMenu.Size = new System.Drawing.Size(181, 92);
             // 
             // addCharacterMenuItem
             // 
             this.addCharacterMenuItem.Name = "addCharacterMenuItem";
-            this.addCharacterMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.addCharacterMenuItem.Size = new System.Drawing.Size(180, 22);
             this.addCharacterMenuItem.Text = "Add character";
             this.addCharacterMenuItem.Click += new System.EventHandler(this.addCharacterMenuItem_Click);
             // 
             // deleteCharacterMenuItem
             // 
             this.deleteCharacterMenuItem.Name = "deleteCharacterMenuItem";
-            this.deleteCharacterMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.deleteCharacterMenuItem.Size = new System.Drawing.Size(180, 22);
             this.deleteCharacterMenuItem.Text = "Delete character ...";
             this.deleteCharacterMenuItem.Click += new System.EventHandler(this.deleteCharacterMenuItem_Click);
             // 
-            // charGrid
+            // editCharacterMenuItem
             // 
-            this.charGrid.Columns = 20;
-            this.charGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.charGrid.Location = new System.Drawing.Point(8, 32);
-            this.charGrid.Margin = new System.Windows.Forms.Padding(2);
-            this.charGrid.Name = "charGrid";
-            this.charGrid.OnCharacterColor = System.Drawing.Color.Red;
-            this.charGrid.Size = new System.Drawing.Size(285, 170);
-            this.charGrid.TabIndex = 0;
-            this.charGrid.SelectedIndexChanged += new System.EventHandler(this.charGrid_SelectedIndexChanged);
-            this.charGrid.MouseUp += new System.Windows.Forms.MouseEventHandler(this.CharGrid_MouseUp);
-            this.charGrid.DoubleClick += new System.EventHandler(this.CharGrid_DoubleClick);
+            this.editCharacterMenuItem.Name = "editCharacterMenuItem";
+            this.editCharacterMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.editCharacterMenuItem.Text = "Edit character";
+            this.editCharacterMenuItem.Click += new System.EventHandler(this.editCharacterMenuItem_Click);
             // 
             // CharMapView
             // 
@@ -274,5 +283,6 @@
         private System.Windows.Forms.ContextMenuStrip characterContextMenu;
         private System.Windows.Forms.ToolStripMenuItem addCharacterMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteCharacterMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem editCharacterMenuItem;
     }
 }

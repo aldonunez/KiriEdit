@@ -404,11 +404,13 @@ namespace KiriEdit
                 {
                     addCharacterMenuItem.Enabled = false;
                     deleteCharacterMenuItem.Enabled = true;
+                    editCharacterMenuItem.Enabled = true;
                 }
                 else
                 {
                     addCharacterMenuItem.Enabled = true;
                     deleteCharacterMenuItem.Enabled = false;
+                    editCharacterMenuItem.Enabled = false;
                 }
 
                 characterContextMenu.Show(charGrid, e.X, e.Y);
@@ -424,6 +426,12 @@ namespace KiriEdit
                 Shell.OpenItem(listItem.CharacterItem);
             }
         }
+
+        private void editCharacterMenuItem_Click(object sender, EventArgs e)
+        {
+            CharGrid_DoubleClick(sender, e);
+        }
+
 
         #region Inner classes
 
