@@ -87,6 +87,18 @@ namespace KiriEdit
             LoadProgressPicture();
         }
 
+        private void PiecesListView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (piecesListView.SelectedIndices.Count == 0)
+            {
+                deletePieceButton.Enabled = false;
+            }
+            else
+            {
+                deletePieceButton.Enabled = true;
+            }
+        }
+
         private void LoadProgressPicture()
         {
             Image oldImage = progressPictureBox.BackgroundImage;

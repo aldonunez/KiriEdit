@@ -165,6 +165,7 @@
             // deletePieceButton
             // 
             this.deletePieceButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.deletePieceButton.Enabled = false;
             this.deletePieceButton.Image = global::KiriEdit.Properties.Resources.Trash_16x;
             this.deletePieceButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.deletePieceButton.Name = "deletePieceButton";
@@ -184,6 +185,7 @@
             this.piecesListView.TabIndex = 1;
             this.piecesListView.UseCompatibleStateImageBehavior = false;
             this.piecesListView.ItemActivate += new System.EventHandler(this.piecesListView_ItemActivate);
+            this.piecesListView.SelectedIndexChanged += new System.EventHandler(this.PiecesListView_SelectedIndexChanged);
             // 
             // piecesImageList
             // 
