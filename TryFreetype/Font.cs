@@ -38,12 +38,15 @@ namespace TryFreetype
             _face = face;
         }
 
-        public Model.Figure DecomposeGlyph(uint character, int size)
+        public Model.Figure DecomposeGlyph(uint character, int size = 0)
         {
-            if (size <= 0)
+            if (size < 0)
                 throw new ArgumentOutOfRangeException(nameof(size));
 
-            _face.LoadChar(character, true);
+            if (size > 0)
+                _face.SetPixelSizes(0, (uint) size);
+
+            _face.LoadChar(character, size == 0);
 
             var walker = new GlyphWalker(_face);
 

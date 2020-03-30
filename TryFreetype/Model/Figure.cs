@@ -195,6 +195,9 @@ namespace TryFreetype.Model
             if (CutExists(point1.Group, point2.Group))
                 throw new ApplicationException("Only one cut is allowed between these point groups.");
 
+            if (point1.OutgoingEdge.P2 == point2 || point1.IncomingEdge.P1 == point2)
+                throw new ApplicationException("Cuts are not allowed between directly connected points.");
+
             // Add a point to each point group: new points
 
             Point newPoint1 = point1.Group.MakePoint();
