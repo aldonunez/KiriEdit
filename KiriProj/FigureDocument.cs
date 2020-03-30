@@ -9,18 +9,8 @@ namespace KiriProj
 {
     public class FigureDocument
     {
-        public class Shape
-        {
-            public bool Enabled { get; set; }
-
-            // The outer contour is first.
-            public int[] Contours { get; set; }
-        }
-
         [JsonConverter(typeof(FigureConverter))]
         public Figure Figure { get; set; }
-
-        public Shape[] Shapes { get; set; }
     }
 
     internal class FigureConverter : JsonConverter<Figure>

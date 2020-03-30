@@ -12,6 +12,9 @@ namespace TryFreetype.Model
         public int OffsetX { get; }
         public int OffsetY { get; }
 
+        private List<Shape> _shapes = new List<Shape>();
+        public ReadOnlyCollection<Shape> Shapes { get; }
+
         private List<Contour> _contours = new List<Contour>();
         public ReadOnlyCollection<Contour> Contours { get; }
 
@@ -38,12 +41,21 @@ namespace TryFreetype.Model
                 contours.Add(group.Points[0].Contour);
             }
 
+            var shapes = new HashSet<Shape>();
+
+            foreach (var contour in contours)
+            {
+                shapes.Add(contour.Shape);
+            }
+
             _pointGroups.AddRange(pointGroups);
             _contours.AddRange(contours);
+            _shapes.AddRange(shapes);
             _cuts.AddRange(cuts);
 
             PointGroups = _pointGroups.AsReadOnly();
             Contours = _contours.AsReadOnly();
+            Shapes = _shapes.AsReadOnly();
             Cuts = _cuts.AsReadOnly();
         }
 

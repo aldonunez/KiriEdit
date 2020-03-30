@@ -94,11 +94,11 @@ namespace KiriEdit
 
             Figure figure = _document.Figure;
 
-            var shape = _document.Shapes[index];
+            var shape = _document.Figure.Shapes[index];
 
-            foreach (var contourIndex in shape.Contours)
+            foreach (var contour in shape.Contours)
             {
-                PaintContour(figure.Contours[contourIndex]);
+                PaintContour(contour);
             }
         }
 

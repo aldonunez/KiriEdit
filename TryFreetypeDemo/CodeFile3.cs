@@ -39,9 +39,9 @@ namespace TryFreetype.Sample3
                 renderer.Render();
                 renderer.Bitmap.Save(@"C:\Temp\b.bmp");
 #else
-                var outlineTool = new OutlineTool(figure);
+                //var outlineTool = new OutlineTool(figure.Contours);
 
-                var shapes = outlineTool.CalculateShapes();
+                //var shapes = outlineTool.CalculateShapes();
 
                 FigureSerializer.Serialize(figure, System.Console.Out);
 #endif
@@ -73,9 +73,9 @@ end";
                 TextReader reader = new StringReader(S);
                 figure = FigureDeserialzer.Deserialize(reader);
 
-                outlineTool = new OutlineTool(figure);
+                //outlineTool = new OutlineTool(figure.Contours);
 
-                outlineTool.CalculateShapes();
+                //outlineTool.CalculateShapes();
             }
         }
     }

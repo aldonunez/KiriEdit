@@ -12,6 +12,7 @@ namespace TryFreetype
             None,
             Figure,
             Contour,
+            Shape,
         }
 
         private int _level;
@@ -19,8 +20,10 @@ namespace TryFreetype
 
         private Dictionary<int, PointGroup> _pointGroups = new Dictionary<int, PointGroup>();
         private Dictionary<int, Point> _points = new Dictionary<int, Point>();
+        private Dictionary<int, Contour> _contours = new Dictionary<int, Contour>();
         private List<Cut> _cuts = new List<Cut>();
         private Contour _curContour;
+        private Shape _curShape;
         private int _width;
         private int _height;
         private int _offsetX;
@@ -70,6 +73,10 @@ namespace TryFreetype
 
                 case Node.Contour:
                     HandleRecordInContour(id, head, attrs, open);
+                    break;
+
+                case Node.Shape:
+                    HandleRecordInShape(id, head, attrs, open);
                     break;
             }
         }
@@ -122,6 +129,8 @@ namespace TryFreetype
                 PushLevel(Node.Contour);
                 _curContour = new Contour();
                 stayOpen = true;
+
+                _contours.Add(id, _curContour);
             }
             else if (head == "original-edge")
             {
@@ -201,6 +210,12 @@ namespace TryFreetype
                 Cut cut = new Cut((LineEdge) edge1, (LineEdge) edge2);
 
                 _cuts.Add(cut);
+            }
+            else if (head == "shape")
+            {
+                PushLevel(Node.Shape);
+                _curShape = new Shape();
+                stayOpen = true;
             }
             else
             {
@@ -284,6 +299,35 @@ namespace TryFreetype
 
                 p0.OutgoingEdge = edge;
                 p1.IncomingEdge = edge;
+            }
+            else
+            {
+                throw new ApplicationException();
+            }
+
+            if (open)
+                throw new ApplicationException();
+        }
+
+        private void HandleRecordInShape(int id, string head, IList<Token> attrs, bool open)
+        {
+            if (head == "contour")
+            {
+                if (attrs.Count < 1)
+                    throw new ApplicationException();
+
+                int contourId = attrs[0].GetInteger();
+                Contour contour = _contours[contourId];
+
+                _curShape.Contours.Add(contour);
+                contour.Shape = _curShape;
+            }
+            else if (head == "enabled")
+            {
+                if (attrs.Count < 1)
+                    throw new ApplicationException();
+
+                _curShape.Enabled = (attrs[0].GetInteger() != 0);
             }
             else
             {

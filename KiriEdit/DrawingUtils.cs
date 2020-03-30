@@ -31,9 +31,9 @@ namespace KiriEdit
             {
                 painter.SetTransform(graphics, rect);
 
-                for (int i = 0; i < doc.Shapes.Length; i++)
+                for (int i = 0; i < doc.Figure.Shapes.Count; i++)
                 {
-                    if (doc.Shapes[i].Enabled)
+                    if (doc.Figure.Shapes[i].Enabled)
                     {
                         painter.PaintShape(i);
                         painter.Fill(graphics, brush);

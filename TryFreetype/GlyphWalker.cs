@@ -8,6 +8,7 @@ namespace TryFreetype
     // TODO: Make this internal.
     public class GlyphWalker
     {
+        // TODO: consistency in names
         private Face face;
         private Figure figure;
         private Contour curContour;
@@ -34,9 +35,11 @@ namespace TryFreetype
                 ConicTo = ConicToFunc,
                 CubicTo = CubicToFunc,
             };
+
             face.Decompose(outlineFuncs);
 
             CloseCurrentContour();
+            AssignShapes();
 
             var faceBbox = face.GetFaceBBox();
             var bbox = face.GetBBox();
@@ -49,6 +52,20 @@ namespace TryFreetype
             int offsetY = faceBbox.Bottom;
 
             figure = new Figure(_pointGroups, new Cut[0], width, height, offsetX, offsetY);
+        }
+
+        private void AssignShapes()
+        {
+            var tool = new OutlineTool(_contours);
+            var shapes = tool.CalculateShapes();
+
+            foreach (var shape in shapes)
+            {
+                foreach (var contour in shape.Contours)
+                {
+                    contour.Shape = shape;
+                }
+            }
         }
 
         private void CloseCurrentContour()

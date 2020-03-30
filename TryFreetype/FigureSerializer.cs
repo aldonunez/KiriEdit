@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using TryFreetype.Model;
 
@@ -17,10 +18,11 @@ namespace TryFreetype
 
         private Dictionary<PointGroup, int> _pointGroupToId = new Dictionary<PointGroup, int>();
         private Dictionary<Point, int> _pointToId = new Dictionary<Point, int>();
+        private Dictionary<Contour, int> _contourToId = new Dictionary<Contour, int>();
 
         internal void Serialize()
         {
-            // Figure, PointGroups, Contours, Points, Edges, OriginalEdges
+            // Figure, PointGroups, Contours, Points, Edges, OriginalEdges, Shapes
 
             CollectObjects();
 
@@ -31,6 +33,7 @@ namespace TryFreetype
             WriteContours();
             WriteOriginalEdges();
             WriteCuts();
+            WriteShapes();
 
             _writer.WriteLine("end");
         }
@@ -67,7 +70,9 @@ namespace TryFreetype
 
         private void WriteContour(Contour contour)
         {
-            _writer.WriteLine("  contour begin");
+            int id = _contourToId[contour];
+
+            _writer.WriteLine("  {0} contour begin", id);
 
             WritePoints(contour);
             WriteEdges(contour);
@@ -211,6 +216,30 @@ namespace TryFreetype
             }
         }
 
+        private void WriteShapes()
+        {
+            foreach (var shape in _figure.Shapes)
+            {
+                WriteShape(shape);
+            }
+        }
+
+        private void WriteShape(Shape shape)
+        {
+            _writer.WriteLine("  shape begin");
+
+            _writer.WriteLine("    enabled {0}", shape.Enabled ? 1 : 0);
+
+            foreach (var contour in shape.Contours)
+            {
+                int id = _contourToId[contour];
+
+                _writer.WriteLine("    contour {0}", id);
+            }
+
+            _writer.WriteLine("  end");
+        }
+
         private int GetIdForPointGroup(PointGroup pointGroup)
         {
             return _pointGroupToId.Count;
@@ -219,6 +248,11 @@ namespace TryFreetype
         private int GetIdForPoint(Point point)
         {
             return _pointToId.Count;
+        }
+
+        private int GetIdForContour(Contour contour)
+        {
+            return _contourToId.Count;
         }
 
         private void CollectObjects()
@@ -231,6 +265,11 @@ namespace TryFreetype
                 {
                     _pointToId.Add(point, GetIdForPoint(point));
                 }
+            }
+
+            foreach (var contour in _figure.Contours)
+            {
+                _contourToId.Add(contour, GetIdForContour(contour));
             }
         }
 

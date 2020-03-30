@@ -48,7 +48,7 @@ namespace KiriEdit
 
             int index = color.B - 1;
 
-            _document.Shapes[index].Enabled = !_document.Shapes[index].Enabled;
+            _document.Figure.Shapes[index].Enabled = !_document.Figure.Shapes[index].Enabled;
 
             DrawCanvas();
             canvas.Invalidate();
@@ -118,12 +118,12 @@ namespace KiriEdit
                     painter.SetTransform(graphics, _rectangle);
                     painter.SetTransform(maskGraphics, _rectangle);
 
-                    for (int i = 0; i < _document.Shapes.Length; i++)
+                    for (int i = 0; i < _document.Figure.Shapes.Count; i++)
                     {
                         Brush fillBrush;
                         Color maskColor = Color.FromArgb(0, 0, i + 1);
 
-                        if (_document.Shapes[i].Enabled)
+                        if (_document.Figure.Shapes[i].Enabled)
                             fillBrush = Brushes.Black;
                         else
                             fillBrush = Brushes.LightGray;

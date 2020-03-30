@@ -5,21 +5,8 @@ using TryFreetype.Model;
 
 namespace TryFreetype
 {
-    public class OutlineTool
+    internal class OutlineTool
     {
-        public class Shape
-        {
-            // TODO: consider making one array of contours and the first element is the outer contour.
-            public Contour OuterContour { get; }
-            public Contour[] InnerContours { get; }
-
-            public Shape(Contour outsideContour, Contour[] insideCountours)
-            {
-                OuterContour = outsideContour;
-                InnerContours = insideCountours;
-            }
-        }
-
         private enum Orientation
         {
             Unknown,
@@ -27,11 +14,11 @@ namespace TryFreetype
             Outside
         }
 
-        private Figure _figure;
+        private IReadOnlyList<Contour> _contours;
 
-        public OutlineTool(Figure figure)
+        public OutlineTool(IReadOnlyList<Contour> contours)
         {
-            _figure = figure;
+            _contours = contours;
         }
 
         private static Orientation GetOrientation(Contour contour)
@@ -110,7 +97,7 @@ namespace TryFreetype
             var outsideContours = new List<Contour>();
             var insideContours = new List<Contour>();
 
-            foreach (var contour in _figure.Contours)
+            foreach (var contour in _contours)
             {
                 Orientation orientation = GetOrientation(contour);
 

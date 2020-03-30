@@ -110,11 +110,9 @@ namespace KiriProj
                 project.FaceIndex,
                 codePoint);
 
-            var shapes = FigureUtils.CalculateShapes(figure);
             var document = new FigureDocument();
 
             document.Figure = figure;
-            document.Shapes = shapes;
 
             var characterItem = new CharacterItem(project, codePoint);
             var figureItem = new FigureItem(figurePath, characterItem);

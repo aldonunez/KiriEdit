@@ -18,6 +18,7 @@ namespace TryFreetype.Model
     public class Contour
     {
         public Point FirstPoint;
+        public Shape Shape;
     }
 
     internal struct SplitResult
@@ -295,6 +296,24 @@ namespace TryFreetype.Model
         public override string ToString()
         {
             return string.Format("({0}, {1})", X, Y);
+        }
+    }
+
+    public class Shape
+    {
+        public bool Enabled;
+
+        // The first element is the outside contour.
+        public List<Contour> Contours { get; } = new List<Contour>();
+
+        public Shape()
+        {
+        }
+
+        public Shape(Contour outside, IReadOnlyCollection<Contour> insides)
+        {
+            Contours.Add(outside);
+            Contours.AddRange(insides);
         }
     }
 }
