@@ -55,7 +55,7 @@ namespace TryFreetype
                         {
                             var conicEdge = (ConicEdge) edge;
                             area += (conicEdge.Control1.Y - prevY) * (conicEdge.Control1.X + prevX);
-                            area += (conicEdge.P2.Y - prevY) * (conicEdge.P2.X + prevX);
+                            area += (conicEdge.P2.Y - conicEdge.Control1.Y) * (conicEdge.P2.X + conicEdge.Control1.X);
                         }
                         break;
 
@@ -63,8 +63,8 @@ namespace TryFreetype
                         {
                             var conicEdge = (CubicEdge) edge;
                             area += (conicEdge.Control1.Y - prevY) * (conicEdge.Control1.X + prevX);
-                            area += (conicEdge.Control2.Y - prevY) * (conicEdge.Control2.X + prevX);
-                            area += (conicEdge.P2.Y - prevY) * (conicEdge.P2.X + prevX);
+                            area += (conicEdge.Control2.Y - conicEdge.Control1.Y) * (conicEdge.Control2.X + conicEdge.Control1.X);
+                            area += (conicEdge.P2.Y - conicEdge.Control2.Y) * (conicEdge.P2.X + conicEdge.Control2.X);
                         }
                         break;
                 }
