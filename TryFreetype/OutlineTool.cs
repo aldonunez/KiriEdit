@@ -28,12 +28,10 @@ namespace TryFreetype
         }
 
         private Figure _figure;
-        private OutlineRenderer _renderer;
 
         public OutlineTool(Figure figure)
         {
             _figure = figure;
-            _renderer = new OutlineRenderer(figure);
         }
 
         private static Orientation GetOrientation(Contour contour)
@@ -135,14 +133,46 @@ namespace TryFreetype
             return (outsideContours, insideContours);
         }
 
-        private void DrawOutsides(List<Contour> outsideContours)
+        private struct CrossingInfo
         {
-            for (int i = 0; i < outsideContours.Count; i++)
-            {
-                var contour = outsideContours[i];
-                byte color = (byte) (1 << i);
+            public int Number;
+            public int Distance;
+        }
 
-                _renderer.DrawContour(contour, color);
+        private void TestLineCrossing(Point p, Point p1, Point p2, ref CrossingInfo crossing)
+        {
+            if (   (p1.Y <= p.Y && p2.Y  > p.Y)
+                || (p1.Y  > p.Y && p2.Y <= p.Y))
+            {
+                float proportion = (float) (p.Y - p1.Y) / (p2.Y - p1.Y);
+                float intersectX = p1.X + proportion * (p2.X - p1.X);
+
+                if (p.X < intersectX)
+                {
+                    crossing.Number++;
+
+                    if (intersectX < crossing.Distance)
+                        crossing.Distance = (int) intersectX;
+                }
+            }
+        }
+
+        private void TestCrossing(Point p, Edge edge, ref CrossingInfo crossing)
+        {
+            if (edge is LineEdge)
+            {
+                TestLineCrossing(p, edge.P1, edge.P2, ref crossing);
+            }
+            else if (edge is ConicEdge conicEdge)
+            {
+                TestLineCrossing(p, conicEdge.P1, conicEdge.Control1, ref crossing);
+                TestLineCrossing(p, conicEdge.Control1, conicEdge.P2, ref crossing);
+            }
+            else if (edge is CubicEdge cubicEdge)
+            {
+                TestLineCrossing(p, cubicEdge.P1, cubicEdge.Control1, ref crossing);
+                TestLineCrossing(p, cubicEdge.Control1, cubicEdge.Control2, ref crossing);
+                TestLineCrossing(p, cubicEdge.Control2, cubicEdge.P2, ref crossing);
             }
         }
 
@@ -153,39 +183,44 @@ namespace TryFreetype
             for (int i = 0; i < outsideContours.Count; i++)
                 insideContourLists[i] = new List<Contour>();
 
+            var crossings = new CrossingInfo[outsideContours.Count];
+
             foreach (var contour in insideContours)
             {
                 Point rightP = FindRightmostPoint(contour);
-                int y = _renderer.RoundAndClampY(_renderer.TransformY(rightP.Y));
-                int x = _renderer.RoundAndClampX(_renderer.TransformX(rightP.X));
 
-                for (; x < _renderer.MaskWidth; x++)
+                Array.Clear(crossings, 0, crossings.Length);
+
+                for (int j = 0; j < outsideContours.Count; j++)
                 {
-                    byte b = _renderer.Mask[y, x];
+                    var outerContour = outsideContours[j];
+                    var p = outerContour.FirstPoint;
 
-                    if (b != 0)
+                    do
                     {
-                        for (int i = 0; i < 7; i++)
-                        {
-                            if ((b & (1 << i)) != 0)
-                            {
-                                insideContourLists[i].Add(contour);
+                        TestCrossing(rightP, p.OutgoingEdge, ref crossings[j]);
 
-                                int outerIndex = _figure.Contours.IndexOf(outsideContours[i]);
-                                Console.WriteLine("Found");
-                                int innerIndex = _figure.Contours.IndexOf(contour);
-                                Console.WriteLine("{0} goes with {1}", innerIndex, outerIndex);
+                        p = p.OutgoingEdge.P2;
+                    }
+                    while (p != outerContour.FirstPoint);
+                }
 
-                                goto Found;
-                            }
-                        }
+                int minX = int.MaxValue;
+                int minContour = -1;
+
+                for (int j = 0; j < crossings.Length; j++)
+                {
+                    if ((crossings[j].Number & 1) == 1
+                        && crossings[j].Distance < minX)
+                    {
+                        minX = crossings[j].Distance;
+                        minContour = j;
                     }
                 }
 
-                Debug.Fail("");
+                Debug.Assert(minContour >= 0);
 
-            Found:
-                ;
+                insideContourLists[minContour].Add(contour);
             }
 
             return insideContourLists;
@@ -206,14 +241,9 @@ namespace TryFreetype
         public Shape[] CalculateShapes()
         {
             var (outsideContours, insideContours) = PartitionContours();
-            DrawOutsides(outsideContours);
             var insideContourLists = DetermineInsides(outsideContours, insideContours);
 
             return PackageShapes(outsideContours, insideContourLists);
         }
-
-#if DEBUG
-        public OutlineRenderer OutlineRenderer { get => _renderer; }
-#endif
     }
 }

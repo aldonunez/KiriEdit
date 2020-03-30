@@ -43,10 +43,6 @@ namespace TryFreetype.Sample3
 
                 var shapes = outlineTool.CalculateShapes();
 
-                //outlineTool.RenderOutline();
-                var bitmap = outlineTool.OutlineRenderer.RenderBitmap();
-                bitmap.Save(@"C:\Temp\b.bmp");
-
                 FigureSerializer.Serialize(figure, System.Console.Out);
 #endif
 
@@ -80,10 +76,6 @@ end";
                 outlineTool = new OutlineTool(figure);
 
                 outlineTool.CalculateShapes();
-
-                outlineTool.OutlineRenderer.DrawOutline();
-                bitmap = outlineTool.OutlineRenderer.RenderBitmap();
-                bitmap.Save(@"C:\Temp\c.bmp");
             }
         }
     }
