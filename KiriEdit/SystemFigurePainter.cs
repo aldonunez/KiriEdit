@@ -36,6 +36,22 @@ namespace KiriEdit
             }
         }
 
+        // TODO: Call this from SetTransform.
+        public static Matrix BuildTransform(Figure figure, Rectangle rect)
+        {
+            float scale = (rect.Height - 1) / (float) figure.Height;
+
+            Matrix m = new Matrix();
+
+            m.Scale(scale, -scale, MatrixOrder.Append);
+            m.Translate(
+                rect.X + (float) -figure.OffsetX * scale,
+                rect.Y + (rect.Height - 1) + (float) figure.OffsetY * scale,
+                MatrixOrder.Append);
+
+            return m;
+        }
+
         public void SetTransform(Graphics g, Rectangle rect)
         {
             float pixHeight = _document.Figure.Height;
@@ -143,6 +159,7 @@ namespace KiriEdit
                 (to.X + 2 * control.X) / 3.0f,
                 (to.Y + 2 * control.Y) / 3.0f
                 );
+#if !DRAW_COARSE_CURVES
             _graphicsPath.AddBeziers(
                 new PointF[]
                 {
@@ -151,6 +168,10 @@ namespace KiriEdit
                     c2,
                     new PointF((float) to.X, (float) to.Y)
                 });
+#else
+            _graphicsPath.AddLine((float) _x, (float) _y, (float) control.X, (float) control.Y);
+            _graphicsPath.AddLine((float) control.X, (float) control.Y, (float) to.X, (float) to.Y);
+#endif
             _x = to.X;
             _y = to.Y;
         }
@@ -161,6 +182,7 @@ namespace KiriEdit
             var control1 = ((CubicEdge) edge).Control1;
             var control2 = ((CubicEdge) edge).Control2;
             var to = edge.P2;
+#if !DRAW_COARSE_CURVES
             _graphicsPath.AddBeziers(
                 new PointF[]
                 {
@@ -169,6 +191,11 @@ namespace KiriEdit
                     new PointF((float) control2.X, (float) control2.Y),
                     new PointF((float) to.X, (float) to.Y)
                 });
+#else
+            _graphicsPath.AddLine((float) _x, (float) _y, (float) control1.X, (float) control1.Y);
+            _graphicsPath.AddLine((float) control1.X, (float) control1.Y, (float) control2.X, (float) control2.Y);
+            _graphicsPath.AddLine((float) control2.X, (float) control2.Y, (float) to.X, (float) to.Y);
+#endif
             _x = to.X;
             _y = to.Y;
         }
