@@ -12,6 +12,9 @@ namespace TryFreetype.Model
         public int OffsetX { get; }
         public int OffsetY { get; }
 
+        private Dictionary<int, Point> _idToPoint = new Dictionary<int, Point>();
+        public IReadOnlyDictionary<int, Point> PointTable => _idToPoint;
+
         private List<Shape> _shapes = new List<Shape>();
         public ReadOnlyCollection<Shape> Shapes { get; }
 
@@ -46,6 +49,14 @@ namespace TryFreetype.Model
             foreach (var contour in contours)
             {
                 shapes.Add(contour.Shape);
+            }
+
+            foreach (var group in pointGroups)
+            {
+                foreach (var point in group.Points)
+                {
+                    _idToPoint.Add(point.Id, point);
+                }
             }
 
             _pointGroups.AddRange(pointGroups);
@@ -115,12 +126,16 @@ namespace TryFreetype.Model
             var splitResult = SplitEdge(point, edge);
 
             var newGroup = new PointGroup();
-            newGroup.Points.Add(splitResult.nearestPoint);
-            splitResult.nearestPoint.Group = newGroup;
-            splitResult.nearestPoint.Contour = edge.P1.Contour;
+            var newPoint = splitResult.nearestPoint;
+
+            newGroup.Points.Add(newPoint);
+            newPoint.Group = newGroup;
+            newPoint.Contour = edge.P1.Contour;
             _pointGroups.Add(newGroup);
 
-            return splitResult.nearestPoint;
+            // TODO: register the new point
+
+            return newPoint;
         }
 
         private SplitResult SplitEdge(Point point, Edge edge)
@@ -209,6 +224,9 @@ namespace TryFreetype.Model
 
             if (point1.OutgoingEdge.P2 == point2 || point1.IncomingEdge.P1 == point2)
                 throw new ApplicationException("Cuts are not allowed between directly connected points.");
+
+            if (point1.Contour.Shape != point2.Contour.Shape)
+                throw new ApplicationException("Cuts are only allowed within a shape.");
 
             // Add a point to each point group: new points
 

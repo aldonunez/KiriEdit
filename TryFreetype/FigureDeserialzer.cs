@@ -236,7 +236,7 @@ namespace TryFreetype
                 int x = attrs[0].GetInteger();
                 int y = attrs[1].GetInteger();
                 int groupId = attrs[2].GetInteger();
-                Point point = new Point(x, y);
+                Point point = new Point(x, y, id);
                 PointGroup group = _pointGroups[groupId];
 
                 _points.Add(id, point);

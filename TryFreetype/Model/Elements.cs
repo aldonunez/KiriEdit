@@ -250,6 +250,7 @@ namespace TryFreetype.Model
 
     public class Point
     {
+        public int Id { get; set; }
         public int X { get; }
         public int Y { get; }
 
@@ -258,10 +259,11 @@ namespace TryFreetype.Model
         public Edge OutgoingEdge;
         public Edge IncomingEdge;
 
-        public Point(int x, int y)
+        public Point(int x, int y, int id = -1)
         {
             X = x;
             Y = y;
+            Id = id;
         }
 
         internal Point(ValuePoint valuePoint)

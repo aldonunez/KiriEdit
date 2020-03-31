@@ -13,6 +13,7 @@ namespace TryFreetype
         private Figure figure;
         private Contour curContour;
         private Point curPoint;
+        private int _nextPointId;
 
         int x, y;
 
@@ -24,6 +25,11 @@ namespace TryFreetype
         public GlyphWalker(Face face)
         {
             this.face = face;
+        }
+
+        private int TakeNextPointId()
+        {
+            return _nextPointId++;
         }
 
         public void Decompose()
@@ -88,6 +94,9 @@ namespace TryFreetype
             firstPoint.IncomingEdge.P2 = firstPoint;
             firstPoint.Group.OriginalIncomingEdge = firstPoint.IncomingEdge;
 
+            // Give back the last one taken, because we're not using it anymore.
+            _nextPointId--;
+
             curContour = null;
             curPoint = null;
         }
@@ -100,10 +109,11 @@ namespace TryFreetype
             y = to.Y;
             Console.WriteLine("MoveTo: {0}, {1}", x, y);
 
-            var newPoint = new Point(x, y);
-
             var newContour = new Contour();
             _contours.Add(newContour);
+
+            var id = TakeNextPointId();
+            var newPoint = new Point(x, y, id);
 
             var newGroup = new PointGroup(isFixed: true);
             newGroup.Points.Add(newPoint);
@@ -125,7 +135,8 @@ namespace TryFreetype
             y = to.Y;
             Console.WriteLine("LineTo: {0}, {1}", x, y);
 
-            var newPoint = new Point(x, y);
+            var id = TakeNextPointId();
+            var newPoint = new Point(x, y, id);
 
             var edge = new LineEdge(curPoint, newPoint);
             curPoint.OutgoingEdge = edge;
@@ -154,7 +165,8 @@ namespace TryFreetype
             int controlY = control.Y;
             Console.WriteLine("ConicTo: {0},{1} {2},{3}", controlX, controlY, x, y);
 
-            var newPoint = new Point(x, y);
+            var id = TakeNextPointId();
+            var newPoint = new Point(x, y, id);
             var controlPoint = new Point(controlX, controlY);
 
             var edge = new ConicEdge(curPoint, controlPoint, newPoint);
@@ -186,7 +198,8 @@ namespace TryFreetype
             int controlY2 = control2.Y;
             Console.WriteLine("CubicTo: {0},{1} {2},{3} {4},{5}", controlX1, controlY1, controlX2, controlY2, x, y);
 
-            var newPoint = new Point(x, y);
+            var id = TakeNextPointId();
+            var newPoint = new Point(x, y, id);
             var controlPoint1 = new Point(controlX1, controlY1);
             var controlPoint2 = new Point(controlX2, controlY2);
 

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using TryFreetype.Model;
 
@@ -17,7 +16,6 @@ namespace TryFreetype
         }
 
         private Dictionary<PointGroup, int> _pointGroupToId = new Dictionary<PointGroup, int>();
-        private Dictionary<Point, int> _pointToId = new Dictionary<Point, int>();
         private Dictionary<Contour, int> _contourToId = new Dictionary<Contour, int>();
 
         internal void Serialize()
@@ -87,11 +85,11 @@ namespace TryFreetype
             // Sort points by ID.
             var sortedTable = new SortedDictionary<int, Point>();
 
-            sortedTable.Add(_pointToId[edge.P1], edge.P1);
+            sortedTable.Add(edge.P1.Id, edge.P1);
 
             while (edge.P2 != contour.FirstPoint)
             {
-                sortedTable.Add(_pointToId[edge.P2], edge.P2);
+                sortedTable.Add(edge.P2.Id, edge.P2);
 
                 edge = edge.P2.OutgoingEdge;
             }
@@ -117,7 +115,7 @@ namespace TryFreetype
 
             while (true)
             {
-                int id0 = _pointToId[edge.P1];
+                int id0 = edge.P1.Id;
 
                 sortedTable.Add(id0, edge);
 
@@ -137,7 +135,7 @@ namespace TryFreetype
 
                 edge = pair.Value;
                 id0 = pair.Key;
-                id1 = _pointToId[edge.P2];
+                id1 = edge.P2.Id;
 
                 switch (edge.Type)
                 {
@@ -207,10 +205,10 @@ namespace TryFreetype
         {
             foreach ( var cut in _figure.Cuts )
             {
-                int idE1P1 = _pointToId[cut.PairedEdge1.P1];
-                int idE1P2 = _pointToId[cut.PairedEdge1.P2];
-                int idE2P1 = _pointToId[cut.PairedEdge2.P1];
-                int idE2P2 = _pointToId[cut.PairedEdge2.P2];
+                int idE1P1 = cut.PairedEdge1.P1.Id;
+                int idE1P2 = cut.PairedEdge1.P2.Id;
+                int idE2P1 = cut.PairedEdge2.P1.Id;
+                int idE2P2 = cut.PairedEdge2.P2.Id;
 
                 _writer.WriteLine( "  cut {0} {1} {2} {3}", idE1P1, idE1P2, idE2P1, idE2P2 );
             }
@@ -247,7 +245,7 @@ namespace TryFreetype
 
         private int GetIdForPoint(Point point)
         {
-            return _pointToId.Count;
+            return point.Id;
         }
 
         private int GetIdForContour(Contour contour)
@@ -260,11 +258,6 @@ namespace TryFreetype
             foreach (var pointGroup in _figure.PointGroups)
             {
                 _pointGroupToId.Add(pointGroup, GetIdForPointGroup(pointGroup));
-
-                foreach (var point in pointGroup.Points)
-                {
-                    _pointToId.Add(point, GetIdForPoint(point));
-                }
             }
 
             foreach (var contour in _figure.Contours)
