@@ -202,8 +202,6 @@ namespace TryFreetype.Model
 
         public Cut AddCut(Point point1, Point point2)
         {
-            // Only allow one cut between the same point groups.
-
             if (CutExists(point1.Group, point2.Group))
                 throw new ApplicationException("Only one cut is allowed between these point groups.");
 
@@ -239,9 +237,13 @@ namespace TryFreetype.Model
             point1.IncomingEdge = lineForOld;
             point2.OutgoingEdge = lineForOld;
 
-            // Split or combine contours.
+            // Split or combine contours and shapes.
+
+            Contour oldContour1 = point1.Contour;
+            Contour oldContour2 = point2.Contour;
 
             ModifyContours(point1, newPoint1);
+            ModifyShapes(oldContour1, oldContour2, point1.Contour, newPoint1.Contour);
 
             // Save cut object.
 
@@ -315,8 +317,10 @@ namespace TryFreetype.Model
             if (!_cuts.Contains(cut))
                 throw new ApplicationException("This cut doesn't exist.");
 
-            Point point1 = null;
-            Point point2 = null;
+            Point keepPoint1 = null;
+            Point keepPoint2 = null;
+            Point deletePoint1 = null;
+            Point deletePoint2 = null;
             var edge1 = cut.PairedEdge1;
             var edge2 = cut.PairedEdge2;
 
@@ -324,24 +328,86 @@ namespace TryFreetype.Model
 
             edge1.P1.OutgoingEdge = edge2.P2.OutgoingEdge;
             edge1.P1.OutgoingEdge.P1 = edge1.P1;
-            point1 = edge1.P1;
+            keepPoint1 = edge1.P1;
+            deletePoint1 = edge2.P1;
 
             edge1.P2.IncomingEdge = edge2.P1.IncomingEdge;
             edge1.P2.IncomingEdge.P2 = edge1.P2;
-            point2 = edge1.P2;
+            keepPoint2 = edge1.P2;
+            deletePoint2 = edge2.P2;
 
             // Remove extra points from their groups.
 
-            edge2.P1.Group.Points.Remove(edge2.P1);
-            edge2.P2.Group.Points.Remove(edge2.P2);
+            deletePoint1.Group.Points.Remove(deletePoint1);
+            deletePoint2.Group.Points.Remove(deletePoint2);
 
-            // Split or combine contours.
+            // Split or combine contours and shapes.
 
-            ModifyContours(point1, point2);
+            Contour oldContour1 = edge1.P1.Contour;
+            Contour oldContour2 = edge2.P1.Contour;
+
+            ModifyContours(keepPoint1, keepPoint2);
+            ModifyShapes(oldContour1, oldContour2, keepPoint1.Contour, keepPoint2.Contour);
 
             // Delete the cut.
 
             _cuts.Remove(cut);
+        }
+
+        private void ModifyShapes(Contour oldContour1, Contour oldContour2, Contour newContour1, Contour newContour2)
+        {
+            // Get the old shapes.
+
+            Shape oldShape1 = oldContour1.Shape;
+            Shape oldShape2 = oldContour2.Shape;
+
+            // Collect contours except old ones.
+
+            var contours = new List<Contour>();
+
+            foreach (var contour in oldShape1.Contours)
+            {
+                if (contour != oldContour1 && contour != oldContour2)
+                    contours.Add(contour);
+            }
+
+            if (oldShape2 != oldShape1)
+            {
+                foreach (var contour in oldShape2.Contours)
+                {
+                    if (contour != oldContour1 && contour != oldContour2)
+                        contours.Add(contour);
+                }
+            }
+
+            // Add new contours.
+
+            contours.Add(newContour1);
+
+            if (newContour2 != newContour1)
+                contours.Add(newContour2);
+
+            // Recalculate shapes.
+
+            var tool = new OutlineTool(contours);
+            var newShapes = tool.CalculateShapes();
+
+            // Assign new shapes to all contours.
+
+            foreach (var shape in newShapes)
+            {
+                foreach (var contour in shape.Contours)
+                {
+                    contour.Shape = shape;
+                }
+            }
+
+            // Replace old shapes with new ones.
+
+            _shapes.Remove(oldShape1);
+            _shapes.Remove(oldShape2);
+
+            _shapes.AddRange(newShapes);
         }
     }
 }
