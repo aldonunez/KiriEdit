@@ -27,11 +27,11 @@ namespace TryFreetype.Sample1
 
                     Console.WriteLine("BitmapTop = {0}", face.Glyph.BitmapTop);
                     Console.WriteLine("BitmapLeft = {0}", face.Glyph.BitmapLeft);
-                    Utils.PrintProperties(face.Glyph, "");
+                    TryFreetypeDemo.Utils.PrintProperties(face.Glyph, "");
 
                     Console.WriteLine("------------------");
                     BBox bbox = face.Glyph.Outline.GetBBox();
-                    Utils.PrintProperties(bbox, "");
+                    TryFreetypeDemo.Utils.PrintProperties(bbox, "");
 
                     {
                         //Graphics g;
