@@ -38,7 +38,10 @@ namespace TryFreetype.Model
 
             foreach (var group in pointGroups)
             {
-                contours.Add(group.Points[0].Contour);
+                foreach (var point in group.Points)
+                {
+                    contours.Add(point.Contour);
+                }
             }
 
             var shapes = new HashSet<Shape>();
