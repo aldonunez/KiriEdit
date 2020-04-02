@@ -412,5 +412,129 @@ namespace TryFreetype.Model
 
             _shapes.AddRange(newShapes);
         }
+
+
+        #region FindPointsForCut
+
+        private struct FindPointsResult
+        {
+            public float DotProduct;
+            public Point Point1;
+            public Point Point2;
+
+            public FindPointsResult(float dotProduct, Point point1, Point point2)
+            {
+                DotProduct = dotProduct;
+                Point1 = point1;
+                Point2 = point2;
+            }
+        }
+
+        public static (Point, Point) FindPointsForCut(PointGroup pointGroup1, PointGroup pointGroup2)
+        {
+            // Keep in mind, only points in the same shape are good.
+
+            var results = new List<FindPointsResult>();
+
+            // First, look for two points on the outside.
+
+            foreach (var point1 in pointGroup1.Points)
+            {
+                foreach (var point2 in pointGroup2.Points)
+                {
+                    if (point1.Contour.Shape == point2.Contour.Shape
+                        && ArePointsApart(point1, point2))
+                    {
+                        float dotProduct = GetMutualDotProduct(point1, point2);
+
+                        results.Add(new FindPointsResult(dotProduct, point1, point2));
+                    }
+                }
+            }
+
+            if (results.Count > 0)
+                return FindBestPoints(results);
+
+            // Next, look for an outside-inside or inside-inside pair of points.
+            // They must be in different contours.
+
+            foreach (var point1 in pointGroup1.Points)
+            {
+                foreach (var point2 in pointGroup2.Points)
+                {
+                    if (point1.Contour.Shape == point2.Contour.Shape
+                        && point1.Contour != point2.Contour
+                        && ArePointsApart(point1, point2))
+                    {
+                        float dotProduct = GetMutualDotProduct(point1, point2);
+
+                        results.Add(new FindPointsResult(dotProduct, point1, point2));
+                    }
+                }
+            }
+
+            if (results.Count > 0)
+                return FindBestPoints(results);
+
+            return (null, null);
+        }
+
+        private static (Point, Point) FindBestPoints(List<FindPointsResult> results)
+        {
+            Debug.Assert(results.Count > 0);
+
+            float maxDotProduct = float.NegativeInfinity;
+            int index = -1;
+
+            for (int i = 0; i < results.Count; i++)
+            {
+                if (results[i].DotProduct > maxDotProduct)
+                {
+                    maxDotProduct = results[i].DotProduct;
+                    index = i;
+                }
+            }
+
+            return (results[index].Point1, results[index].Point2);
+        }
+
+        private static bool ArePointsApart(Point point1, Point point2)
+        {
+            // Points have to be more than one edge apart.
+
+            if (   point1.OutgoingEdge.P2 == point2
+                || point2.OutgoingEdge.P2 == point1)
+                return false;
+
+            return true;
+        }
+
+        // Cutting outside points must yield two shapes.
+
+        private static float GeDotProductToTarget(Point jointPoint, Point targetPoint)
+        {
+            Point p1, p2, p3;
+            float angle;
+
+            p1 = jointPoint.IncomingEdge.P1;
+            p2 = jointPoint;
+            p3 = jointPoint.OutgoingEdge.P2;
+
+            angle = Utils.GetBisectorAngle(p1, p2, p3);
+
+            return Utils.GetAngleDotProduct(angle, p2, targetPoint);
+        }
+
+        // The joint at each point should point at the other point.
+
+        private static float GetMutualDotProduct(Point point1, Point point2)
+        {
+            float dotProduct1 = GeDotProductToTarget(point1, point2);
+            float dotProduct2 = GeDotProductToTarget(point2, point1);
+
+            return dotProduct1 + dotProduct2;
+        }
+
+        #endregion
     }
 }
