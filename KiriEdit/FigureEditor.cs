@@ -1,16 +1,25 @@
 ﻿using KiriProj;
 using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using Point = TryFreetype.Model.Point;
 
 namespace KiriEdit
 {
     public partial class FigureEditor : UserControl
     {
+        private const float CircleRadius = 4;
+        private const float CirclePenWidth = 1;
+
         private FigureDocument _document;
         private bool _shown;
         private Rectangle _rectangle;
         private Bitmap _shapeMask;
+
+        private float _curControlScaleSingle;
+        private SizeF _curControlScaleSize;
+        private Matrix _worldToScreenMatrix;
 
         public event EventHandler Modified;
 
@@ -32,6 +41,14 @@ namespace KiriEdit
         public FigureEditor()
         {
             InitializeComponent();
+        }
+
+        protected override void ScaleControl(SizeF factor, BoundsSpecified specified)
+        {
+            base.ScaleControl(factor, specified);
+
+            _curControlScaleSingle = Math.Min(factor.Width, factor.Height);
+            _curControlScaleSize = factor;
         }
 
         private void OnModified()
@@ -83,6 +100,12 @@ namespace KiriEdit
                 canvas.BackgroundImage = null;
             }
 
+            if (canvas.Image != null)
+            {
+                canvas.Image.Dispose();
+                canvas.Image = null;
+            }
+
             if (_shapeMask != null)
             {
                 _shapeMask.Dispose();
@@ -101,11 +124,20 @@ namespace KiriEdit
             _rectangle = rect;
             _shapeMask = new Bitmap(picBoxSize.Width, picBoxSize.Height);
             canvas.BackgroundImage = new Bitmap(picBoxSize.Width, picBoxSize.Height);
+            canvas.Image = new Bitmap(picBoxSize.Width, picBoxSize.Height);
+
+            _worldToScreenMatrix = SystemFigurePainter.BuildTransform(_document.Figure, _rectangle);
 
             DrawCanvas();
         }
 
         private void DrawCanvas()
+        {
+            DrawBackgroundShapes();
+            DrawOverlay();
+        }
+
+        private void DrawBackgroundShapes()
         {
             using (var graphics = Graphics.FromImage(canvas.BackgroundImage))
             using (var maskGraphics = Graphics.FromImage(_shapeMask))
@@ -115,8 +147,8 @@ namespace KiriEdit
 
                 using (var painter = new SystemFigurePainter(_document))
                 {
-                    painter.SetTransform(graphics, _rectangle);
-                    painter.SetTransform(maskGraphics, _rectangle);
+                    graphics.Transform = _worldToScreenMatrix;
+                    maskGraphics.Transform = _worldToScreenMatrix;
 
                     for (int i = 0; i < _document.Figure.Shapes.Count; i++)
                     {
@@ -139,6 +171,59 @@ namespace KiriEdit
 
                     painter.PaintFull();
                     painter.Draw(graphics);
+                }
+            }
+        }
+
+        private void DrawOverlay()
+        {
+            using (var graphics = Graphics.FromImage(canvas.Image))
+            {
+                graphics.Clear(Color.Transparent);
+
+                // Overlay elements are drawn using screen coordinates, to have better control
+                // of their looks.
+
+                graphics.ResetTransform();
+
+                DrawPoints(graphics);
+            }
+        }
+
+        private void DrawPoints(Graphics graphics)
+        {
+            PointF[] pointFs = new PointF[1];
+
+            float circleRadius = CircleRadius * _curControlScaleSingle;
+            float penWidth = (float) Math.Round(CirclePenWidth * _curControlScaleSingle);
+
+            using (var pen = new Pen(Color.Black, penWidth))
+            {
+                foreach (var pointGroup in _document.Figure.PointGroups)
+                {
+                    Point p = pointGroup.Points[0];
+
+                    pointFs[0] = new PointF(p.X, p.Y);
+                    _worldToScreenMatrix.TransformPoints(pointFs);
+
+                    if (pointGroup.IsFixed)
+                    {
+                        graphics.DrawRectangle(
+                            pen,
+                            pointFs[0].X - circleRadius,
+                            pointFs[0].Y - circleRadius,
+                            circleRadius * 2,
+                            circleRadius * 2);
+                    }
+                    else
+                    {
+                        graphics.DrawEllipse(
+                            pen,
+                            pointFs[0].X - circleRadius,
+                            pointFs[0].Y - circleRadius,
+                            circleRadius * 2,
+                            circleRadius * 2);
+                    }
                 }
             }
         }
