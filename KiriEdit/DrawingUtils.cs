@@ -1,4 +1,5 @@
 ﻿using KiriProj;
+using System;
 using System.Drawing;
 using TryFreetype.Model;
 
@@ -6,6 +7,14 @@ namespace KiriEdit
 {
     internal static class DrawingUtils
     {
+        public static double GetLineLength(int x1, int y1, int x2, int y2)
+        {
+            float dX = x2 - x1;
+            float dY = y2 - y1;
+
+            return Math.Sqrt(dX * dX + dY * dY);
+        }
+
         public static Rectangle CenterFigure(Figure figure, Size boundSize)
         {
             int height = boundSize.Height;
