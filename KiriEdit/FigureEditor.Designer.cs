@@ -50,6 +50,8 @@
             this.canvas.TabIndex = 1;
             this.canvas.TabStop = false;
             this.canvas.MouseClick += new System.Windows.Forms.MouseEventHandler(Canvas_MouseClick);
+            this.canvas.MouseDown += new System.Windows.Forms.MouseEventHandler(Canvas_MouseDown);
+            this.canvas.MouseMove += new System.Windows.Forms.MouseEventHandler(Canvas_MouseMove);
             // 
             // FigureEditor
             // 
