@@ -80,7 +80,23 @@ namespace KiriEdit
         private void TryCommitLine(object sender, MouseEventArgs e)
         {
             _trackingLine = false;
-            DrawCanvas();
+
+            PointGroup pointGroup = FindPointGroupSc(e.X, e.Y);
+
+            if (pointGroup != null && pointGroup != _lineStartGroup)
+            {
+                var (p1, p2) = Figure.FindPointsForCut(_lineStartGroup, pointGroup);
+
+                _document.Figure.AddCut(p1, p2);
+
+                RebuildCanvas();
+                OnModified();
+            }
+            else
+            {
+                DrawCanvas();
+            }
+
             canvas.Invalidate();
         }
 
