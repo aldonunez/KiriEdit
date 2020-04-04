@@ -27,8 +27,11 @@ namespace KiriEdit
 
         private bool _trackingLine;
         private PointGroup _lineStartGroup;
+        private PointGroup _lineEndGroup;
         private PointF _lineStart;
         private PointF _lineEnd;
+        private Point _candidatePoint1;
+        private Point _candidatePoint2;
 
         public event EventHandler Modified;
 
@@ -81,13 +84,14 @@ namespace KiriEdit
         {
             _trackingLine = false;
 
-            PointGroup pointGroup = FindPointGroupSc(e.X, e.Y);
-
-            if (pointGroup != null && pointGroup != _lineStartGroup)
+            if (_candidatePoint1 != null && _candidatePoint2 != null)
             {
-                var (p1, p2) = Figure.FindPointsForCut(_lineStartGroup, pointGroup);
+                _document.Figure.AddCut(_candidatePoint1, _candidatePoint2);
 
-                _document.Figure.AddCut(p1, p2);
+                _lineStartGroup = null;
+                _lineEndGroup = null;
+                _candidatePoint1 = null;
+                _candidatePoint2 = null;
 
                 RebuildCanvas();
                 OnModified();
@@ -127,6 +131,7 @@ namespace KiriEdit
             {
                 _trackingLine = true;
                 _lineStartGroup = pointGroup;
+                _lineEndGroup = null;
                 _lineStart = new PointF(e.X, e.Y);
             }
         }
@@ -136,8 +141,35 @@ namespace KiriEdit
             if (_trackingLine)
             {
                 _lineEnd = new PointF(e.X, e.Y);
+
+                TryCapturePointsForCut(e.X, e.Y);
+
                 DrawCanvas();
                 canvas.Invalidate();
+            }
+        }
+
+        private void TryCapturePointsForCut(int x, int y)
+        {
+            PointGroup pointGroup = FindPointGroupSc(x, y);
+
+            if (pointGroup != _lineEndGroup)
+            {
+                Point p1 = null;
+                Point p2 = null;
+
+                if (pointGroup != null && pointGroup != _lineStartGroup)
+                {
+                    (p1, p2) = Figure.FindPointsForCut(_lineStartGroup, pointGroup);
+                }
+
+                if (p1 != null && p2 != null)
+                    _lineEndGroup = pointGroup;
+                else
+                    _lineEndGroup = null;
+
+                _candidatePoint1 = p1;
+                _candidatePoint2 = p2;
             }
         }
 
@@ -307,6 +339,11 @@ namespace KiriEdit
 
                     pointFs[0] = new PointF(p.X, p.Y);
                     _worldToScreenMatrix.TransformPoints(pointFs);
+
+                    if (pointGroup == _lineStartGroup || pointGroup == _lineEndGroup)
+                        pen.Color = Color.Red;
+                    else
+                        pen.Color = Color.Black;
 
                     if (pointGroup.IsFixed)
                     {
