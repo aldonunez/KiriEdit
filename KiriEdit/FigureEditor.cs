@@ -13,6 +13,7 @@ namespace KiriEdit
         private const float CircleRadius = 4;
         private const float CirclePenWidth = 1;
         private const float LinePenWidth = 4;
+        private const float LineBoundingWidth = LinePenWidth + 4;
 
         private FigureDocument _document;
         private bool _shown;
@@ -32,6 +33,7 @@ namespace KiriEdit
         private PointF _lineEnd;
         private Point _candidatePoint1;
         private Point _candidatePoint2;
+        private Cut _candidateCut;
 
         public event EventHandler Modified;
 
@@ -76,8 +78,23 @@ namespace KiriEdit
             }
             else
             {
-                TryClickShape(sender, e);
+                Cut cut = FindCutSc(e.X, e.Y);
+
+                if (cut != null)
+                    DeleteLine(cut);
+                else
+                    TryClickShape(sender, e);
             }
+        }
+
+        private void DeleteLine(Cut cut)
+        {
+            _candidateCut = null;
+
+            _document.Figure.DeleteCut(cut);
+
+            RebuildCanvas();
+            OnModified();
         }
 
         private void TryCommitLine(object sender, MouseEventArgs e)
@@ -140,6 +157,8 @@ namespace KiriEdit
         {
             if (_trackingLine)
             {
+                _candidateCut = null;
+
                 _lineEnd = new PointF(e.X, e.Y);
 
                 TryCapturePointsForCut(e.X, e.Y);
@@ -147,6 +166,61 @@ namespace KiriEdit
                 DrawCanvas();
                 canvas.Invalidate();
             }
+            else
+            {
+                Cut cut = FindCutSc(e.X, e.Y);
+
+                if (cut != _candidateCut)
+                {
+                    _candidateCut = cut;
+
+                    DrawCanvas();
+                    canvas.Invalidate();
+                }
+            }
+        }
+
+        private Cut FindCutSc(int x, int y)
+        {
+            float halfWidth = (LineBoundingWidth * _curControlScaleSingle) / 2;
+
+            PointF[] pointFs = new PointF[2];
+
+            foreach (var cut in _document.Figure.Cuts)
+            {
+                pointFs[0] = new PointF(cut.PairedEdge1.P1.X, cut.PairedEdge1.P1.Y);
+                pointFs[1] = new PointF(cut.PairedEdge1.P2.X, cut.PairedEdge1.P2.Y);
+
+                _worldToScreenMatrix.TransformPoints(pointFs);
+
+                // Translate by P1, so P1 is the origin.
+
+                PointF translatedRef = new PointF(x - pointFs[0].X, y - pointFs[0].Y);
+                PointF translatedP2 = new PointF(pointFs[1].X - pointFs[0].X, pointFs[1].Y - pointFs[0].Y);
+
+                // Get the cut's angle.
+
+                double angle = Math.Atan2(translatedP2.Y, translatedP2.X);
+
+                // Rotate by negative angle.
+
+                double sin = Math.Sin(-angle);
+                double cos = Math.Cos(-angle);
+
+                PointF rotatedRef = new PointF(
+                    (float) (translatedRef.X * cos - translatedRef.Y * sin),
+                    (float) (translatedRef.X * sin + translatedRef.Y * cos));
+
+                PointF rotatedP2 = new PointF(
+                    (float) (translatedP2.X * cos - translatedP2.Y * sin),
+                    (float) (translatedP2.X * sin + translatedP2.Y * cos));
+
+                if (   rotatedRef.Y >= -halfWidth && rotatedRef.Y <= halfWidth
+                    && rotatedRef.X >=  0 && rotatedRef.X <= rotatedP2.X)
+                    return cut;
+            }
+
+            return null;
         }
 
         private void TryCapturePointsForCut(int x, int y)
@@ -320,6 +394,7 @@ namespace KiriEdit
                 graphics.ResetTransform();
 
                 DrawPoints(graphics);
+                DrawCuts(graphics);
                 DrawLine(graphics);
             }
         }
@@ -377,6 +452,31 @@ namespace KiriEdit
                 pen.DashStyle = DashStyle.Dot;
 
                 graphics.DrawLine(pen, _lineStart, _lineEnd);
+            }
+        }
+
+        private void DrawCuts(Graphics graphics)
+        {
+            PointF[] pointFs = new PointF[2];
+
+            using (var pen = new Pen(Color.Turquoise, LinePenWidth * _curControlScaleSingle))
+            {
+                pen.DashStyle = DashStyle.Dot;
+
+                foreach (var cut in _document.Figure.Cuts)
+                {
+                    pointFs[0] = new PointF(cut.PairedEdge1.P1.X, cut.PairedEdge1.P1.Y);
+                    pointFs[1] = new PointF(cut.PairedEdge1.P2.X, cut.PairedEdge1.P2.Y);
+
+                    _worldToScreenMatrix.TransformPoints(pointFs);
+
+                    if (cut == _candidateCut)
+                        pen.Color = Color.Red;
+                    else
+                        pen.Color = Color.LightPink;
+
+                    graphics.DrawLine(pen, pointFs[0], pointFs[1]);
+                }
             }
         }
     }
