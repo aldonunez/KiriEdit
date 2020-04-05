@@ -19,21 +19,13 @@ namespace KiriEdit
         private bool _shown;
         private Rectangle _rectangle;
         private Bitmap _shapeMask;
+        private Tool _tool;
 
         private float _curControlScaleSingle;
         private SizeF _curControlScaleSize;
         private Matrix _worldToScreenMatrix;
         private Matrix _screenToWorldMatrix;
         private float _screenToWorldScale;
-
-        private bool _trackingLine;
-        private PointGroup _lineStartGroup;
-        private PointGroup _lineEndGroup;
-        private PointF _lineStart;
-        private PointF _lineEnd;
-        private Point _candidatePoint1;
-        private Point _candidatePoint2;
-        private Cut _candidateCut;
 
         public event EventHandler Modified;
 
@@ -55,6 +47,8 @@ namespace KiriEdit
         public FigureEditor()
         {
             InitializeComponent();
+
+            _tool = new LineTool(this);
         }
 
         protected override void ScaleControl(SizeF factor, BoundsSpecified specified)
@@ -72,53 +66,17 @@ namespace KiriEdit
 
         private void Canvas_MouseClick(object sender, MouseEventArgs e)
         {
-            if (_trackingLine)
-            {
-                TryCommitLine(sender, e);
-            }
-            else
-            {
-                Cut cut = FindCutSc(e.X, e.Y);
-
-                if (cut != null)
-                    DeleteLine(cut);
-                else
-                    TryClickShape(sender, e);
-            }
+            _tool.OnMouseClick(sender, e);
         }
 
-        private void DeleteLine(Cut cut)
+        private void Canvas_MouseDown(object sender, MouseEventArgs e)
         {
-            _candidateCut = null;
-
-            _document.Figure.DeleteCut(cut);
-
-            RebuildCanvas();
-            OnModified();
+            _tool.OnMouseDown(sender, e);
         }
 
-        private void TryCommitLine(object sender, MouseEventArgs e)
+        private void Canvas_MouseMove(object sender, MouseEventArgs e)
         {
-            _trackingLine = false;
-
-            if (_candidatePoint1 != null && _candidatePoint2 != null)
-            {
-                _document.Figure.AddCut(_candidatePoint1, _candidatePoint2);
-
-                _lineStartGroup = null;
-                _lineEndGroup = null;
-                _candidatePoint1 = null;
-                _candidatePoint2 = null;
-
-                RebuildCanvas();
-                OnModified();
-            }
-            else
-            {
-                DrawCanvas();
-            }
-
-            canvas.Invalidate();
+            _tool.OnMouseMove(sender, e);
         }
 
         private void TryClickShape(object sender, MouseEventArgs e)
@@ -136,115 +94,6 @@ namespace KiriEdit
             canvas.Invalidate();
 
             OnModified();
-        }
-
-        private void Canvas_MouseDown(object sender, MouseEventArgs e)
-        {
-            _trackingLine = false;
-
-            PointGroup pointGroup = FindPointGroupSc(e.X, e.Y);
-
-            if (pointGroup != null)
-            {
-                _trackingLine = true;
-                _lineStartGroup = pointGroup;
-                _lineEndGroup = null;
-                _lineStart = new PointF(e.X, e.Y);
-            }
-        }
-
-        private void Canvas_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (_trackingLine)
-            {
-                _candidateCut = null;
-
-                _lineEnd = new PointF(e.X, e.Y);
-
-                TryCapturePointsForCut(e.X, e.Y);
-
-                DrawCanvas();
-                canvas.Invalidate();
-            }
-            else
-            {
-                Cut cut = FindCutSc(e.X, e.Y);
-
-                if (cut != _candidateCut)
-                {
-                    _candidateCut = cut;
-
-                    DrawCanvas();
-                    canvas.Invalidate();
-                }
-            }
-        }
-
-        private Cut FindCutSc(int x, int y)
-        {
-            float halfWidth = (LineBoundingWidth * _curControlScaleSingle) / 2;
-
-            PointF[] pointFs = new PointF[2];
-
-            foreach (var cut in _document.Figure.Cuts)
-            {
-                pointFs[0] = new PointF(cut.PairedEdge1.P1.X, cut.PairedEdge1.P1.Y);
-                pointFs[1] = new PointF(cut.PairedEdge1.P2.X, cut.PairedEdge1.P2.Y);
-
-                _worldToScreenMatrix.TransformPoints(pointFs);
-
-                // Translate by P1, so P1 is the origin.
-
-                PointF translatedRef = new PointF(x - pointFs[0].X, y - pointFs[0].Y);
-                PointF translatedP2 = new PointF(pointFs[1].X - pointFs[0].X, pointFs[1].Y - pointFs[0].Y);
-
-                // Get the cut's angle.
-
-                double angle = Math.Atan2(translatedP2.Y, translatedP2.X);
-
-                // Rotate by negative angle.
-
-                double sin = Math.Sin(-angle);
-                double cos = Math.Cos(-angle);
-
-                PointF rotatedRef = new PointF(
-                    (float) (translatedRef.X * cos - translatedRef.Y * sin),
-                    (float) (translatedRef.X * sin + translatedRef.Y * cos));
-
-                PointF rotatedP2 = new PointF(
-                    (float) (translatedP2.X * cos - translatedP2.Y * sin),
-                    (float) (translatedP2.X * sin + translatedP2.Y * cos));
-
-                if (   rotatedRef.Y >= -halfWidth && rotatedRef.Y <= halfWidth
-                    && rotatedRef.X >=  0 && rotatedRef.X <= rotatedP2.X)
-                    return cut;
-            }
-
-            return null;
-        }
-
-        private void TryCapturePointsForCut(int x, int y)
-        {
-            PointGroup pointGroup = FindPointGroupSc(x, y);
-
-            if (pointGroup != _lineEndGroup)
-            {
-                Point p1 = null;
-                Point p2 = null;
-
-                if (pointGroup != null && pointGroup != _lineStartGroup)
-                {
-                    (p1, p2) = Figure.FindPointsForCut(_lineStartGroup, pointGroup);
-                }
-
-                if (p1 != null && p2 != null)
-                    _lineEndGroup = pointGroup;
-                else
-                    _lineEndGroup = null;
-
-                _candidatePoint1 = p1;
-                _candidatePoint2 = p2;
-            }
         }
 
         // Find a point group given a point in screen coordinates.
@@ -338,6 +187,12 @@ namespace KiriEdit
             DrawCanvas();
         }
 
+        private void Redraw()
+        {
+            DrawCanvas();
+            canvas.Invalidate();
+        }
+
         private void DrawCanvas()
         {
             DrawBackgroundShapes();
@@ -393,13 +248,11 @@ namespace KiriEdit
 
                 graphics.ResetTransform();
 
-                DrawPoints(graphics);
-                DrawCuts(graphics);
-                DrawLine(graphics);
+                _tool.Draw(graphics);
             }
         }
 
-        private void DrawPoints(Graphics graphics)
+        private void DrawPoints(Graphics graphics, PointGroup hilitGroup1, PointGroup hilitGroup2)
         {
             PointF[] pointFs = new PointF[1];
 
@@ -415,7 +268,7 @@ namespace KiriEdit
                     pointFs[0] = new PointF(p.X, p.Y);
                     _worldToScreenMatrix.TransformPoints(pointFs);
 
-                    if (pointGroup == _lineStartGroup || pointGroup == _lineEndGroup)
+                    if (pointGroup == hilitGroup1 || pointGroup == hilitGroup2)
                         pen.Color = Color.Red;
                     else
                         pen.Color = Color.Black;
@@ -442,20 +295,7 @@ namespace KiriEdit
             }
         }
 
-        private void DrawLine(Graphics graphics)
-        {
-            if (!_trackingLine)
-                return;
-
-            using (var pen = new Pen(Color.Red, LinePenWidth * _curControlScaleSingle))
-            {
-                pen.DashStyle = DashStyle.Dot;
-
-                graphics.DrawLine(pen, _lineStart, _lineEnd);
-            }
-        }
-
-        private void DrawCuts(Graphics graphics)
+        private void DrawCuts(Graphics graphics, Cut hilitCut)
         {
             PointF[] pointFs = new PointF[2];
 
@@ -470,7 +310,7 @@ namespace KiriEdit
 
                     _worldToScreenMatrix.TransformPoints(pointFs);
 
-                    if (cut == _candidateCut)
+                    if (cut == hilitCut)
                         pen.Color = Color.Red;
                     else
                         pen.Color = Color.LightPink;
@@ -479,5 +319,266 @@ namespace KiriEdit
                 }
             }
         }
+
+        private void lineButton_Click(object sender, EventArgs e)
+        {
+            _tool = new LineTool(this);
+            OnGroupButtonClick(sender, e);
+        }
+
+        private void pointButton_Click(object sender, EventArgs e)
+        {
+            _tool = new PointTool(this);
+            OnGroupButtonClick(sender, e);
+        }
+
+        private void OnGroupButtonClick(object sender, EventArgs e)
+        {
+            foreach (var item in editorToolStrip.Items)
+            {
+                if (item != sender && item is ToolStripButton button)
+                {
+                    button.Checked = false;
+                }
+            }
+        }
+
+
+        #region Inner classes
+
+        private abstract class Tool
+        {
+            public abstract void OnMouseClick(object sender, MouseEventArgs e);
+            public abstract void OnMouseDown(object sender, MouseEventArgs e);
+            public abstract void OnMouseMove(object sender, MouseEventArgs e);
+            public abstract void Draw(Graphics graphics);
+        }
+
+        private class LineTool : Tool
+        {
+            private FigureEditor _parent;
+
+            private bool _trackingLine;
+            private PointGroup _lineStartGroup;
+            private PointGroup _lineEndGroup;
+            private PointF _lineStart;
+            private PointF _lineEnd;
+            private Point _candidatePoint1;
+            private Point _candidatePoint2;
+            private Cut _candidateCut;
+
+            public LineTool(FigureEditor parent)
+            {
+                _parent = parent;
+            }
+
+            public override void OnMouseClick(object sender, MouseEventArgs e)
+            {
+                if (_trackingLine)
+                {
+                    TryCommitLine(sender, e);
+                }
+                else
+                {
+                    Cut cut = FindCutSc(e.X, e.Y);
+
+                    if (cut != null)
+                        DeleteLine(cut);
+                    else
+                        _parent.TryClickShape(sender, e);
+                }
+            }
+
+            private void DeleteLine(Cut cut)
+            {
+                _candidateCut = null;
+
+                _parent._document.Figure.DeleteCut(cut);
+
+                _parent.RebuildCanvas();
+                _parent.OnModified();
+            }
+
+            private void TryCommitLine(object sender, MouseEventArgs e)
+            {
+                _trackingLine = false;
+
+                if (_candidatePoint1 != null && _candidatePoint2 != null)
+                {
+                    _parent._document.Figure.AddCut(_candidatePoint1, _candidatePoint2);
+
+                    _lineStartGroup = null;
+                    _lineEndGroup = null;
+                    _candidatePoint1 = null;
+                    _candidatePoint2 = null;
+
+                    _parent.RebuildCanvas();
+                    _parent.OnModified();
+                }
+                else
+                {
+                    _parent.Redraw();
+                }
+            }
+
+            private Cut FindCutSc(int x, int y)
+            {
+                float halfWidth = (LineBoundingWidth * _parent._curControlScaleSingle) / 2;
+
+                PointF[] pointFs = new PointF[2];
+
+                foreach (var cut in _parent._document.Figure.Cuts)
+                {
+                    pointFs[0] = new PointF(cut.PairedEdge1.P1.X, cut.PairedEdge1.P1.Y);
+                    pointFs[1] = new PointF(cut.PairedEdge1.P2.X, cut.PairedEdge1.P2.Y);
+
+                    _parent._worldToScreenMatrix.TransformPoints(pointFs);
+
+                    // Translate by P1, so P1 is the origin.
+
+                    PointF translatedRef = new PointF(x - pointFs[0].X, y - pointFs[0].Y);
+                    PointF translatedP2 = new PointF(pointFs[1].X - pointFs[0].X, pointFs[1].Y - pointFs[0].Y);
+
+                    // Get the cut's angle.
+
+                    double angle = Math.Atan2(translatedP2.Y, translatedP2.X);
+
+                    // Rotate by negative angle.
+
+                    double sin = Math.Sin(-angle);
+                    double cos = Math.Cos(-angle);
+
+                    PointF rotatedRef = new PointF(
+                        (float) (translatedRef.X * cos - translatedRef.Y * sin),
+                        (float) (translatedRef.X * sin + translatedRef.Y * cos));
+
+                    PointF rotatedP2 = new PointF(
+                        (float) (translatedP2.X * cos - translatedP2.Y * sin),
+                        (float) (translatedP2.X * sin + translatedP2.Y * cos));
+
+                    if (rotatedRef.Y >= -halfWidth && rotatedRef.Y <= halfWidth
+                        && rotatedRef.X >= 0 && rotatedRef.X <= rotatedP2.X)
+                        return cut;
+                }
+
+                return null;
+            }
+
+            private void TryCapturePointsForCut(int x, int y)
+            {
+                PointGroup pointGroup = _parent.FindPointGroupSc(x, y);
+
+                if (pointGroup != _lineEndGroup)
+                {
+                    Point p1 = null;
+                    Point p2 = null;
+
+                    if (pointGroup != null && pointGroup != _lineStartGroup)
+                    {
+                        (p1, p2) = Figure.FindPointsForCut(_lineStartGroup, pointGroup);
+                    }
+
+                    if (p1 != null && p2 != null)
+                        _lineEndGroup = pointGroup;
+                    else
+                        _lineEndGroup = null;
+
+                    _candidatePoint1 = p1;
+                    _candidatePoint2 = p2;
+                }
+            }
+
+            public override void OnMouseDown(object sender, MouseEventArgs e)
+            {
+                _trackingLine = false;
+
+                PointGroup pointGroup = _parent.FindPointGroupSc(e.X, e.Y);
+
+                if (pointGroup != null)
+                {
+                    _trackingLine = true;
+                    _lineStartGroup = pointGroup;
+                    _lineEndGroup = null;
+                    _lineStart = new PointF(e.X, e.Y);
+                }
+            }
+
+            public override void OnMouseMove(object sender, MouseEventArgs e)
+            {
+                if (_trackingLine)
+                {
+                    _candidateCut = null;
+
+                    _lineEnd = new PointF(e.X, e.Y);
+
+                    TryCapturePointsForCut(e.X, e.Y);
+
+                    _parent.Redraw();
+                }
+                else
+                {
+                    Cut cut = FindCutSc(e.X, e.Y);
+
+                    if (cut != _candidateCut)
+                    {
+                        _candidateCut = cut;
+
+                        _parent.Redraw();
+                    }
+                }
+            }
+
+            public override void Draw(Graphics graphics)
+            {
+                _parent.DrawPoints(graphics, _lineStartGroup, _lineEndGroup);
+                _parent.DrawCuts(graphics, _candidateCut);
+                DrawLine(graphics);
+            }
+
+            private void DrawLine(Graphics graphics)
+            {
+                if (!_trackingLine)
+                    return;
+
+                using (var pen = new Pen(Color.Red, LinePenWidth * _parent._curControlScaleSingle))
+                {
+                    pen.DashStyle = DashStyle.Dot;
+
+                    graphics.DrawLine(pen, _lineStart, _lineEnd);
+                }
+            }
+        }
+
+        private class PointTool : Tool
+        {
+            private FigureEditor _parent;
+
+            public PointTool(FigureEditor parent)
+            {
+                _parent = parent;
+            }
+
+            public override void Draw(Graphics graphics)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void OnMouseClick(object sender, MouseEventArgs e)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void OnMouseDown(object sender, MouseEventArgs e)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void OnMouseMove(object sender, MouseEventArgs e)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        #endregion
     }
 }
