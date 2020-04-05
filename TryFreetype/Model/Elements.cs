@@ -117,37 +117,7 @@ namespace TryFreetype.Model
 
         private ValuePoint FindNearestPoint(Point point, ValuePoint p1, ValuePoint p2)
         {
-            ValuePoint valuePoint = point.ToValuePoint();
-            double distP1 = Math.Abs(valuePoint.GetDistance(p1));
-            double distP2 = Math.Abs(valuePoint.GetDistance(p2));
-            double distP1P2 = Math.Abs(p1.GetDistance(p2));
-
-            if (distP1P2 <= 1.0)
-            {
-                if (distP1 <= distP2)
-                {
-                    return p1;
-                }
-                else
-                {
-                    return p2;
-                }
-            }
-
-            ValuePoint midPoint = new ValuePoint
-            {
-                X = (p2.X + p1.X) / 2,
-                Y = (p2.Y + p1.Y) / 2
-            };
-
-            if (distP1 <= distP2)
-            {
-                return FindNearestPoint(point, p1, midPoint);
-            }
-            else
-            {
-                return FindNearestPoint(point, midPoint, p2);
-            }
+            throw new NotImplementedException();
         }
     }
 
