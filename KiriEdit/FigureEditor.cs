@@ -188,9 +188,9 @@ namespace KiriEdit
             DrawCanvas();
         }
 
-        private void Redraw()
+        private void RedrawOverlay()
         {
-            DrawCanvas();
+            DrawOverlay();
             canvas.Invalidate();
         }
 
@@ -418,7 +418,7 @@ namespace KiriEdit
                 }
                 else
                 {
-                    _parent.Redraw();
+                    _parent.RedrawOverlay();
                 }
             }
 
@@ -514,7 +514,7 @@ namespace KiriEdit
 
                     TryCapturePointsForCut(e.X, e.Y);
 
-                    _parent.Redraw();
+                    _parent.RedrawOverlay();
                 }
                 else
                 {
@@ -524,7 +524,7 @@ namespace KiriEdit
                     {
                         _candidateCut = cut;
 
-                        _parent.Redraw();
+                        _parent.RedrawOverlay();
                     }
                 }
             }
@@ -626,7 +626,7 @@ namespace KiriEdit
                     MoveOverEdge(e.X, e.Y);
                 }
 
-                _parent.Redraw();
+                _parent.RedrawOverlay();
             }
 
             private void MoveOverPoint(PointGroup pointGroup)
