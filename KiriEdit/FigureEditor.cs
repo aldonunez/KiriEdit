@@ -571,12 +571,18 @@ namespace KiriEdit
 
             public override void OnMouseClick(object sender, MouseEventArgs e)
             {
-                throw new NotImplementedException();
+                if (_candidateEdge != null)
+                {
+                    var point = new Point((int) _candidatePoint.X, (int) _candidatePoint.Y);
+
+                    _parent._document.Figure.AddDiscardablePoint(point, _candidateEdge);
+
+                    _parent.RebuildCanvas();
+                }
             }
 
             public override void OnMouseDown(object sender, MouseEventArgs e)
             {
-                throw new NotImplementedException();
             }
 
             private struct EdgeSearchResult

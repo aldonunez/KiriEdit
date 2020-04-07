@@ -126,7 +126,14 @@ namespace TryFreetype.Model
 
         private ValuePoint FindNearestPoint(Point point, ValuePoint p1, ValuePoint p2)
         {
-            throw new NotImplementedException();
+            PointD? optNearestPoint = GetProjectedPoint(point.X, point.Y);
+
+            if (optNearestPoint.HasValue)
+            {
+                return new ValuePoint((int) optNearestPoint.Value.X, (int) optNearestPoint.Value.Y);
+            }
+
+            return P1.ToValuePoint();
         }
 
         public override PointD? GetProjectedPoint(int x, int y)
@@ -301,6 +308,12 @@ namespace TryFreetype.Model
     {
         public int X;
         public int Y;
+
+        public ValuePoint(int x, int y)
+        {
+            X = x;
+            Y = y;
+        }
 
         internal double GetDistance(ValuePoint otherPoint)
         {
