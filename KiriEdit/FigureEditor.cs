@@ -595,6 +595,9 @@ namespace KiriEdit
 
             public override void OnMouseMove(object sender, MouseEventArgs e)
             {
+                if (e.Button != MouseButtons.None)
+                    return;
+
                 EdgeSearchResult result = FindNearestEdgeSc(e.X, e.Y);
 
                 // Find the nearest point to the mouse cursor among these edges.
@@ -625,7 +628,7 @@ namespace KiriEdit
 
                 var p = new System.Drawing.Point((int) pointFs[0].X, (int) pointFs[0].Y);
 
-                int padding = (int) (10 * _parent._curControlScaleSingle * _parent._screenToWorldScale);
+                int padding = (int) (20 * _parent._curControlScaleSingle * _parent._screenToWorldScale);
 
                 // Collect every edge whose bounding box the mouse cursor is in, and hash them.
 
@@ -641,35 +644,11 @@ namespace KiriEdit
                     {
                         if (point.OutgoingEdge is LineEdge edge)
                         {
-                            int left, right, top, bottom;
+                            BBox box = edge.GetBBox();
 
-                            if (edge.P1.X < edge.P2.X)
-                            {
-                                left = edge.P1.X;
-                                right = edge.P2.X;
-                            }
-                            else
-                            {
-                                right = edge.P1.X;
-                                left = edge.P2.X;
-                            }
+                            box.Inflate(padding, padding);
 
-                            if (edge.P1.Y < edge.P2.Y)
-                            {
-                                bottom = edge.P1.Y;
-                                top = edge.P2.Y;
-                            }
-                            else
-                            {
-                                top = edge.P1.Y;
-                                bottom = edge.P2.Y;
-                            }
-
-                            Rectangle rect = Rectangle.FromLTRB(left, bottom, right, top);
-
-                            rect.Inflate(padding * 2, padding * 2);
-
-                            if (rect.Contains(p))
+                            if (box.Contains(p.X, p.Y))
                             {
                                 PointD? optProjection = edge.GetProjectedPoint(p.X, p.Y);
 

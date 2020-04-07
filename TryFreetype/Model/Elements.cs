@@ -49,7 +49,7 @@ namespace TryFreetype.Model
         public int Right;
         public int Bottom;
 
-        public bool IsPointInside(int x, int y)
+        public bool Contains(int x, int y)
         {
             return (x >= Left) && (x <= Right)
                 && (y <= Top) && (y >= Bottom);
