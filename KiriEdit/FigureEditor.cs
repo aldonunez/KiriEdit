@@ -553,6 +553,9 @@ namespace KiriEdit
         {
             private FigureEditor _parent;
 
+            private PointF _candidatePoint;
+            private LineEdge _candidateEdge;
+
             public PointTool(FigureEditor parent)
             {
                 _parent = parent;
@@ -560,7 +563,9 @@ namespace KiriEdit
 
             public override void Draw(Graphics graphics)
             {
-                throw new NotImplementedException();
+                _parent.DrawPoints(graphics, null, null);
+                _parent.DrawCuts(graphics, null);
+                DrawPoint(graphics);
             }
 
             public override void OnMouseClick(object sender, MouseEventArgs e)
@@ -575,7 +580,136 @@ namespace KiriEdit
 
             public override void OnMouseMove(object sender, MouseEventArgs e)
             {
-                throw new NotImplementedException();
+                // Change cursor point and padding amount to world coordinates.
+
+                PointF[] pointFs = new PointF[1] { new PointF(e.X, e.Y) };
+
+                _parent._screenToWorldMatrix.TransformPoints(pointFs);
+
+                var p = new System.Drawing.Point((int) pointFs[0].X, (int) pointFs[0].Y);
+
+                int padding = (int) (10 * _parent._curControlScaleSingle * _parent._screenToWorldScale);
+
+                // Collect every edge whose bounding box the mouse cursor is in, and hash them.
+
+                float minDistance = float.PositiveInfinity;
+                LineEdge minEdge = null;
+                PointF minPoint = new PointF();
+
+                foreach (var group in _parent._document.Figure.PointGroups)
+                {
+                    foreach (var point in group.Points)
+                    {
+                        if (point.OutgoingEdge is LineEdge edge)
+                        {
+                            int left, right, top, bottom;
+
+                            if (edge.P1.X < edge.P2.X)
+                            {
+                                left = edge.P1.X;
+                                right = edge.P2.X;
+                            }
+                            else
+                            {
+                                right = edge.P1.X;
+                                left = edge.P2.X;
+                            }
+
+                            if (edge.P1.Y < edge.P2.Y)
+                            {
+                                bottom = edge.P1.Y;
+                                top = edge.P2.Y;
+                            }
+                            else
+                            {
+                                top = edge.P1.Y;
+                                bottom = edge.P2.Y;
+                            }
+
+                            Rectangle rect = Rectangle.FromLTRB(left, bottom, right, top);
+
+                            rect.Inflate(padding * 2, padding * 2);
+
+                            if (rect.Contains(p))
+                            {
+                                int dCursorX = p.X - edge.P1.X;
+                                int dCursorY = p.Y - edge.P1.Y;
+                                int dEdgeX = edge.P2.X - edge.P1.X;
+                                int dEdgeY = edge.P2.Y - edge.P1.Y;
+
+                                int dotProduct = dCursorX * dEdgeX + dCursorY * dEdgeY;
+                                int lengthSquared = dEdgeX * dEdgeX + dEdgeY * dEdgeY;
+
+                                if (lengthSquared != 0)
+                                {
+                                    float t = dotProduct / (float) lengthSquared;
+
+                                    if (t > 0 && t < 1)
+                                    {
+                                        PointF projection = new PointF(
+                                            edge.P1.X + t * dEdgeX,
+                                            edge.P1.Y + t * dEdgeY);
+
+                                        float dX = p.X - projection.X;
+                                        float dY = p.Y - projection.Y;
+
+                                        float distance = (float) Math.Sqrt(dX * dX + dY * dY);
+
+                                        if (distance < minDistance)
+                                        {
+                                            minDistance = distance;
+                                            minEdge = edge;
+                                            minPoint = projection;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // If the count and hash are the same as before, then the cursor hasn't moved
+                // enough to matter.
+
+                // Otherwise, find the nearest point to the mouse cursor among these edges.
+
+                // But only show it to the user, if it's near enough.
+
+                if (minEdge != null && minDistance <= 10 * _parent._curControlScaleSingle * _parent._screenToWorldScale)
+                {
+                    _candidateEdge = minEdge;
+                    _candidatePoint = minPoint;
+                }
+                else
+                {
+                    _candidateEdge = null;
+                }
+
+                _parent.Redraw();
+            }
+
+            private void DrawPoint(Graphics graphics)
+            {
+                if (_candidateEdge == null)
+                    return;
+
+                PointF[] pointFs = new PointF[1];
+
+                float circleRadius = CircleRadius * _parent._curControlScaleSingle;
+                float penWidth = (float) Math.Round(CirclePenWidth * _parent._curControlScaleSingle);
+
+                using (var pen = new Pen(Color.Black, penWidth))
+                {
+                    pointFs[0] = _candidatePoint;
+                    _parent._worldToScreenMatrix.TransformPoints(pointFs);
+
+                    graphics.DrawEllipse(
+                        pen,
+                        pointFs[0].X - circleRadius,
+                        pointFs[0].Y - circleRadius,
+                        circleRadius * 2,
+                        circleRadius * 2);
+                }
             }
         }
 
