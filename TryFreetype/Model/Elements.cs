@@ -119,6 +119,31 @@ namespace TryFreetype.Model
         {
             throw new NotImplementedException();
         }
+
+        public PointD? GetProjectedPoint(int x, int y)
+        {
+            int dX = x - P1.X;
+            int dY = y - P1.Y;
+            int dEdgeX = P2.X - P1.X;
+            int dEdgeY = P2.Y - P1.Y;
+
+            int dotProduct = dX * dEdgeX + dY * dEdgeY;
+            int lengthSquared = dEdgeX * dEdgeX + dEdgeY * dEdgeY;
+
+            if (lengthSquared != 0)
+            {
+                float t = dotProduct / (float) lengthSquared;
+
+                if (t >= 0 && t <= 1)
+                {
+                    return new PointD(
+                        P1.X + t * dEdgeX,
+                        P1.Y + t * dEdgeY);
+                }
+            }
+
+            return null;
+        }
     }
 
     public class ConicEdge : Edge

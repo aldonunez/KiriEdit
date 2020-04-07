@@ -3,6 +3,7 @@ using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using TryFreetype;
 using TryFreetype.Model;
 using Point = TryFreetype.Model.Point;
 
@@ -632,35 +633,24 @@ namespace KiriEdit
 
                             if (rect.Contains(p))
                             {
-                                int dCursorX = p.X - edge.P1.X;
-                                int dCursorY = p.Y - edge.P1.Y;
-                                int dEdgeX = edge.P2.X - edge.P1.X;
-                                int dEdgeY = edge.P2.Y - edge.P1.Y;
+                                PointD? optProjection = edge.GetProjectedPoint(p.X, p.Y);
 
-                                int dotProduct = dCursorX * dEdgeX + dCursorY * dEdgeY;
-                                int lengthSquared = dEdgeX * dEdgeX + dEdgeY * dEdgeY;
-
-                                if (lengthSquared != 0)
+                                if (optProjection.HasValue)
                                 {
-                                    float t = dotProduct / (float) lengthSquared;
+                                    PointF projection = new PointF(
+                                        (float) optProjection.Value.X,
+                                        (float) optProjection.Value.Y);
 
-                                    if (t > 0 && t < 1)
+                                    float dX = p.X - projection.X;
+                                    float dY = p.Y - projection.Y;
+
+                                    float distance = (float) Math.Sqrt(dX * dX + dY * dY);
+
+                                    if (distance < minDistance)
                                     {
-                                        PointF projection = new PointF(
-                                            edge.P1.X + t * dEdgeX,
-                                            edge.P1.Y + t * dEdgeY);
-
-                                        float dX = p.X - projection.X;
-                                        float dY = p.Y - projection.Y;
-
-                                        float distance = (float) Math.Sqrt(dX * dX + dY * dY);
-
-                                        if (distance < minDistance)
-                                        {
-                                            minDistance = distance;
-                                            minEdge = edge;
-                                            minPoint = projection;
-                                        }
+                                        minDistance = distance;
+                                        minEdge = edge;
+                                        minPoint = projection;
                                     }
                                 }
                             }
@@ -668,11 +658,7 @@ namespace KiriEdit
                     }
                 }
 
-                // If the count and hash are the same as before, then the cursor hasn't moved
-                // enough to matter.
-
-                // Otherwise, find the nearest point to the mouse cursor among these edges.
-
+                // Find the nearest point to the mouse cursor among these edges.
                 // But only show it to the user, if it's near enough.
 
                 if (minEdge != null && minDistance <= 10 * _parent._curControlScaleSingle * _parent._screenToWorldScale)
