@@ -79,6 +79,7 @@ namespace TryFreetype.Model
 
         public abstract BBox GetBBox();
         internal abstract SplitResult Split(Point point);
+        public abstract PointD? GetProjectedPoint(int x, int y);
         public abstract object Clone();
     }
 
@@ -128,7 +129,7 @@ namespace TryFreetype.Model
             throw new NotImplementedException();
         }
 
-        public PointD? GetProjectedPoint(int x, int y)
+        public override PointD? GetProjectedPoint(int x, int y)
         {
             int dX = x - P1.X;
             int dY = y - P1.Y;
@@ -183,6 +184,12 @@ namespace TryFreetype.Model
             return bbox;
         }
 
+        public override PointD? GetProjectedPoint(int x, int y)
+        {
+            // TODO: Not implemented, but don't fail.
+            return null;
+        }
+
         internal override SplitResult Split(Point point)
         {
             throw new NotImplementedException();
@@ -218,6 +225,12 @@ namespace TryFreetype.Model
                 Bottom = Math.Min(P1.Y, Math.Min(P2.Y, Math.Min(Control1.Y, Control2.Y))),
             };
             return bbox;
+        }
+
+        public override PointD? GetProjectedPoint(int x, int y)
+        {
+            // TODO: Not implemented, but don't fail.
+            return null;
         }
 
         internal override SplitResult Split(Point point)

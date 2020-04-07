@@ -555,7 +555,7 @@ namespace KiriEdit
             private FigureEditor _parent;
 
             private PointF _candidatePoint;
-            private LineEdge _candidateEdge;
+            private Edge _candidateEdge;
 
             public PointTool(FigureEditor parent)
             {
@@ -582,10 +582,10 @@ namespace KiriEdit
             private struct EdgeSearchResult
             {
                 public float Distance;
-                public LineEdge Edge;
+                public Edge Edge;
                 public PointF Point;
 
-                public EdgeSearchResult(float distance, LineEdge edge, PointF point)
+                public EdgeSearchResult(float distance, Edge edge, PointF point)
                 {
                     Distance = distance;
                     Edge = edge;
@@ -600,8 +600,7 @@ namespace KiriEdit
 
                 EdgeSearchResult result = FindNearestEdgeSc(e.X, e.Y);
 
-                // Find the nearest point to the mouse cursor among these edges.
-                // But only show it to the user, if it's near enough.
+                // Only show a point along an edge, if it's near enough to it.
 
                 float visibleDistance = 10 * _parent._curControlScaleSingle * _parent._screenToWorldScale;
 
@@ -630,7 +629,8 @@ namespace KiriEdit
 
                 int padding = (int) (20 * _parent._curControlScaleSingle * _parent._screenToWorldScale);
 
-                // Collect every edge whose bounding box the mouse cursor is in, and hash them.
+                // Check every edge whose bounding box the mouse cursor is in.
+                // Find the nearest point to the mouse cursor among these edges.
 
                 EdgeSearchResult result;
 
@@ -642,33 +642,31 @@ namespace KiriEdit
                 {
                     foreach (var point in group.Points)
                     {
-                        if (point.OutgoingEdge is LineEdge edge)
+                        Edge edge = point.OutgoingEdge;
+                        BBox box = edge.GetBBox();
+
+                        box.Inflate(padding, padding);
+
+                        if (box.Contains(p.X, p.Y))
                         {
-                            BBox box = edge.GetBBox();
+                            PointD? optProjection = edge.GetProjectedPoint(p.X, p.Y);
 
-                            box.Inflate(padding, padding);
-
-                            if (box.Contains(p.X, p.Y))
+                            if (optProjection.HasValue)
                             {
-                                PointD? optProjection = edge.GetProjectedPoint(p.X, p.Y);
+                                PointF projection = new PointF(
+                                    (float) optProjection.Value.X,
+                                    (float) optProjection.Value.Y);
 
-                                if (optProjection.HasValue)
+                                float dX = p.X - projection.X;
+                                float dY = p.Y - projection.Y;
+
+                                float distance = (float) Math.Sqrt(dX * dX + dY * dY);
+
+                                if (distance < result.Distance)
                                 {
-                                    PointF projection = new PointF(
-                                        (float) optProjection.Value.X,
-                                        (float) optProjection.Value.Y);
-
-                                    float dX = p.X - projection.X;
-                                    float dY = p.Y - projection.Y;
-
-                                    float distance = (float) Math.Sqrt(dX * dX + dY * dY);
-
-                                    if (distance < result.Distance)
-                                    {
-                                        result.Distance = distance;
-                                        result.Edge = edge;
-                                        result.Point = projection;
-                                    }
+                                    result.Distance = distance;
+                                    result.Edge = edge;
+                                    result.Point = projection;
                                 }
                             }
                         }
