@@ -54,6 +54,14 @@ namespace TryFreetype.Model
             return (x >= Left) && (x <= Right)
                 && (y <= Top) && (y >= Bottom);
         }
+
+        public void Inflate(int width, int height)
+        {
+            Left -= width;
+            Right += width;
+            Top += height;
+            Bottom -= height;
+        }
     }
 
     public abstract class Edge : ICloneable

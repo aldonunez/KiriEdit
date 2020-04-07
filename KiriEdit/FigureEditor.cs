@@ -579,11 +579,47 @@ namespace KiriEdit
                 throw new NotImplementedException();
             }
 
+            private struct EdgeSearchResult
+            {
+                public float Distance;
+                public LineEdge Edge;
+                public PointF Point;
+
+                public EdgeSearchResult(float distance, LineEdge edge, PointF point)
+                {
+                    Distance = distance;
+                    Edge = edge;
+                    Point = point;
+                }
+            }
+
             public override void OnMouseMove(object sender, MouseEventArgs e)
+            {
+                EdgeSearchResult result = FindNearestEdgeSc(e.X, e.Y);
+
+                // Find the nearest point to the mouse cursor among these edges.
+                // But only show it to the user, if it's near enough.
+
+                float visibleDistance = 10 * _parent._curControlScaleSingle * _parent._screenToWorldScale;
+
+                if (result.Edge != null && result.Distance <= visibleDistance)
+                {
+                    _candidateEdge = result.Edge;
+                    _candidatePoint = result.Point;
+                }
+                else
+                {
+                    _candidateEdge = null;
+                }
+
+                _parent.Redraw();
+            }
+
+            private EdgeSearchResult FindNearestEdgeSc(int x, int y)
             {
                 // Change cursor point and padding amount to world coordinates.
 
-                PointF[] pointFs = new PointF[1] { new PointF(e.X, e.Y) };
+                PointF[] pointFs = new PointF[1] { new PointF(x, y) };
 
                 _parent._screenToWorldMatrix.TransformPoints(pointFs);
 
@@ -593,9 +629,11 @@ namespace KiriEdit
 
                 // Collect every edge whose bounding box the mouse cursor is in, and hash them.
 
-                float minDistance = float.PositiveInfinity;
-                LineEdge minEdge = null;
-                PointF minPoint = new PointF();
+                EdgeSearchResult result;
+
+                result.Distance = float.PositiveInfinity;
+                result.Edge = null;
+                result.Point = new PointF();
 
                 foreach (var group in _parent._document.Figure.PointGroups)
                 {
@@ -646,11 +684,11 @@ namespace KiriEdit
 
                                     float distance = (float) Math.Sqrt(dX * dX + dY * dY);
 
-                                    if (distance < minDistance)
+                                    if (distance < result.Distance)
                                     {
-                                        minDistance = distance;
-                                        minEdge = edge;
-                                        minPoint = projection;
+                                        result.Distance = distance;
+                                        result.Edge = edge;
+                                        result.Point = projection;
                                     }
                                 }
                             }
@@ -658,20 +696,7 @@ namespace KiriEdit
                     }
                 }
 
-                // Find the nearest point to the mouse cursor among these edges.
-                // But only show it to the user, if it's near enough.
-
-                if (minEdge != null && minDistance <= 10 * _parent._curControlScaleSingle * _parent._screenToWorldScale)
-                {
-                    _candidateEdge = minEdge;
-                    _candidatePoint = minPoint;
-                }
-                else
-                {
-                    _candidateEdge = null;
-                }
-
-                _parent.Redraw();
+                return result;
             }
 
             private void DrawPoint(Graphics graphics)
