@@ -193,8 +193,11 @@ namespace TryFreetype.Model
 
         public override PointD? GetProjectedPoint(int x, int y)
         {
-            // TODO: Not implemented, but don't fail.
-            return null;
+            return Curve.GetProjectedPoint(
+                new PointD(x, y),
+                P1.ToPointD(),
+                Control1.ToPointD(),
+                P2.ToPointD());
         }
 
         internal override SplitResult Split(Point point)
@@ -236,8 +239,12 @@ namespace TryFreetype.Model
 
         public override PointD? GetProjectedPoint(int x, int y)
         {
-            // TODO: Not implemented, but don't fail.
-            return null;
+            return Curve.GetProjectedPoint(
+                new PointD(x, y),
+                P1.ToPointD(),
+                Control1.ToPointD(),
+                Control2.ToPointD(),
+                P2.ToPointD());
         }
 
         internal override SplitResult Split(Point point)
@@ -296,6 +303,11 @@ namespace TryFreetype.Model
         internal ValuePoint ToValuePoint()
         {
             return new ValuePoint { X = X, Y = Y };
+        }
+
+        public PointD ToPointD()
+        {
+            return new PointD(X, Y);
         }
 
         public override string ToString()
