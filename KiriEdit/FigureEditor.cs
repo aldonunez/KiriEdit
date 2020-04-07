@@ -556,6 +556,7 @@ namespace KiriEdit
 
             private PointF _candidatePoint;
             private Edge _candidateEdge;
+            private PointGroup _hilitGroup;
 
             public PointTool(FigureEditor parent)
             {
@@ -564,7 +565,7 @@ namespace KiriEdit
 
             public override void Draw(Graphics graphics)
             {
-                _parent.DrawPoints(graphics, null, null);
+                _parent.DrawPoints(graphics, _hilitGroup, null);
                 _parent.DrawCuts(graphics, null);
                 DrawPoint(graphics);
             }
@@ -577,6 +578,14 @@ namespace KiriEdit
 
                     _parent._document.Figure.AddDiscardablePoint(point, _candidateEdge);
 
+                    _candidateEdge = null;
+                    _parent.RebuildCanvas();
+                }
+                else if (_hilitGroup != null)
+                {
+                    _parent._document.Figure.DeleteDiscardablePoint(_hilitGroup);
+
+                    _hilitGroup = null;
                     _parent.RebuildCanvas();
                 }
             }
@@ -604,7 +613,33 @@ namespace KiriEdit
                 if (e.Button != MouseButtons.None)
                     return;
 
-                EdgeSearchResult result = FindNearestEdgeSc(e.X, e.Y);
+                var pointGroup = _parent.FindPointGroupSc(e.X, e.Y);
+
+                if (pointGroup != null)
+                {
+                    _candidateEdge = null;
+                    MoveOverPoint(pointGroup);
+                }
+                else
+                {
+                    _hilitGroup = null;
+                    MoveOverEdge(e.X, e.Y);
+                }
+
+                _parent.Redraw();
+            }
+
+            private void MoveOverPoint(PointGroup pointGroup)
+            {
+                if (!pointGroup.IsFixed && pointGroup.Points.Count == 1)
+                {
+                    _hilitGroup = pointGroup;
+                }
+            }
+
+            private void MoveOverEdge(int x, int y)
+            {
+                EdgeSearchResult result = FindNearestEdgeSc(x, y);
 
                 // Only show a point along an edge, if it's near enough to it.
 
@@ -619,8 +654,6 @@ namespace KiriEdit
                 {
                     _candidateEdge = null;
                 }
-
-                _parent.Redraw();
             }
 
             private EdgeSearchResult FindNearestEdgeSc(int x, int y)
