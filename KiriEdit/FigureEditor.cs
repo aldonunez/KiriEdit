@@ -3,6 +3,7 @@ using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using TryFreetype;
 using TryFreetype.Model;
 using Point = TryFreetype.Model.Point;
 
@@ -553,6 +554,9 @@ namespace KiriEdit
         {
             private FigureEditor _parent;
 
+            private PointF _candidatePoint;
+            private Edge _candidateEdge;
+
             public PointTool(FigureEditor parent)
             {
                 _parent = parent;
@@ -560,22 +564,146 @@ namespace KiriEdit
 
             public override void Draw(Graphics graphics)
             {
-                throw new NotImplementedException();
+                _parent.DrawPoints(graphics, null, null);
+                _parent.DrawCuts(graphics, null);
+                DrawPoint(graphics);
             }
 
             public override void OnMouseClick(object sender, MouseEventArgs e)
             {
-                throw new NotImplementedException();
+                if (_candidateEdge != null)
+                {
+                    var point = new Point((int) _candidatePoint.X, (int) _candidatePoint.Y);
+
+                    _parent._document.Figure.AddDiscardablePoint(point, _candidateEdge);
+
+                    _parent.RebuildCanvas();
+                }
             }
 
             public override void OnMouseDown(object sender, MouseEventArgs e)
             {
-                throw new NotImplementedException();
+            }
+
+            private struct EdgeSearchResult
+            {
+                public float Distance;
+                public Edge Edge;
+                public PointF Point;
+
+                public EdgeSearchResult(float distance, Edge edge, PointF point)
+                {
+                    Distance = distance;
+                    Edge = edge;
+                    Point = point;
+                }
             }
 
             public override void OnMouseMove(object sender, MouseEventArgs e)
             {
-                throw new NotImplementedException();
+                if (e.Button != MouseButtons.None)
+                    return;
+
+                EdgeSearchResult result = FindNearestEdgeSc(e.X, e.Y);
+
+                // Only show a point along an edge, if it's near enough to it.
+
+                float visibleDistance = 10 * _parent._curControlScaleSingle * _parent._screenToWorldScale;
+
+                if (result.Edge != null && result.Distance <= visibleDistance)
+                {
+                    _candidateEdge = result.Edge;
+                    _candidatePoint = result.Point;
+                }
+                else
+                {
+                    _candidateEdge = null;
+                }
+
+                _parent.Redraw();
+            }
+
+            private EdgeSearchResult FindNearestEdgeSc(int x, int y)
+            {
+                // Change cursor point and padding amount to world coordinates.
+
+                PointF[] pointFs = new PointF[1] { new PointF(x, y) };
+
+                _parent._screenToWorldMatrix.TransformPoints(pointFs);
+
+                var p = new System.Drawing.Point((int) pointFs[0].X, (int) pointFs[0].Y);
+
+                int padding = (int) (20 * _parent._curControlScaleSingle * _parent._screenToWorldScale);
+
+                // Check every edge whose bounding box the mouse cursor is in.
+                // Find the nearest point to the mouse cursor among these edges.
+
+                EdgeSearchResult result;
+
+                result.Distance = float.PositiveInfinity;
+                result.Edge = null;
+                result.Point = new PointF();
+
+                foreach (var group in _parent._document.Figure.PointGroups)
+                {
+                    foreach (var point in group.Points)
+                    {
+                        Edge edge = point.OutgoingEdge;
+                        BBox box = edge.GetBBox();
+
+                        box.Inflate(padding, padding);
+
+                        if (box.Contains(p.X, p.Y))
+                        {
+                            PointD? optProjection = edge.GetProjectedPoint(p.X, p.Y);
+
+                            if (optProjection.HasValue)
+                            {
+                                PointF projection = new PointF(
+                                    (float) optProjection.Value.X,
+                                    (float) optProjection.Value.Y);
+
+                                float dX = p.X - projection.X;
+                                float dY = p.Y - projection.Y;
+
+                                float distance = (float) Math.Sqrt(dX * dX + dY * dY);
+
+                                if (distance < result.Distance)
+                                {
+                                    result.Distance = distance;
+                                    result.Edge = edge;
+                                    result.Point = projection;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return result;
+            }
+
+            private void DrawPoint(Graphics graphics)
+            {
+                if (_candidateEdge == null)
+                    return;
+
+                PointF[] pointFs = new PointF[1];
+
+                float circleRadius = CircleRadius * _parent._curControlScaleSingle;
+                float penWidth = (float) Math.Round(CirclePenWidth * _parent._curControlScaleSingle);
+
+                using (var pen = new Pen(Color.Black, penWidth))
+                {
+                    pointFs[0] = _candidatePoint;
+                    _parent._worldToScreenMatrix.TransformPoints(pointFs);
+
+                    graphics.DrawEllipse(
+                        pen,
+                        pointFs[0].X - circleRadius,
+                        pointFs[0].Y - circleRadius,
+                        circleRadius * 2,
+                        circleRadius * 2);
+                }
             }
         }
 

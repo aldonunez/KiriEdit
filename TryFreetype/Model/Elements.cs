@@ -49,10 +49,18 @@ namespace TryFreetype.Model
         public int Right;
         public int Bottom;
 
-        public bool IsPointInside(int x, int y)
+        public bool Contains(int x, int y)
         {
             return (x >= Left) && (x <= Right)
                 && (y <= Top) && (y >= Bottom);
+        }
+
+        public void Inflate(int width, int height)
+        {
+            Left -= width;
+            Right += width;
+            Top += height;
+            Bottom -= height;
         }
     }
 
@@ -71,6 +79,7 @@ namespace TryFreetype.Model
 
         public abstract BBox GetBBox();
         internal abstract SplitResult Split(Point point);
+        public abstract PointD? GetProjectedPoint(int x, int y);
         public abstract object Clone();
     }
 
@@ -117,7 +126,39 @@ namespace TryFreetype.Model
 
         private ValuePoint FindNearestPoint(Point point, ValuePoint p1, ValuePoint p2)
         {
-            throw new NotImplementedException();
+            PointD? optNearestPoint = GetProjectedPoint(point.X, point.Y);
+
+            if (optNearestPoint.HasValue)
+            {
+                return new ValuePoint((int) optNearestPoint.Value.X, (int) optNearestPoint.Value.Y);
+            }
+
+            return P1.ToValuePoint();
+        }
+
+        public override PointD? GetProjectedPoint(int x, int y)
+        {
+            int dX = x - P1.X;
+            int dY = y - P1.Y;
+            int dEdgeX = P2.X - P1.X;
+            int dEdgeY = P2.Y - P1.Y;
+
+            int dotProduct = dX * dEdgeX + dY * dEdgeY;
+            int lengthSquared = dEdgeX * dEdgeX + dEdgeY * dEdgeY;
+
+            if (lengthSquared != 0)
+            {
+                float t = dotProduct / (float) lengthSquared;
+
+                if (t >= 0 && t <= 1)
+                {
+                    return new PointD(
+                        P1.X + t * dEdgeX,
+                        P1.Y + t * dEdgeY);
+                }
+            }
+
+            return null;
         }
     }
 
@@ -148,6 +189,12 @@ namespace TryFreetype.Model
                 Bottom = Math.Min(P1.Y, Math.Min(P2.Y, Control1.Y)),
             };
             return bbox;
+        }
+
+        public override PointD? GetProjectedPoint(int x, int y)
+        {
+            // TODO: Not implemented, but don't fail.
+            return null;
         }
 
         internal override SplitResult Split(Point point)
@@ -185,6 +232,12 @@ namespace TryFreetype.Model
                 Bottom = Math.Min(P1.Y, Math.Min(P2.Y, Math.Min(Control1.Y, Control2.Y))),
             };
             return bbox;
+        }
+
+        public override PointD? GetProjectedPoint(int x, int y)
+        {
+            // TODO: Not implemented, but don't fail.
+            return null;
         }
 
         internal override SplitResult Split(Point point)
@@ -255,6 +308,12 @@ namespace TryFreetype.Model
     {
         public int X;
         public int Y;
+
+        public ValuePoint(int x, int y)
+        {
+            X = x;
+            Y = y;
+        }
 
         internal double GetDistance(ValuePoint otherPoint)
         {
