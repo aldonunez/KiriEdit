@@ -1,8 +1,9 @@
 ﻿using System;
 using System.IO;
-using TryFreetype.Model;
+using KiriFig;
+using KiriFig.Model;
 
-namespace TryFreetype.Sample3
+namespace KiriFigDemo.Sample3
 {
     static class Sample
     {

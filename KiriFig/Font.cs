@@ -1,7 +1,7 @@
 ﻿using KiriFT;
 using System;
 
-namespace TryFreetype
+namespace KiriFig
 {
     public class FontLibrary : IDisposable
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 
-namespace TryFreetype.Model
+namespace KiriFig.Model
 {
     public class Figure
     {

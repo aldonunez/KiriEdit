@@ -2,8 +2,8 @@
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using TryFreetype;
-using TryFreetype.Model;
+using KiriFig;
+using KiriFig.Model;
 
 namespace KiriProj
 {

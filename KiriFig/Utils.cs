@@ -1,7 +1,7 @@
 ﻿using System;
-using TryFreetype.Model;
+using KiriFig.Model;
 
-namespace TryFreetype
+namespace KiriFig
 {
     public static class Utils
     {

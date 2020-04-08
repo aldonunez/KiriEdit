@@ -1,8 +1,8 @@
 ﻿using SharpFont;
 using System;
-using TryFreetype.Model;
+using KiriFig.Model;
 
-namespace TryFreetype.Sample2
+namespace KiriFigDemo.Sample2
 {
 #if false
     static class Sample

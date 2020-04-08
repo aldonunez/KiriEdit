@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace TryFreetype
+namespace KiriFig
 {
     internal abstract class Parser
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TryFreetype.Model
+namespace KiriFig.Model
 {
     public class Cut
     {

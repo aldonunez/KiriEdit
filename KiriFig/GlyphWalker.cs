@@ -1,9 +1,9 @@
 ﻿using KiriFT;
 using System;
 using System.Collections.Generic;
-using TryFreetype.Model;
+using KiriFig.Model;
 
-namespace TryFreetype
+namespace KiriFig
 {
     // TODO: Make this internal.
     public class GlyphWalker

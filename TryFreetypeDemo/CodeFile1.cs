@@ -2,7 +2,7 @@
 using System;
 using System.Drawing;
 
-namespace TryFreetype.Sample1
+namespace KiriFigDemo.Sample1
 {
     static class Sample
     {

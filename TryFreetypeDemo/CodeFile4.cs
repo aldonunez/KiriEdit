@@ -3,10 +3,11 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
-using TryFreetype.Model;
-using Point = TryFreetype.Model.Point;
+using KiriFig;
+using KiriFig.Model;
+using Point = KiriFig.Model.Point;
 
-namespace TryFreetype.Sample4
+namespace KiriFigDemo.Sample4
 {
     static class Sample
     {

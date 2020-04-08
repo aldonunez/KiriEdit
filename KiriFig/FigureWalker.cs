@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using TryFreetype.Model;
-using Point = TryFreetype.Model.Point;
+using KiriFig.Model;
+using Point = KiriFig.Model.Point;
 
-namespace TryFreetype
+namespace KiriFig
 {
     public delegate void LineToHandler(Edge edge);
     public delegate void ConicToHandler(Edge edge);

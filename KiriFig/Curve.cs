@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TryFreetype
+namespace KiriFig
 {
     public struct Curve
     {

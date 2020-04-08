@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using TryFreetype.Model;
+using KiriFig.Model;
 
-namespace TryFreetype
+namespace KiriFig
 {
     public class FigureSerializer
     {

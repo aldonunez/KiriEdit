@@ -2,9 +2,9 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using TryFreetype;
-using TryFreetype.Model;
-using Point = TryFreetype.Model.Point;
+using KiriFig;
+using KiriFig.Model;
+using Point = KiriFig.Model.Point;
 
 namespace KiriEdit
 {

@@ -1,7 +1,7 @@
 ﻿using KiriProj;
 using System;
 using System.Drawing;
-using TryFreetype.Model;
+using KiriFig.Model;
 
 namespace KiriEdit
 {

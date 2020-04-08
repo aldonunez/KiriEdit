@@ -4,7 +4,7 @@
     {
         static void Main(string[] args)
         {
-            TryFreetype.Sample4.Sample.Run();
+            KiriFigDemo.Sample4.Sample.Run();
         }
     }
 }

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using TryFreetype.Model;
+using KiriFig.Model;
 
-namespace TryFreetype
+namespace KiriFig
 {
     internal class OutlineTool
     {

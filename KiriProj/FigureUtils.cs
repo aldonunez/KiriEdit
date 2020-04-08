@@ -1,5 +1,5 @@
-﻿using TryFreetype;
-using TryFreetype.Model;
+﻿using KiriFig;
+using KiriFig.Model;
 
 namespace KiriProj
 {

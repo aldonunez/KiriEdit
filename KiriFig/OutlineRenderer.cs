@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Drawing;
-using TryFreetype.Model;
-using Point = TryFreetype.Model.Point;
+using KiriFig.Model;
+using Point = KiriFig.Model.Point;
 
-namespace TryFreetype
+namespace KiriFig
 {
 #if DEBUG
     public
