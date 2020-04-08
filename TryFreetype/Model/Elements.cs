@@ -118,9 +118,6 @@ namespace TryFreetype.Model
             var edgeBefore = new LineEdge(P1, nearestPoint);
             var edgeAfter = new LineEdge(nearestPoint, P2);
 
-            nearestPoint.IncomingEdge = edgeBefore;
-            nearestPoint.OutgoingEdge = edgeAfter;
-
             return new SplitResult(nearestPoint, edgeBefore, edgeAfter);
         }
 
@@ -193,6 +190,12 @@ namespace TryFreetype.Model
 
         public override PointD? GetProjectedPoint(int x, int y)
         {
+            var (t, p) = GetProjectedPointAndT(x, y);
+            return p;
+        }
+
+        internal (double, PointD) GetProjectedPointAndT(int x, int y)
+        {
             return Curve.GetProjectedPoint(
                 new PointD(x, y),
                 P1.ToPointD(),
@@ -202,7 +205,24 @@ namespace TryFreetype.Model
 
         internal override SplitResult Split(Point point)
         {
-            throw new NotImplementedException();
+            var (t, midP) = GetProjectedPointAndT(point.X, point.Y);
+
+            Point b0 = new Point(
+                (int) ((1 - t) * P1.X + t * Control1.X),
+                (int) ((1 - t) * P1.Y + t * Control1.Y)
+            );
+
+            Point b1 = new Point(
+                (int) ((1 - t) * Control1.X + t * P2.X),
+                (int) ((1 - t) * Control1.Y + t * P2.Y)
+            );
+
+            Point midPoint = Point.Trunc(midP);
+
+            ConicEdge edgeBefore = new ConicEdge(P1, b0, midPoint);
+            ConicEdge edgeAfter = new ConicEdge(midPoint, b1, P2);
+
+            return new SplitResult(midPoint, edgeBefore, edgeAfter);
         }
     }
 
@@ -239,6 +259,12 @@ namespace TryFreetype.Model
 
         public override PointD? GetProjectedPoint(int x, int y)
         {
+            var (t, p) = GetProjectedPointAndT(x, y);
+            return p;
+        }
+
+        internal (double, PointD) GetProjectedPointAndT(int x, int y)
+        {
             return Curve.GetProjectedPoint(
                 new PointD(x, y),
                 P1.ToPointD(),
@@ -249,7 +275,42 @@ namespace TryFreetype.Model
 
         internal override SplitResult Split(Point point)
         {
-            throw new NotImplementedException();
+            var (t, midP) = GetProjectedPointAndT(point.X, point.Y);
+
+            PointD b0d = new PointD(
+                (1 - t) * P1.X + t * Control1.X,
+                (1 - t) * P1.Y + t * Control1.Y
+            );
+
+            PointD b1d = new PointD(
+                (1 - t) * Control1.X + t * Control2.X,
+                (1 - t) * Control1.Y + t * Control2.Y
+            );
+
+            PointD b2d = new PointD(
+                (1 - t) * Control2.X + t * P2.X,
+                (1 - t) * Control2.Y + t * P2.Y
+            );
+
+
+            Point b3 = new Point(
+                (int) ((1 - t) * b0d.X + t * b1d.X),
+                (int) ((1 - t) * b0d.Y + t * b1d.Y)
+            );
+
+            Point b4 = new Point(
+                (int) ((1 - t) * b1d.X + t * b2d.X),
+                (int) ((1 - t) * b1d.Y + t * b2d.Y)
+            );
+
+            Point midPoint = Point.Trunc(midP);
+            Point b0 = Point.Trunc(b0d);
+            Point b2 = Point.Trunc(b2d);
+
+            CubicEdge edgeBefore = new CubicEdge(P1, b0, b3, midPoint);
+            CubicEdge edgeAfter = new CubicEdge(midPoint, b2, b4, P2);
+
+            return new SplitResult(midPoint, edgeBefore, edgeAfter);
         }
     }
 
@@ -298,6 +359,11 @@ namespace TryFreetype.Model
         {
             X = valuePoint.X;
             Y = valuePoint.Y;
+        }
+
+        public static Point Trunc(PointD pointD)
+        {
+            return new Point((int) pointD.X, (int) pointD.Y);
         }
 
         internal ValuePoint ToValuePoint()

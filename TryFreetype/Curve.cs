@@ -74,21 +74,21 @@ namespace TryFreetype
             return result;
         }
 
-        public static PointD GetProjectedPoint(PointD point, PointD c0, PointD c1, PointD c2)
+        public static (double, PointD) GetProjectedPoint(PointD point, PointD c0, PointD c1, PointD c2)
         {
             PointD CalcCurve(double t) => CalcConic(t, c0, c1, c2);
 
             return GetProjectedPoint(point, c0, CalcCurve);
         }
 
-        public static PointD GetProjectedPoint(PointD point, PointD c0, PointD c1, PointD c2, PointD c3)
+        public static (double, PointD) GetProjectedPoint(PointD point, PointD c0, PointD c1, PointD c2, PointD c3)
         {
             PointD CalcCurve(double t) => Curve.CalcCubic(t, c0, c1, c2, c3);
 
             return GetProjectedPoint(point, c0, CalcCurve);
         }
 
-        private static PointD GetProjectedPoint(PointD point, PointD c0, CalcCurveDelegate calcCurve)
+        private static (double, PointD) GetProjectedPoint(PointD point, PointD c0, CalcCurveDelegate calcCurve)
         {
             const int Segments = 5;
             const float DeltaT = 1f / Segments;
@@ -127,7 +127,7 @@ namespace TryFreetype
             return FindNearestPoint(tBefore, tAfter, pBefore, pAfter, point, calcCurve);
         }
 
-        private static PointD FindNearestPoint(
+        private static (double, PointD) FindNearestPoint(
             float t1, float t2, PointD p1, PointD p2, PointD p,
             CalcCurveDelegate calcCurve)
         {
@@ -138,9 +138,9 @@ namespace TryFreetype
             if (d12 <= 1.0)
             {
                 if (d1 < d2)
-                    return p1;
+                    return (t1, p1);
                 else
-                    return p2;
+                    return (t2, p2);
             }
 
             float midT = (t1 + t2) / 2;

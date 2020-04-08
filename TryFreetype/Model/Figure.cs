@@ -130,6 +130,9 @@ namespace TryFreetype.Model
         {
             var splitResult = edge.Split(point);
 
+            splitResult.nearestPoint.IncomingEdge = splitResult.edgeBefore;
+            splitResult.nearestPoint.OutgoingEdge = splitResult.edgeAfter;
+
             edge.P1.OutgoingEdge = splitResult.edgeBefore;
             edge.P2.IncomingEdge = splitResult.edgeAfter;
 
