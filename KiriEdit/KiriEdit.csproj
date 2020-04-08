@@ -217,9 +217,9 @@
       <Project>{74b30fb3-5fb4-4257-afc6-b041696266d9}</Project>
       <Name>KiriProj</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TryFreetype\TryFreetype.csproj">
+    <ProjectReference Include="..\KiriFig\KiriFig.csproj">
       <Project>{c098da70-c98b-4267-be80-31c147545cf2}</Project>
-      <Name>TryFreetype</Name>
+      <Name>KiriFig</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

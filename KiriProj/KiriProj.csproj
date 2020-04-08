@@ -105,9 +105,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TryFreetype\TryFreetype.csproj">
+    <ProjectReference Include="..\KiriFig\KiriFig.csproj">
       <Project>{c098da70-c98b-4267-be80-31c147545cf2}</Project>
-      <Name>TryFreetype</Name>
+      <Name>KiriFig</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
