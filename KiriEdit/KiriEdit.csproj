@@ -223,16 +223,16 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Add_16x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Trash_16x.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\DashedLine.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Point.png" />
+    <None Include="Resources\layer-select-point.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\minus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\plus.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

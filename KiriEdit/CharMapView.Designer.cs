@@ -131,7 +131,7 @@
             // addListCharButton
             // 
             this.addListCharButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.addListCharButton.Image = global::KiriEdit.Properties.Resources.Add_16x;
+            this.addListCharButton.Image = global::KiriEdit.Properties.Resources.Add;
             this.addListCharButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.addListCharButton.Name = "addListCharButton";
             this.addListCharButton.Size = new System.Drawing.Size(23, 22);
@@ -141,7 +141,7 @@
             // deleteListCharButton
             // 
             this.deleteListCharButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.deleteListCharButton.Image = global::KiriEdit.Properties.Resources.Trash_16x;
+            this.deleteListCharButton.Image = global::KiriEdit.Properties.Resources.Delete;
             this.deleteListCharButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.deleteListCharButton.Name = "deleteListCharButton";
             this.deleteListCharButton.Size = new System.Drawing.Size(23, 22);

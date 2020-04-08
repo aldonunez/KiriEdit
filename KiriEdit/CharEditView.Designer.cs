@@ -155,7 +155,7 @@
             // addPieceButton
             // 
             this.addPieceButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.addPieceButton.Image = global::KiriEdit.Properties.Resources.Add_16x;
+            this.addPieceButton.Image = global::KiriEdit.Properties.Resources.Add;
             this.addPieceButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.addPieceButton.Name = "addPieceButton";
             this.addPieceButton.Size = new System.Drawing.Size(23, 22);
@@ -166,7 +166,7 @@
             // 
             this.deletePieceButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.deletePieceButton.Enabled = false;
-            this.deletePieceButton.Image = global::KiriEdit.Properties.Resources.Trash_16x;
+            this.deletePieceButton.Image = global::KiriEdit.Properties.Resources.Delete;
             this.deletePieceButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.deletePieceButton.Name = "deletePieceButton";
             this.deletePieceButton.Size = new System.Drawing.Size(23, 22);
