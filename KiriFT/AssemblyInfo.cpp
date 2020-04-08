@@ -1,3 +1,10 @@
+/*
+   Copyright 2020 Aldo J. Nunez
+
+   Licensed under the Apache License, Version 2.0.
+   See the LICENSE.txt file for details.
+*/
+
 #include "pch.h"
 
 using namespace System;
@@ -11,7 +18,7 @@ using namespace System::Security::Permissions;
 [assembly:AssemblyConfigurationAttribute(L"")];
 [assembly:AssemblyCompanyAttribute(L"")];
 [assembly:AssemblyProductAttribute(L"KiriFT")];
-[assembly:AssemblyCopyrightAttribute(L"Copyright (c)  2020")];
+[assembly:AssemblyCopyrightAttribute(L"Copyright (c)  2020 Aldo J. Nunez")];
 [assembly:AssemblyTrademarkAttribute(L"")];
 [assembly:AssemblyCultureAttribute(L"")];
 

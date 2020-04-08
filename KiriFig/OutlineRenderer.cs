@@ -1,4 +1,11 @@
-﻿using System;
+﻿/*
+   Copyright 2020 Aldo J. Nunez
+
+   Licensed under the Apache License, Version 2.0.
+   See the LICENSE.txt file for details.
+*/
+
+using System;
 using System.Drawing;
 using KiriFig.Model;
 using Point = KiriFig.Model.Point;

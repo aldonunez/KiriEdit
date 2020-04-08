@@ -1,4 +1,11 @@
-﻿using KiriFT;
+﻿/*
+   Copyright 2020 Aldo J. Nunez
+
+   Licensed under the Apache License, Version 2.0.
+   See the LICENSE.txt file for details.
+*/
+
+using KiriFT;
 using KiriProj;
 using System;
 using System.Collections.Generic;

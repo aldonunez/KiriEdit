@@ -1,0 +1,2 @@
+KiriEdit
+Copyright (c) 2020 Aldo J. Nunez

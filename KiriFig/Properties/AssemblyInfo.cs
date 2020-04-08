@@ -1,4 +1,11 @@
-﻿using System.Reflection;
+﻿/*
+   Copyright 2020 Aldo J. Nunez
+
+   Licensed under the Apache License, Version 2.0.
+   See the LICENSE.txt file for details.
+*/
+
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -10,7 +17,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("TryFreetype")]
-[assembly: AssemblyCopyright("Copyright ©  2020")]
+[assembly: AssemblyCopyright("Copyright ©  2020 Aldo J. Nunez")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -1,3 +1,10 @@
+/*
+   Copyright 2020 Aldo J. Nunez
+
+   Licensed under the Apache License, Version 2.0.
+   See the LICENSE.txt file for details.
+*/
+
 // pch.h: This is a precompiled header file.
 // Files listed below are compiled only once, improving build performance for future builds.
 // This also affects IntelliSense performance, including code completion and many code browsing features.
