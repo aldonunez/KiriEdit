@@ -12,11 +12,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("TryFreetype")]
+[assembly: AssemblyTitle("KiriFig")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("TryFreetype")]
+[assembly: AssemblyProduct("KiriFig")]
 [assembly: AssemblyCopyright("Copyright ©  2020 Aldo J. Nunez")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
