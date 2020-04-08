@@ -196,11 +196,12 @@ namespace TryFreetype.Model
 
         internal (double, PointD) GetProjectedPointAndT(int x, int y)
         {
-            return Curve.GetProjectedPoint(
-                new PointD(x, y),
+            var curve = new Curve(
                 P1.ToPointD(),
                 Control1.ToPointD(),
                 P2.ToPointD());
+
+            return curve.GetProjectedPoint(new PointD(x, y));
         }
 
         internal override SplitResult Split(Point point)
@@ -265,12 +266,13 @@ namespace TryFreetype.Model
 
         internal (double, PointD) GetProjectedPointAndT(int x, int y)
         {
-            return Curve.GetProjectedPoint(
-                new PointD(x, y),
+            var curve = new Curve(
                 P1.ToPointD(),
                 Control1.ToPointD(),
                 Control2.ToPointD(),
                 P2.ToPointD());
+
+            return curve.GetProjectedPoint(new PointD(x, y));
         }
 
         internal override SplitResult Split(Point point)

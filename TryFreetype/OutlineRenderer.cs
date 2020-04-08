@@ -188,9 +188,11 @@ namespace TryFreetype
             int prevX = RoundAndClampX(tFrom.X);
             int prevY = RoundAndClampY(tFrom.Y);
 
+            var curve = new Curve(tFrom, tControl, tTo);
+
             for (double t = 0.0; t < 1.0; t += dt)
             {
-                p = Curve.CalcConic(t, tFrom, tControl, tTo);
+                p = curve.CalcConic(t);
 
                 x = RoundAndClampX(p.X);
                 y = RoundAndClampY(p.Y);
@@ -209,7 +211,7 @@ namespace TryFreetype
                 prevY = y;
             }
 
-            p = Curve.CalcConic(1.0, tFrom, tControl, tTo);
+            p = curve.CalcConic(1.0);
 
             x = RoundAndClampX(p.X);
             y = RoundAndClampY(p.Y);
@@ -243,9 +245,11 @@ namespace TryFreetype
             int x;
             int y;
 
+            var curve = new Curve(tFrom, tControl1, tControl2, tTo);
+
             for (double t = 0.0; t < 1.0; t += dt)
             {
-                p = Curve.CalcCubic(t, tFrom, tControl1, tControl2, tTo);
+                p = curve.CalcCubic(t);
 
                 x = RoundAndClampX(p.X);
                 y = RoundAndClampY(p.Y);
@@ -253,7 +257,7 @@ namespace TryFreetype
                 SetPixel(x, y);
             }
 
-            p = Curve.CalcCubic(1.0, tFrom, tControl1, tControl2, tTo);
+            p = curve.CalcCubic(1.0);
 
             x = RoundAndClampX(p.X);
             y = RoundAndClampY(p.Y);

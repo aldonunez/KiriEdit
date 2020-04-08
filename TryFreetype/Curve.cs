@@ -2,9 +2,37 @@
 
 namespace TryFreetype
 {
-    public class Curve
+    public struct Curve
     {
-        private delegate PointD CalcCurveDelegate(double t);
+        private enum CurveType
+        {
+            Conic,
+            Cubic,
+        }
+
+        private CurveType _curveType;
+        private PointD c0;
+        private PointD c1;
+        private PointD c2;
+        private PointD c3;
+
+        public Curve(PointD c0, PointD c1, PointD c2)
+        {
+            _curveType = CurveType.Conic;
+            this.c0 = c0;
+            this.c1 = c1;
+            this.c2 = c2;
+            this.c3 = new PointD();
+        }
+
+        public Curve(PointD c0, PointD c1, PointD c2, PointD c3)
+        {
+            _curveType = CurveType.Cubic;
+            this.c0 = c0;
+            this.c1 = c1;
+            this.c2 = c2;
+            this.c3 = c3;
+        }
 
         private static double GetLineLength(PointD p1, PointD p2)
         {
@@ -34,61 +62,55 @@ namespace TryFreetype
             return dt;
         }
 
-        public static PointD CalcConic(double t, PointD p0, PointD p1, PointD p2)
+        public PointD CalcConic(double t)
         {
             var result = new PointD();
 
             result.X =
-                p0.X * Math.Pow((1 - t), 2) +
-                p1.X * 2 * t * (1 - t) +
-                p2.X * Math.Pow(t, 2)
+                c0.X * Math.Pow((1 - t), 2) +
+                c1.X * 2 * t * (1 - t) +
+                c2.X * Math.Pow(t, 2)
                 ;
 
             result.Y =
-                p0.Y * Math.Pow((1 - t), 2) +
-                p1.Y * 2 * t * (1 - t) +
-                p2.Y * Math.Pow(t, 2)
+                c0.Y * Math.Pow((1 - t), 2) +
+                c1.Y * 2 * t * (1 - t) +
+                c2.Y * Math.Pow(t, 2)
                 ;
 
             return result;
         }
 
-        public static PointD CalcCubic(double t, PointD p0, PointD p1, PointD p2, PointD p3)
+        public PointD CalcCubic(double t)
         {
             var result = new PointD();
 
             result.X =
-                p0.X * Math.Pow((1 - t), 3) +
-                p1.X * 3 * t * Math.Pow((1 - t), 2) +
-                p2.X * 3 * Math.Pow(t, 2) * (1 - t) +
-                p3.X * Math.Pow(t, 3)
+                c0.X * Math.Pow((1 - t), 3) +
+                c1.X * 3 * t * Math.Pow((1 - t), 2) +
+                c2.X * 3 * Math.Pow(t, 2) * (1 - t) +
+                c3.X * Math.Pow(t, 3)
                 ;
 
             result.Y =
-                p0.Y * Math.Pow((1 - t), 3) +
-                p1.Y * 3 * t * Math.Pow((1 - t), 2) +
-                p2.Y * 3 * Math.Pow(t, 2) * (1 - t) +
-                p3.Y * Math.Pow(t, 3)
+                c0.Y * Math.Pow((1 - t), 3) +
+                c1.Y * 3 * t * Math.Pow((1 - t), 2) +
+                c2.Y * 3 * Math.Pow(t, 2) * (1 - t) +
+                c3.Y * Math.Pow(t, 3)
                 ;
 
             return result;
         }
 
-        public static (double, PointD) GetProjectedPoint(PointD point, PointD c0, PointD c1, PointD c2)
+        public PointD CalcCurve(double t)
         {
-            PointD CalcCurve(double t) => CalcConic(t, c0, c1, c2);
-
-            return GetProjectedPoint(point, c0, CalcCurve);
+            if (_curveType == CurveType.Conic)
+                return CalcConic(t);
+            else
+                return CalcCubic(t);
         }
 
-        public static (double, PointD) GetProjectedPoint(PointD point, PointD c0, PointD c1, PointD c2, PointD c3)
-        {
-            PointD CalcCurve(double t) => Curve.CalcCubic(t, c0, c1, c2, c3);
-
-            return GetProjectedPoint(point, c0, CalcCurve);
-        }
-
-        private static (double, PointD) GetProjectedPoint(PointD point, PointD c0, CalcCurveDelegate calcCurve)
+        public (double, PointD) GetProjectedPoint(PointD point)
         {
             const int Segments = 5;
             const float DeltaT = 1f / Segments;
@@ -101,7 +123,7 @@ namespace TryFreetype
             for (int i = 1; i < Segments; i++)
             {
                 t += DeltaT;
-                PointD p = calcCurve(t);
+                PointD p = CalcCurve(t);
                 double d = p.GetDistance(point);
 
                 if (d < minD)
@@ -121,15 +143,13 @@ namespace TryFreetype
             if (tAfter > 1)
                 tAfter = 1;
 
-            PointD pBefore = calcCurve(tBefore);
-            PointD pAfter = calcCurve(tAfter);
+            PointD pBefore = CalcCurve(tBefore);
+            PointD pAfter = CalcCurve(tAfter);
 
-            return FindNearestPoint(tBefore, tAfter, pBefore, pAfter, point, calcCurve);
+            return FindNearestPoint(tBefore, tAfter, pBefore, pAfter, point);
         }
 
-        private static (double, PointD) FindNearestPoint(
-            float t1, float t2, PointD p1, PointD p2, PointD p,
-            CalcCurveDelegate calcCurve)
+        private (double, PointD) FindNearestPoint(float t1, float t2, PointD p1, PointD p2, PointD p)
         {
             double d1 = p1.GetDistance(p);
             double d2 = p2.GetDistance(p);
@@ -144,12 +164,12 @@ namespace TryFreetype
             }
 
             float midT = (t1 + t2) / 2;
-            PointD midP = calcCurve(midT);
+            PointD midP = CalcCurve(midT);
 
             if (d1 < d2)
-                return FindNearestPoint(t1, midT, p1, midP, p, calcCurve);
+                return FindNearestPoint(t1, midT, p1, midP, p);
             else
-                return FindNearestPoint(midT, t2, midP, p2, p, calcCurve);
+                return FindNearestPoint(midT, t2, midP, p2, p);
         }
     }
 
