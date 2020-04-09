@@ -213,19 +213,18 @@ namespace KiriFig.Model
 
         internal override SplitResult Split(Point point)
         {
-            var (t, midP) = GetProjectedPointAndT(point.X, point.Y);
+            var curve = new Curve(
+                P1.ToPointD(),
+                Control1.ToPointD(),
+                P2.ToPointD());
 
-            Point b0 = new Point(
-                (int) ((1 - t) * P1.X + t * Control1.X),
-                (int) ((1 - t) * P1.Y + t * Control1.Y)
-            );
+            var (t, midP) = curve.GetProjectedPoint(new PointD(point.X, point.Y));
 
-            Point b1 = new Point(
-                (int) ((1 - t) * Control1.X + t * P2.X),
-                (int) ((1 - t) * Control1.Y + t * P2.Y)
-            );
+            var (curve1, curve2) = curve.Split(t, midP);
 
-            Point midPoint = Point.Trunc(midP);
+            Point b0 = Point.Trunc(curve1.C1);
+            Point b1 = Point.Trunc(curve2.C1);
+            Point midPoint = Point.Trunc(curve2.C0);
 
             ConicEdge edgeBefore = new ConicEdge(P1, b0, midPoint);
             ConicEdge edgeAfter = new ConicEdge(midPoint, b1, P2);
@@ -284,37 +283,21 @@ namespace KiriFig.Model
 
         internal override SplitResult Split(Point point)
         {
-            var (t, midP) = GetProjectedPointAndT(point.X, point.Y);
+            var curve = new Curve(
+                P1.ToPointD(),
+                Control1.ToPointD(),
+                Control2.ToPointD(),
+                P2.ToPointD());
 
-            PointD b0d = new PointD(
-                (1 - t) * P1.X + t * Control1.X,
-                (1 - t) * P1.Y + t * Control1.Y
-            );
+            var (t, midP) = curve.GetProjectedPoint(new PointD(point.X, point.Y));
 
-            PointD b1d = new PointD(
-                (1 - t) * Control1.X + t * Control2.X,
-                (1 - t) * Control1.Y + t * Control2.Y
-            );
+            var (curve1, curve2) = curve.Split(t, midP);
 
-            PointD b2d = new PointD(
-                (1 - t) * Control2.X + t * P2.X,
-                (1 - t) * Control2.Y + t * P2.Y
-            );
-
-
-            Point b3 = new Point(
-                (int) ((1 - t) * b0d.X + t * b1d.X),
-                (int) ((1 - t) * b0d.Y + t * b1d.Y)
-            );
-
-            Point b4 = new Point(
-                (int) ((1 - t) * b1d.X + t * b2d.X),
-                (int) ((1 - t) * b1d.Y + t * b2d.Y)
-            );
-
-            Point midPoint = Point.Trunc(midP);
-            Point b0 = Point.Trunc(b0d);
-            Point b2 = Point.Trunc(b2d);
+            Point b0 = Point.Trunc(curve1.C1);
+            Point b3 = Point.Trunc(curve1.C2);
+            Point b2 = Point.Trunc(curve2.C1);
+            Point b4 = Point.Trunc(curve2.C2);
+            Point midPoint = Point.Trunc(curve2.C0);
 
             CubicEdge edgeBefore = new CubicEdge(P1, b0, b3, midPoint);
             CubicEdge edgeAfter = new CubicEdge(midPoint, b2, b4, P2);

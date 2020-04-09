@@ -23,6 +23,11 @@ namespace KiriFig
         private PointD c2;
         private PointD c3;
 
+        public PointD C0 => c0;
+        public PointD C1 => c1;
+        public PointD C2 => c2;
+        public PointD C3 => c3;
+
         public Curve(PointD c0, PointD c1, PointD c2)
         {
             _curveType = CurveType.Conic;
@@ -177,6 +182,66 @@ namespace KiriFig
                 return FindNearestPoint(t1, midT, p1, midP, p);
             else
                 return FindNearestPoint(midT, t2, midP, p2, p);
+        }
+
+        public (Curve, Curve) Split(double t, PointD midP)
+        {
+            if (_curveType == CurveType.Conic)
+                return SplitConic(t, midP);
+            else
+                return SplitCubic(t, midP);
+        }
+
+        private (Curve, Curve) SplitConic(double t, PointD midP)
+        {
+            PointD b0 = new PointD(
+                (int) ((1 - t) * c0.X + t * c1.X),
+                (int) ((1 - t) * c0.Y + t * c1.Y)
+            );
+
+            PointD b1 = new PointD(
+                (int) ((1 - t) * c1.X + t * c2.X),
+                (int) ((1 - t) * c1.Y + t * c2.Y)
+            );
+
+            Curve curve1 = new Curve(c0, b0, midP);
+            Curve curve2 = new Curve(midP, b1, c2);
+
+            return (curve1, curve2);
+        }
+
+        private (Curve, Curve) SplitCubic(double t, PointD midP)
+        {
+            PointD b0 = new PointD(
+                (1 - t) * c0.X + t * c1.X,
+                (1 - t) * c0.Y + t * c1.Y
+            );
+
+            PointD b1 = new PointD(
+                (1 - t) * c1.X + t * c2.X,
+                (1 - t) * c1.Y + t * c2.Y
+            );
+
+            PointD b2 = new PointD(
+                (1 - t) * c2.X + t * c3.X,
+                (1 - t) * c2.Y + t * c3.Y
+            );
+
+
+            PointD b3 = new PointD(
+                (1 - t) * b0.X + t * b1.X,
+                (1 - t) * b0.Y + t * b1.Y
+            );
+
+            PointD b4 = new PointD(
+                (1 - t) * b1.X + t * b2.X,
+                (1 - t) * b1.Y + t * b2.Y
+            );
+
+            Curve curve1 = new Curve(c0, b0, b3, midP);
+            Curve curve2 = new Curve(midP, b2, b4, c3);
+
+            return (curve1, curve2);
         }
     }
 
