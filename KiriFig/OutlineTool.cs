@@ -60,17 +60,17 @@ namespace KiriFig
                     case EdgeType.Conic:
                         {
                             var conicEdge = (ConicEdge) edge;
-                            area += (conicEdge.Control1.Y - prevY) * (conicEdge.Control1.X + prevX);
-                            area += (conicEdge.P2.Y - conicEdge.Control1.Y) * (conicEdge.P2.X + conicEdge.Control1.X);
+                            area += (conicEdge.C1.Y - prevY) * (conicEdge.C1.X + prevX);
+                            area += (conicEdge.P2.Y - conicEdge.C1.Y) * (conicEdge.P2.X + conicEdge.C1.X);
                         }
                         break;
 
                     case EdgeType.Cubic:
                         {
                             var conicEdge = (CubicEdge) edge;
-                            area += (conicEdge.Control1.Y - prevY) * (conicEdge.Control1.X + prevX);
-                            area += (conicEdge.Control2.Y - conicEdge.Control1.Y) * (conicEdge.Control2.X + conicEdge.Control1.X);
-                            area += (conicEdge.P2.Y - conicEdge.Control2.Y) * (conicEdge.P2.X + conicEdge.Control2.X);
+                            area += (conicEdge.C1.Y - prevY) * (conicEdge.C1.X + prevX);
+                            area += (conicEdge.C2.Y - conicEdge.C1.Y) * (conicEdge.C2.X + conicEdge.C1.X);
+                            area += (conicEdge.P2.Y - conicEdge.C2.Y) * (conicEdge.P2.X + conicEdge.C2.X);
                         }
                         break;
                 }
@@ -171,14 +171,14 @@ namespace KiriFig
             }
             else if (edge is ConicEdge conicEdge)
             {
-                TestLineCrossing(p, conicEdge.P1, conicEdge.Control1, ref crossing);
-                TestLineCrossing(p, conicEdge.Control1, conicEdge.P2, ref crossing);
+                TestLineCrossing(p, conicEdge.P1, conicEdge.C1, ref crossing);
+                TestLineCrossing(p, conicEdge.C1, conicEdge.P2, ref crossing);
             }
             else if (edge is CubicEdge cubicEdge)
             {
-                TestLineCrossing(p, cubicEdge.P1, cubicEdge.Control1, ref crossing);
-                TestLineCrossing(p, cubicEdge.Control1, cubicEdge.Control2, ref crossing);
-                TestLineCrossing(p, cubicEdge.Control2, cubicEdge.P2, ref crossing);
+                TestLineCrossing(p, cubicEdge.P1, cubicEdge.C1, ref crossing);
+                TestLineCrossing(p, cubicEdge.C1, cubicEdge.C2, ref crossing);
+                TestLineCrossing(p, cubicEdge.C2, cubicEdge.P2, ref crossing);
             }
         }
 

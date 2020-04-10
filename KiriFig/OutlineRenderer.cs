@@ -77,21 +77,21 @@ namespace KiriFig
 
         private void ConicTo(Edge edge)
         {
-            var control = ((ConicEdge) edge).Control1;
+            var c1 = ((ConicEdge) edge).C1;
             var to = edge.P2;
-            Console.WriteLine("ConicTo: {0},{1} {2},{3}", control.X, control.Y, to.X, to.Y);
-            DrawConic(control, to);
+            Console.WriteLine("ConicTo: {0},{1} {2},{3}", c1.X, c1.Y, to.X, to.Y);
+            DrawConic(c1, to);
             _x = to.X;
             _y = to.Y;
         }
 
         private void CubicTo(Edge edge)
         {
-            var control1 = ((CubicEdge) edge).Control1;
-            var control2 = ((CubicEdge) edge).Control2;
+            var c1 = ((CubicEdge) edge).C1;
+            var c2 = ((CubicEdge) edge).C2;
             var to = edge.P2;
-            Console.WriteLine("CubicTo: {0},{1} {2},{3} {4},{5}", control1.X, control1.Y, control2.X, control2.Y, to.X, to.Y);
-            DrawCubic(control1, control2, to);
+            Console.WriteLine("CubicTo: {0},{1} {2},{3} {4},{5}", c1.X, c1.Y, c2.X, c2.Y, to.X, to.Y);
+            DrawCubic(c1, c2, to);
             _x = to.X;
             _y = to.Y;
         }
@@ -180,12 +180,12 @@ namespace KiriFig
                 TransformY(point.Y));
         }
 
-        private void DrawConic(Point control, Point to)
+        private void DrawConic(Point c1, Point to)
         {
             PointD tFrom = new PointD(
                 TransformX(_x),
                 TransformY(_y));
-            PointD tControl = TransformPoint(control);
+            PointD tControl = TransformPoint(c1);
             PointD tTo = TransformPoint(to);
 
             double dt = Curve.CalcConicDeltaT(tFrom, tControl, tTo);
@@ -238,13 +238,13 @@ namespace KiriFig
             //       then we can get rid of the previous one (b).
         }
 
-        private void DrawCubic(Point control1, Point control2, Point to)
+        private void DrawCubic(Point c1, Point c2, Point to)
         {
             PointD tFrom = new PointD(
                 TransformX(_x),
                 TransformY(_y));
-            PointD tControl1 = TransformPoint(control1);
-            PointD tControl2 = TransformPoint(control2);
+            PointD tControl1 = TransformPoint(c1);
+            PointD tControl2 = TransformPoint(c2);
             PointD tTo = TransformPoint(to);
 
             double dt = Curve.CalcCubicDeltaT(tFrom, tControl1, tControl2, tTo);

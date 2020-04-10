@@ -75,7 +75,14 @@ namespace KiriFig.Model
     {
         public EdgeType Type { get; }
         public bool Unbreakable { get; }
+
+        // P1 is the first control point, C0.
+
         public Point P1;
+
+        // P2 is the last control point.
+        // This is C1 for lines, C2 for conics, and C3 for cubics.
+
         public Point P2;
 
         protected Edge(EdgeType type, bool unbreakable = false)
@@ -168,13 +175,13 @@ namespace KiriFig.Model
 
     public class ConicEdge : Edge
     {
-        public Point Control1;
+        public Point C1;
 
         public ConicEdge(Point p1, Point c1, Point p2) :
             base(EdgeType.Conic)
         {
             P1 = p1;
-            Control1 = c1;
+            C1 = c1;
             P2 = p2;
         }
 
@@ -187,10 +194,10 @@ namespace KiriFig.Model
         {
             BBox bbox = new BBox
             {
-                Left = Math.Min(P1.X, Math.Min(P2.X, Control1.X)),
-                Right = Math.Max(P1.X, Math.Max(P2.X, Control1.X)),
-                Top = Math.Max(P1.Y, Math.Max(P2.Y, Control1.Y)),
-                Bottom = Math.Min(P1.Y, Math.Min(P2.Y, Control1.Y)),
+                Left = Math.Min(P1.X, Math.Min(P2.X, C1.X)),
+                Right = Math.Max(P1.X, Math.Max(P2.X, C1.X)),
+                Top = Math.Max(P1.Y, Math.Max(P2.Y, C1.Y)),
+                Bottom = Math.Min(P1.Y, Math.Min(P2.Y, C1.Y)),
             };
             return bbox;
         }
@@ -205,7 +212,7 @@ namespace KiriFig.Model
         {
             var curve = new Curve(
                 P1.ToPointD(),
-                Control1.ToPointD(),
+                C1.ToPointD(),
                 P2.ToPointD());
 
             return curve.GetProjectedPoint(new PointD(x, y));
@@ -215,35 +222,35 @@ namespace KiriFig.Model
         {
             var curve = new Curve(
                 P1.ToPointD(),
-                Control1.ToPointD(),
+                C1.ToPointD(),
                 P2.ToPointD());
 
             var (t, midP) = curve.GetProjectedPoint(new PointD(point.X, point.Y));
 
             var (curve1, curve2) = curve.Split(t, midP);
 
-            Point b0 = Point.Trunc(curve1.C1);
-            Point b1 = Point.Trunc(curve2.C1);
+            Point a0 = Point.Trunc(curve1.C1);
+            Point b0 = Point.Trunc(curve2.C1);
             Point midPoint = Point.Trunc(curve2.C0);
 
-            ConicEdge edgeBefore = new ConicEdge(P1, b0, midPoint);
-            ConicEdge edgeAfter = new ConicEdge(midPoint, b1, P2);
+            ConicEdge edge1 = new ConicEdge(P1, a0, midPoint);
+            ConicEdge edge2 = new ConicEdge(midPoint, b0, P2);
 
-            return new SplitResult(midPoint, edgeBefore, edgeAfter);
+            return new SplitResult(midPoint, edge1, edge2);
         }
     }
 
     public class CubicEdge : Edge
     {
-        public Point Control1;
-        public Point Control2;
+        public Point C1;
+        public Point C2;
 
         public CubicEdge(Point p1, Point c1, Point c2, Point p2) :
             base(EdgeType.Cubic)
         {
             P1 = p1;
-            Control1 = c1;
-            Control2 = c2;
+            C1 = c1;
+            C2 = c2;
             P2 = p2;
         }
 
@@ -256,17 +263,17 @@ namespace KiriFig.Model
         {
             BBox bbox = new BBox
             {
-                Left = Math.Min(P1.X, Math.Min(P2.X, Math.Min(Control1.X, Control2.X))),
-                Right = Math.Max(P1.X, Math.Max(P2.X, Math.Max(Control1.X, Control2.X))),
-                Top = Math.Max(P1.Y, Math.Max(P2.Y, Math.Max(Control1.Y, Control2.Y))),
-                Bottom = Math.Min(P1.Y, Math.Min(P2.Y, Math.Min(Control1.Y, Control2.Y))),
+                Left = Math.Min(P1.X, Math.Min(P2.X, Math.Min(C1.X, C2.X))),
+                Right = Math.Max(P1.X, Math.Max(P2.X, Math.Max(C1.X, C2.X))),
+                Top = Math.Max(P1.Y, Math.Max(P2.Y, Math.Max(C1.Y, C2.Y))),
+                Bottom = Math.Min(P1.Y, Math.Min(P2.Y, Math.Min(C1.Y, C2.Y))),
             };
             return bbox;
         }
 
         public override PointD? GetProjectedPoint(int x, int y)
         {
-            var (t, p) = GetProjectedPointAndT(x, y);
+            var (_, p) = GetProjectedPointAndT(x, y);
             return p;
         }
 
@@ -274,8 +281,8 @@ namespace KiriFig.Model
         {
             var curve = new Curve(
                 P1.ToPointD(),
-                Control1.ToPointD(),
-                Control2.ToPointD(),
+                C1.ToPointD(),
+                C2.ToPointD(),
                 P2.ToPointD());
 
             return curve.GetProjectedPoint(new PointD(x, y));
@@ -285,24 +292,24 @@ namespace KiriFig.Model
         {
             var curve = new Curve(
                 P1.ToPointD(),
-                Control1.ToPointD(),
-                Control2.ToPointD(),
+                C1.ToPointD(),
+                C2.ToPointD(),
                 P2.ToPointD());
 
             var (t, midP) = curve.GetProjectedPoint(new PointD(point.X, point.Y));
 
             var (curve1, curve2) = curve.Split(t, midP);
 
-            Point b0 = Point.Trunc(curve1.C1);
-            Point b3 = Point.Trunc(curve1.C2);
-            Point b2 = Point.Trunc(curve2.C1);
-            Point b4 = Point.Trunc(curve2.C2);
+            Point a0 = Point.Trunc(curve1.C1);
+            Point a1 = Point.Trunc(curve1.C2);
+            Point b0 = Point.Trunc(curve2.C1);
+            Point b1 = Point.Trunc(curve2.C2);
             Point midPoint = Point.Trunc(curve2.C0);
 
-            CubicEdge edgeBefore = new CubicEdge(P1, b0, b3, midPoint);
-            CubicEdge edgeAfter = new CubicEdge(midPoint, b2, b4, P2);
+            CubicEdge edge1 = new CubicEdge(P1, a0, a1, midPoint);
+            CubicEdge edge2 = new CubicEdge(midPoint, b0, b1, P2);
 
-            return new SplitResult(midPoint, edgeBefore, edgeAfter);
+            return new SplitResult(midPoint, edge1, edge2);
         }
     }
 

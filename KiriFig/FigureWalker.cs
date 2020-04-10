@@ -207,17 +207,17 @@ namespace KiriFig
         private void ConicTo(Edge edge)
         {
             BeginEdge();
-            var control = ((ConicEdge) edge).Control1;
+            var control1 = ((ConicEdge) edge).C1;
             var to = edge.P2;
             var c1 = new PointF(
-                ((float) x + 2 * control.X) / 3.0f,
-                ((float) y + 2 * control.Y) / 3.0f
+                ((float) x + 2 * control1.X) / 3.0f,
+                ((float) y + 2 * control1.Y) / 3.0f
                 );
             var c2 = new PointF(
-                (to.X + 2 * control.X) / 3.0f,
-                (to.Y + 2 * control.Y) / 3.0f
+                (to.X + 2 * control1.X) / 3.0f,
+                (to.Y + 2 * control1.Y) / 3.0f
                 );
-            Console.WriteLine("ConicTo: {0},{1} {2},{3}", control.X, control.Y, to.X, to.Y);
+            Console.WriteLine("ConicTo: {0},{1} {2},{3}", control1.X, control1.Y, to.X, to.Y);
             g.DrawBeziers(
                 pen,
                 new PointF[]
@@ -234,17 +234,17 @@ namespace KiriFig
         private void CubicTo(Edge edge)
         {
             BeginEdge();
-            var control1 = ((CubicEdge) edge).Control1;
-            var control2 = ((CubicEdge) edge).Control2;
+            var c1 = ((CubicEdge) edge).C1;
+            var c2 = ((CubicEdge) edge).C2;
             var to = edge.P2;
-            Console.WriteLine("CubicTo: {0},{1} {2},{3} {4},{5}", control1.X, control1.Y, control2.X, control2.Y, to.X, to.Y);
+            Console.WriteLine("CubicTo: {0},{1} {2},{3} {4},{5}", c1.X, c1.Y, c2.X, c2.Y, to.X, to.Y);
             g.DrawBeziers(
                 pen,
                 new PointF[]
                 {
                     new PointF((float) x, (float) y),
-                    new PointF((float) control1.X, (float) control1.Y),
-                    new PointF((float) control2.X, (float) control2.Y),
+                    new PointF((float) c1.X, (float) c1.Y),
+                    new PointF((float) c2.X, (float) c2.Y),
                     new PointF((float) to.X, (float) to.Y)
                 });
             x = to.X;

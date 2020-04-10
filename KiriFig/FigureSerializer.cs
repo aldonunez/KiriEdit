@@ -154,13 +154,13 @@ namespace KiriFig
                         break;
 
                     case EdgeType.Conic:
-                        c1 = ((ConicEdge) edge).Control1;
+                        c1 = ((ConicEdge) edge).C1;
                         _writer.Write(" conic {0} {1} {2} {3}", id0, id1, c1.X, c1.Y);
                         break;
 
                     case EdgeType.Cubic:
-                        c1 = ((CubicEdge) edge).Control1;
-                        c2 = ((CubicEdge) edge).Control2;
+                        c1 = ((CubicEdge) edge).C1;
+                        c2 = ((CubicEdge) edge).C2;
                         _writer.Write(" cubic {0} {1} {2} {3} {4} {5}", id0, id1, c1.X, c1.Y, c2.X, c2.Y);
                         break;
                 }
@@ -194,14 +194,14 @@ namespace KiriFig
 
                     case EdgeType.Conic:
                         id2 = _pointGroupToId[edge.P2.Group];
-                        c1 = ((ConicEdge) edge).Control1;
+                        c1 = ((ConicEdge) edge).C1;
                         _writer.Write(" conic {0} {1} {2} {3}", id0, id2, c1.X, c1.Y);
                         break;
 
                     case EdgeType.Cubic:
                         id3 = _pointGroupToId[edge.P2.Group];
-                        c1 = ((CubicEdge) edge).Control1;
-                        c2 = ((CubicEdge) edge).Control2;
+                        c1 = ((CubicEdge) edge).C1;
+                        c2 = ((CubicEdge) edge).C2;
                         _writer.Write(" cubic {0} {1} {2} {3} {4} {5}", id0, id3, c1.X, c1.Y, c2.X, c2.Y);
                         break;
                 }

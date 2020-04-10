@@ -156,15 +156,15 @@ namespace KiriEdit
         private void ConicTo(Edge edge)
         {
             BeginEdge();
-            var control = ((ConicEdge) edge).Control1;
+            var control1 = ((ConicEdge) edge).C1;
             var to = edge.P2;
             var c1 = new PointF(
-                (_x + 2 * control.X) / 3.0f,
-                (_y + 2 * control.Y) / 3.0f
+                (_x + 2 * control1.X) / 3.0f,
+                (_y + 2 * control1.Y) / 3.0f
                 );
             var c2 = new PointF(
-                (to.X + 2 * control.X) / 3.0f,
-                (to.Y + 2 * control.Y) / 3.0f
+                (to.X + 2 * control1.X) / 3.0f,
+                (to.Y + 2 * control1.Y) / 3.0f
                 );
 #if !DRAW_COARSE_CURVES
             _graphicsPath.AddBeziers(
@@ -176,8 +176,8 @@ namespace KiriEdit
                     new PointF((float) to.X, (float) to.Y)
                 });
 #else
-            _graphicsPath.AddLine((float) _x, (float) _y, (float) control.X, (float) control.Y);
-            _graphicsPath.AddLine((float) control.X, (float) control.Y, (float) to.X, (float) to.Y);
+            _graphicsPath.AddLine((float) _x, (float) _y, (float) control1.X, (float) control1.Y);
+            _graphicsPath.AddLine((float) control1.X, (float) control1.Y, (float) to.X, (float) to.Y);
 #endif
             _x = to.X;
             _y = to.Y;
@@ -186,22 +186,22 @@ namespace KiriEdit
         private void CubicTo(Edge edge)
         {
             BeginEdge();
-            var control1 = ((CubicEdge) edge).Control1;
-            var control2 = ((CubicEdge) edge).Control2;
+            var c1 = ((CubicEdge) edge).C1;
+            var c2 = ((CubicEdge) edge).C2;
             var to = edge.P2;
 #if !DRAW_COARSE_CURVES
             _graphicsPath.AddBeziers(
                 new PointF[]
                 {
                     new PointF((float) _x, (float) _y),
-                    new PointF((float) control1.X, (float) control1.Y),
-                    new PointF((float) control2.X, (float) control2.Y),
+                    new PointF((float) c1.X, (float) c1.Y),
+                    new PointF((float) c2.X, (float) c2.Y),
                     new PointF((float) to.X, (float) to.Y)
                 });
 #else
-            _graphicsPath.AddLine((float) _x, (float) _y, (float) control1.X, (float) control1.Y);
-            _graphicsPath.AddLine((float) control1.X, (float) control1.Y, (float) control2.X, (float) control2.Y);
-            _graphicsPath.AddLine((float) control2.X, (float) control2.Y, (float) to.X, (float) to.Y);
+            _graphicsPath.AddLine((float) _x, (float) _y, (float) c1.X, (float) c1.Y);
+            _graphicsPath.AddLine((float) c1.X, (float) c1.Y, (float) c2.X, (float) c2.Y);
+            _graphicsPath.AddLine((float) c2.X, (float) c2.Y, (float) to.X, (float) to.Y);
 #endif
             _x = to.X;
             _y = to.Y;

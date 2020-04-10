@@ -240,7 +240,7 @@ namespace KiriFigDemo.Sample4
         private void ConicTo(Edge edge)
         {
             BeginEdge();
-            var control = ((ConicEdge) edge).Control1;
+            var control = ((ConicEdge) edge).C1;
             var to = edge.P2;
             var c1 = new PointF(
                 (_x + 2 * control.X) / 3.0f,
@@ -270,8 +270,8 @@ namespace KiriFigDemo.Sample4
         private void CubicTo(Edge edge)
         {
             BeginEdge();
-            var control1 = ((CubicEdge) edge).Control1;
-            var control2 = ((CubicEdge) edge).Control2;
+            var control1 = ((CubicEdge) edge).C1;
+            var control2 = ((CubicEdge) edge).C2;
             var to = edge.P2;
 #if !DRAW_COARSE_CURVES
             _graphicsPath.AddBeziers(
