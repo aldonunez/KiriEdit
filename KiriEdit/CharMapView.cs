@@ -187,6 +187,8 @@ namespace KiriEdit
                 cultures,
                 (a, b) => CultureInfo.CurrentUICulture.CompareInfo.Compare(a.DisplayName, b.DisplayName));
 
+            // Add a special first entry to represent sorting by ordinal.
+
             sortComboBox.Items.Add(new OrdinalCultureItem());
             sortComboBox.Items.AddRange(cultures);
             sortComboBox.DisplayMember = "DisplayName";

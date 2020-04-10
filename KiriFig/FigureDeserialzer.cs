@@ -61,6 +61,8 @@ namespace KiriFig
             _level--;
         }
 
+        // An open record has more than one line. The first line ends with "begin".
+
         protected override void OnBeginRecord(int id, string head, IList<Token> attrs, bool open)
         {
             Console.WriteLine("{2} {0} ({1})", head, id, open ? "begin" : "record");

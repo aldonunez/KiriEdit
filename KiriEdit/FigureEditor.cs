@@ -464,6 +464,8 @@ namespace KiriEdit
                         (float) (translatedP2.X * cos - translatedP2.Y * sin),
                         (float) (translatedP2.X * sin + translatedP2.Y * cos));
 
+                    // Is the mouse in this box?
+
                     if (rotatedRef.Y >= -halfWidth && rotatedRef.Y <= halfWidth
                         && rotatedRef.X >= 0 && rotatedRef.X <= rotatedP2.X)
                         return cut;
@@ -599,6 +601,7 @@ namespace KiriEdit
 
             public override void OnMouseDown(object sender, MouseEventArgs e)
             {
+                // Nothing to do.
             }
 
             private struct EdgeSearchResult

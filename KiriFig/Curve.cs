@@ -55,6 +55,9 @@ namespace KiriFig
 
         public static double CalcConicDeltaT(PointD p0, PointD p1, PointD p2)
         {
+            // Use the length of the line segments between each control point as an estimate of
+            // the length of the curve.
+
             double length =
                 GetLineLength(p0, p1)
                 + GetLineLength(p1, p2);
@@ -65,6 +68,9 @@ namespace KiriFig
 
         public static double CalcCubicDeltaT(PointD p0, PointD p1, PointD p2, PointD p3)
         {
+            // Use the length of the line segments between each control point as an estimate of
+            // the length of the curve.
+
             double length =
                 GetLineLength(p0, p1)
                 + GetLineLength(p1, p2)
@@ -124,6 +130,9 @@ namespace KiriFig
 
         public (double, PointD) GetProjectedPoint(PointD point)
         {
+            // First use a rough pass to find the closest point among N samples along the curve
+            // spaced at 1/(N-1) between each.
+
             const int Segments = 5;
             const float DeltaT = 1f / Segments;
 
@@ -146,6 +155,9 @@ namespace KiriFig
                 }
             }
 
+            // Now find the nearest point in detail between the approximate point found and
+            // the next nearest approximate point.
+
             float tBefore = minT - DeltaT;
             float tAfter = minT + DeltaT;
 
@@ -163,6 +175,8 @@ namespace KiriFig
 
         private (double, PointD) FindNearestPoint(float t1, float t2, PointD p1, PointD p2, PointD p)
         {
+            // Use a binary search to find p. End when the interval is 1 or less.
+
             double d1 = p1.GetDistance(p);
             double d2 = p2.GetDistance(p);
             double d12 = p1.GetDistance(p2);
@@ -194,6 +208,8 @@ namespace KiriFig
 
         private (Curve, Curve) SplitConic(double t, PointD midP)
         {
+            // Use de Casteljau's algorithm.
+
             PointD b0 = new PointD(
                 (int) ((1 - t) * c0.X + t * c1.X),
                 (int) ((1 - t) * c0.Y + t * c1.Y)
@@ -212,6 +228,8 @@ namespace KiriFig
 
         private (Curve, Curve) SplitCubic(double t, PointD midP)
         {
+            // Use de Casteljau's algorithm.
+
             PointD b0 = new PointD(
                 (1 - t) * c0.X + t * c1.X,
                 (1 - t) * c0.Y + t * c1.Y

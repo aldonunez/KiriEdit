@@ -30,6 +30,18 @@ namespace KiriFig
 
         private static Orientation GetOrientation(Contour contour)
         {
+            // Use the method described here to determine the orientation of a contour:
+            // https://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order
+
+            // It involves calculating the area of the polygon (integration).
+            // It's also the method used by Freetype 2.
+
+            // For the purposes of determining orientation, it's enough to approximate conic
+            // and cubic curves with the line segments that connect their control points.
+
+            // Only use the TrueType convention of clockwise means outside, counter-clocwise means inside.
+            // Assume that contours don't intersect themselves.
+
             int prevX = contour.FirstPoint.X;
             int prevY = contour.FirstPoint.Y;
             Point p = contour.FirstPoint;
@@ -169,6 +181,14 @@ namespace KiriFig
                 TestLineCrossing(p, cubicEdge.Control2, cubicEdge.P2, ref crossing);
             }
         }
+
+        // Determine which inside contours go with which outside contours.
+        // For each inside contour, take its right-most point. Trace a ray to the right.
+        // Find the nearest edge of an outside contour that crosses this ray an odd number of times.
+
+        // The version of the even-odd rule used here stipulates that an odd number of crossings
+        // means that a point is inside a shape. The closest of these edges belongs to the shape
+        // that directly encloses the point.
 
         private List<Contour>[] DetermineInsides(List<Contour> outsideContours, List<Contour> insideContours)
         {

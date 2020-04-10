@@ -210,9 +210,6 @@ namespace KiriFig.Model
                 pointToDelete.Contour.FirstPoint = fixedPointBefore;
         }
 
-        // TODO: Do this in the caller.
-        // Find a point in each group that share the same contour: old points
-
         public Cut AddCut(Point point1, Point point2)
         {
             if (CutExists(point1.Group, point2.Group))
@@ -489,6 +486,9 @@ namespace KiriFig.Model
             return (null, null);
         }
 
+        // Return the pair of points that point to each other to the greatest degree.
+        // They'll have the biggest sum of dot products.
+
         private static (Point, Point) FindBestPoints(List<FindPointsResult> results)
         {
             Debug.Assert(results.Count > 0);
@@ -536,6 +536,7 @@ namespace KiriFig.Model
         }
 
         // The joint at each point should point at the other point.
+        // The more they point to each other, the bigger positive number you get.
 
         private static float GetMutualDotProduct(Point point1, Point point2)
         {

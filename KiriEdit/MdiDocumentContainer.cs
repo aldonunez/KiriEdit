@@ -35,6 +35,9 @@ namespace KiriEdit
 
     internal class MdiDocumentContainer
     {
+        // Store views in order with most recent at the end. This avoids shuffling all
+        // elements every time one is moved.
+
         private Form _form;
         private List<IView> _views = new List<IView>();
 
@@ -99,6 +102,8 @@ namespace KiriEdit
 
             ViewsChanged?.Invoke(this, new ViewsChangedEventArgs(view, ViewsChangedAction.Removed));
         }
+
+        // Enumerate views in order with most recent first.
 
         public IEnumerator<IView> EnumerateViews()
         {
