@@ -99,8 +99,6 @@ namespace KiriEdit
         {
             _graphicsPath.Reset();
 
-            Figure figure = _document.Figure;
-
             var shape = _document.Figure.Shapes[index];
 
             foreach (var contour in shape.Contours)

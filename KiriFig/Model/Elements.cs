@@ -126,7 +126,7 @@ namespace KiriFig.Model
 
         internal override SplitResult Split(Point point)
         {
-            var valueNearestPoint = FindNearestPoint(point, P1.ToValuePoint(), P2.ToValuePoint());
+            var valueNearestPoint = FindNearestPoint(point);
 
             var nearestPoint = new Point(valueNearestPoint);
             var edgeBefore = new LineEdge(P1, nearestPoint);
@@ -135,7 +135,7 @@ namespace KiriFig.Model
             return new SplitResult(nearestPoint, edgeBefore, edgeAfter);
         }
 
-        private ValuePoint FindNearestPoint(Point point, ValuePoint p1, ValuePoint p2)
+        private ValuePoint FindNearestPoint(Point point)
         {
             PointD? optNearestPoint = GetProjectedPoint(point.X, point.Y);
 
@@ -204,7 +204,7 @@ namespace KiriFig.Model
 
         public override PointD? GetProjectedPoint(int x, int y)
         {
-            var (t, p) = GetProjectedPointAndT(x, y);
+            var (_, p) = GetProjectedPointAndT(x, y);
             return p;
         }
 
@@ -390,13 +390,6 @@ namespace KiriFig.Model
         {
             X = x;
             Y = y;
-        }
-
-        internal double GetDistance(ValuePoint otherPoint)
-        {
-            int w = otherPoint.X - X;
-            int h = otherPoint.Y - Y;
-            return Math.Sqrt(w * w + h * h);
         }
 
         public override string ToString()

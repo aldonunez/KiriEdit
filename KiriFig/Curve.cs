@@ -17,7 +17,7 @@ namespace KiriFig
             Cubic,
         }
 
-        private CurveType _curveType;
+        private readonly CurveType _curveType;
         private PointD c0;
         private PointD c1;
         private PointD c2;
@@ -138,8 +138,7 @@ namespace KiriFig
 
             float t = 0;
             float minT = 0;
-            var minP = c0;
-            double minD = minP.GetDistance(point);
+            double minD = c0.GetDistance(point);
 
             for (int i = 1; i < Segments; i++)
             {
@@ -150,7 +149,6 @@ namespace KiriFig
                 if (d < minD)
                 {
                     minD = d;
-                    minP = p;
                     minT = t;
                 }
             }
