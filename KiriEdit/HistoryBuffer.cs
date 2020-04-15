@@ -43,7 +43,7 @@ namespace KiriEdit
             cmd.Apply();
         }
 
-        public void PushCommand(HistoryCommand command)
+        public void Add(HistoryCommand command)
         {
             int index = _topUndoIndex + 1;
             int count = _commands.Count - index;

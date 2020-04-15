@@ -130,6 +130,7 @@ namespace KiriEdit
         private void FigureEditView_Load(object sender, EventArgs e)
         {
             figureEditor.Document = _figureItem.Open();
+            figureEditor.History = HistoryBuffer;
 
             LoadMasterPicture(figureEditor.Document);
             LoadProgressPicture(figureEditor.Document);
