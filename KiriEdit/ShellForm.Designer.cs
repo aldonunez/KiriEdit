@@ -38,6 +38,9 @@
             this.saveAllMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.undoMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.redoMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.characterMapMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -56,6 +59,7 @@
             // 
             this.mainMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileMenuItem,
+            this.editMenuItem,
             this.viewMenuItem,
             this.windowMenuItem});
             this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
@@ -135,6 +139,33 @@
             this.exitMenuItem.Text = "E&xit";
             this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
             // 
+            // editMenuItem
+            // 
+            this.editMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.undoMenuItem,
+            this.redoMenuItem});
+            this.editMenuItem.Name = "editMenuItem";
+            this.editMenuItem.Size = new System.Drawing.Size(39, 20);
+            this.editMenuItem.Text = "&Edit";
+            // 
+            // undoMenuItem
+            // 
+            this.undoMenuItem.Enabled = false;
+            this.undoMenuItem.Name = "undoMenuItem";
+            this.undoMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
+            this.undoMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.undoMenuItem.Text = "&Undo";
+            this.undoMenuItem.Click += new System.EventHandler(this.undoMenuItem_Click);
+            // 
+            // redoMenuItem
+            // 
+            this.redoMenuItem.Enabled = false;
+            this.redoMenuItem.Name = "redoMenuItem";
+            this.redoMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
+            this.redoMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.redoMenuItem.Text = "&Redo";
+            this.redoMenuItem.Click += new System.EventHandler(this.redoMenuItem_Click);
+            // 
             // viewMenuItem
             // 
             this.viewMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -146,7 +177,7 @@
             // characterMapMenuItem
             // 
             this.characterMapMenuItem.Name = "characterMapMenuItem";
-            this.characterMapMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.characterMapMenuItem.Size = new System.Drawing.Size(152, 22);
             this.characterMapMenuItem.Text = "Character &Map";
             this.characterMapMenuItem.Click += new System.EventHandler(this.characterMapMenuItem_Click);
             // 
@@ -266,6 +297,9 @@
         private System.Windows.Forms.ToolStripMenuItem window2MenuItem;
         private System.Windows.Forms.ToolStripMenuItem window3MenuItem;
         private System.Windows.Forms.ToolStripMenuItem windowsMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem editMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem undoMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem redoMenuItem;
     }
 }
 

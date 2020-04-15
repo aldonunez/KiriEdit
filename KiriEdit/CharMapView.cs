@@ -55,6 +55,7 @@ namespace KiriEdit
         public Form Form => this;
         public string DocumentTitle => Text;
         public bool IsDirty => false;
+        public HistoryBuffer HistoryBuffer => null;
 
         public CharMapView()
         {

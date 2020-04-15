@@ -36,6 +36,7 @@ namespace KiriEdit
         public Form Form => this;
         public string DocumentTitle => Text;
         public bool IsDirty => _figureItem.IsDirty;
+        public HistoryBuffer HistoryBuffer { get; } = new HistoryBuffer();
 
         public object ProjectItem
         {
@@ -129,6 +130,7 @@ namespace KiriEdit
         private void FigureEditView_Load(object sender, EventArgs e)
         {
             figureEditor.Document = _figureItem.Open();
+            figureEditor.History = HistoryBuffer;
 
             LoadMasterPicture(figureEditor.Document);
             LoadProgressPicture(figureEditor.Document);

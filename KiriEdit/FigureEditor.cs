@@ -5,13 +5,14 @@
    See the LICENSE.txt file for details.
 */
 
+using KiriFig;
+using KiriFig.Model;
 using KiriProj;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
-using KiriFig;
-using KiriFig.Model;
 using Point = KiriFig.Model.Point;
 
 namespace KiriEdit
@@ -24,6 +25,7 @@ namespace KiriEdit
         private const float LineBoundingWidth = LinePenWidth + 4;
 
         private FigureDocument _document;
+        private FigureContext _context;
         private bool _shown;
         private Rectangle _rectangle;
         private Bitmap _shapeMask;
@@ -48,9 +50,13 @@ namespace KiriEdit
 
                     if (_shown)
                         RebuildCanvas();
+
+                    UpdateFigureContext();
                 }
             }
         }
+
+        public HistoryBuffer History { get; set; }
 
         public FigureEditor()
         {
@@ -65,6 +71,30 @@ namespace KiriEdit
 
             _curControlScaleSingle = Math.Min(factor.Width, factor.Height);
             _curControlScaleSize = factor;
+        }
+
+        private void UpdateFigureContext()
+        {
+            if (_document == null)
+                return;
+
+            _context = new FigureContext(this);
+
+            foreach (var pointGroup in _document.Figure.PointGroups)
+            {
+                _context.Add(-1, pointGroup);
+            }
+
+            foreach (var cut in _document.Figure.Cuts)
+            {
+                _context.Add(-1, cut);
+            }
+        }
+
+        private void AddHistory(HistoryCommand command)
+        {
+            if (History != null)
+                History.Add(command);
         }
 
         private void OnModified()
@@ -96,12 +126,10 @@ namespace KiriEdit
 
             int index = color.B - 1;
 
-            _document.Figure.Shapes[index].Enabled = !_document.Figure.Shapes[index].Enabled;
+            var cmd = new EnableShapeCommand(_context, index, !_document.Figure.Shapes[index].Enabled);
 
-            DrawCanvas();
-            canvas.Invalidate();
-
-            OnModified();
+            cmd.Apply();
+            AddHistory(cmd);
         }
 
         // Find a point group given a point in screen coordinates.
@@ -198,6 +226,12 @@ namespace KiriEdit
         private void RedrawOverlay()
         {
             DrawOverlay();
+            canvas.Invalidate();
+        }
+
+        private void RedrawCanvas()
+        {
+            DrawCanvas();
             canvas.Invalidate();
         }
 
@@ -362,6 +396,7 @@ namespace KiriEdit
             public abstract void Draw(Graphics graphics);
         }
 
+
         private class LineTool : Tool
         {
             private FigureEditor _parent;
@@ -401,10 +436,10 @@ namespace KiriEdit
             {
                 _candidateCut = null;
 
-                _parent._document.Figure.DeleteCut(cut);
+                var cmd = new DeleteCutCommand(_parent._context, cut);
 
-                _parent.RebuildCanvas();
-                _parent.OnModified();
+                cmd.Apply();
+                _parent.AddHistory(cmd);
             }
 
             private void TryCommitLine(object sender, MouseEventArgs e)
@@ -413,15 +448,15 @@ namespace KiriEdit
 
                 if (_candidatePoint1 != null && _candidatePoint2 != null)
                 {
-                    _parent._document.Figure.AddCut(_candidatePoint1, _candidatePoint2);
+                    var cmd = new AddCutCommand(_parent._context, _candidatePoint1.Group, _candidatePoint2.Group);
+
+                    cmd.Apply();
+                    _parent.AddHistory(cmd);
 
                     _lineStartGroup = null;
                     _lineEndGroup = null;
                     _candidatePoint1 = null;
                     _candidatePoint2 = null;
-
-                    _parent.RebuildCanvas();
-                    _parent.OnModified();
                 }
                 else
                 {
@@ -559,6 +594,7 @@ namespace KiriEdit
             }
         }
 
+
         private class PointTool : Tool
         {
             private FigureEditor _parent;
@@ -583,19 +619,25 @@ namespace KiriEdit
             {
                 if (_candidateEdge != null)
                 {
-                    var point = new Point((int) _candidatePoint.X, (int) _candidatePoint.Y);
+                    var cmd = new AddPointCommand(
+                        _parent._context,
+                        (int) _candidatePoint.X,
+                        (int) _candidatePoint.Y,
+                        _candidateEdge);
 
-                    _parent._document.Figure.AddDiscardablePoint(point, _candidateEdge);
+                    cmd.Apply();
+                    _parent.AddHistory(cmd);
 
                     _candidateEdge = null;
-                    _parent.RebuildCanvas();
                 }
                 else if (_hilitGroup != null)
                 {
-                    _parent._document.Figure.DeleteDiscardablePoint(_hilitGroup);
+                    var cmd = new DeletePointCommand(_parent._context, _hilitGroup);
+
+                    cmd.Apply();
+                    _parent.AddHistory(cmd);
 
                     _hilitGroup = null;
-                    _parent.RebuildCanvas();
                 }
             }
 
@@ -747,6 +789,282 @@ namespace KiriEdit
                         circleRadius * 2,
                         circleRadius * 2);
                 }
+            }
+        }
+
+
+        private class FigureContext
+        {
+            private FigureEditor _figureEditor;
+            private int _nextId;
+
+            private Dictionary<int, object> _idToObj = new Dictionary<int, object>();
+            private Dictionary<object, int> _objToId = new Dictionary<object, int>();
+
+            public Figure Figure => _figureEditor._document.Figure;
+
+            public FigureContext(FigureEditor figureEditor)
+            {
+                _figureEditor = figureEditor;
+            }
+
+            public void OnModifiedShapes()
+            {
+                _figureEditor.RebuildCanvas();
+                _figureEditor.OnModified();
+            }
+
+            public void OnEnabledChanged()
+            {
+                _figureEditor.RedrawCanvas();
+                _figureEditor.OnModified();
+            }
+
+            public int GetId<T>(T obj)
+            {
+                if (!_objToId.ContainsKey(obj))
+                    return -1;
+
+                return _objToId[obj];
+            }
+
+            public T Get<T>(int id)
+            {
+                return (T) _idToObj[id];
+            }
+
+            public int Add<T>(int id, T obj)
+            {
+                if (id < 0)
+                    id = _nextId++;
+
+                _idToObj.Add(id, obj);
+                _objToId.Add(obj, id);
+
+                return id;
+            }
+
+            public void Remove<T>(int id)
+            {
+                T obj = (T) _idToObj[id];
+
+                _idToObj.Remove(id);
+                _objToId.Remove(obj);
+            }
+
+            public int Import<T>(T obj)
+            {
+                int id = GetId(obj);
+
+                if (id < 0)
+                    id = Add(-1, obj);
+
+                return id;
+            }
+        }
+
+
+        private abstract class AddDeleteCutCommandBase : HistoryCommand
+        {
+            protected FigureContext _context;
+            protected int _pointGroup1, _pointGroup2;
+            protected int _cut = -1;
+
+            public AddDeleteCutCommandBase(FigureContext context, PointGroup pointGroup1, PointGroup pointGroup2)
+            {
+                _context = context;
+                _pointGroup1 = _context.GetId(pointGroup1);
+                _pointGroup2 = _context.GetId(pointGroup2);
+            }
+
+            public AddDeleteCutCommandBase(FigureContext context, Cut cut)
+            {
+                _context = context;
+                _cut = _context.GetId(cut);
+                _pointGroup1 = _context.GetId(cut.PairedEdge1.P1.Group);
+                _pointGroup2 = _context.GetId(cut.PairedEdge1.P2.Group);
+            }
+
+            public void Add()
+            {
+                PointGroup pg1 = _context.Get<PointGroup>(_pointGroup1);
+                PointGroup pg2 = _context.Get<PointGroup>(_pointGroup2);
+
+                var (p1, p2) = Figure.FindPointsForCut(pg1, pg2);
+
+                Cut cut = _context.Figure.AddCut(p1, p2);
+
+                _cut = _context.Add(_cut, cut);
+                _context.OnModifiedShapes();
+            }
+
+            public void Delete()
+            {
+                Cut cut = _context.Get<Cut>(_cut);
+
+                _context.Remove<Cut>(_cut);
+                _context.Figure.DeleteCut(cut);
+                _context.OnModifiedShapes();
+            }
+        }
+
+
+        private class AddCutCommand : AddDeleteCutCommandBase
+        {
+            public AddCutCommand(FigureContext context, PointGroup pointGroup1, PointGroup pointGroup2) :
+                base(context, pointGroup1, pointGroup2)
+            {
+            }
+
+            public override void Apply()
+            {
+                base.Add();
+            }
+
+            public override void Unapply()
+            {
+                base.Delete();
+            }
+        }
+
+
+        private class DeleteCutCommand : AddDeleteCutCommandBase
+        {
+            public DeleteCutCommand(FigureContext context, Cut cut) :
+                base(context, cut)
+            {
+            }
+
+            public override void Apply()
+            {
+                base.Delete();
+            }
+
+            public override void Unapply()
+            {
+                base.Add();
+            }
+        }
+
+
+        private abstract class AddDeletePointCommandBase : HistoryCommand
+        {
+            private FigureContext _context;
+            private int _x, _y;
+            private int _pointGroup = -1;
+            private int _edgeSingle = -1;
+            private int _edgeDouble1 = -1;
+            private int _edgeDouble2 = -1;
+
+            public AddDeletePointCommandBase(FigureContext context, int x, int y, Edge edge)
+            {
+                _context = context;
+                _x = x;
+                _y = y;
+                _edgeSingle = _context.Import(edge);
+            }
+
+            public AddDeletePointCommandBase(FigureContext context, PointGroup pointGroup)
+            {
+                _context = context;
+                _x = pointGroup.Points[0].X;
+                _y = pointGroup.Points[0].Y;
+                _pointGroup = _context.GetId(pointGroup);
+                _edgeDouble1 = _context.Import(pointGroup.Points[0].IncomingEdge);
+                _edgeDouble2 = _context.Import(pointGroup.Points[0].OutgoingEdge);
+            }
+
+            public void Add()
+            {
+                Edge edge = _context.Get<Edge>(_edgeSingle);
+
+                var p = _context.Figure.AddDiscardablePoint(new Point(_x, _y), edge);
+
+                _context.Remove<Edge>(_edgeSingle);
+                _pointGroup = _context.Add(_pointGroup, p.Group);
+                _edgeDouble1 = _context.Add(_edgeDouble1, p.IncomingEdge);
+                _edgeDouble2 = _context.Add(_edgeDouble2, p.OutgoingEdge);
+
+                _context.OnModifiedShapes();
+            }
+
+            public void Delete()
+            {
+                PointGroup pg = _context.Get<PointGroup>(_pointGroup);
+
+                var edge = _context.Figure.DeleteDiscardablePoint(pg);
+
+                _context.Remove<PointGroup>(_pointGroup);
+                _context.Remove<Edge>(_edgeDouble1);
+                _context.Remove<Edge>(_edgeDouble2);
+                _edgeSingle = _context.Add(_edgeSingle, edge);
+
+                _context.OnModifiedShapes();
+            }
+        }
+
+
+        private class AddPointCommand : AddDeletePointCommandBase
+        {
+            public AddPointCommand(FigureContext context, int x, int y, Edge edge) :
+                base(context, x, y, edge)
+            {
+            }
+
+            public override void Apply()
+            {
+                base.Add();
+            }
+
+            public override void Unapply()
+            {
+                base.Delete();
+            }
+        }
+
+
+        private class DeletePointCommand : AddDeletePointCommandBase
+        {
+            public DeletePointCommand(FigureContext context, PointGroup pointGroup) :
+                base(context, pointGroup)
+            {
+            }
+
+            public override void Apply()
+            {
+                base.Delete();
+            }
+
+            public override void Unapply()
+            {
+                base.Add();
+            }
+        }
+
+
+        private class EnableShapeCommand : HistoryCommand
+        {
+            private readonly FigureContext _context;
+            private int _shapeIndex;
+            private bool _enable;
+
+            public EnableShapeCommand(FigureContext figureContext, int shapeIndex, bool enable)
+            {
+                _context = figureContext;
+                _shapeIndex = shapeIndex;
+                _enable = enable;
+            }
+
+            public override void Apply()
+            {
+                _context.Figure.Shapes[_shapeIndex].Enabled = _enable;
+                _context.OnEnabledChanged();
+            }
+
+            public override void Unapply()
+            {
+                _context.Figure.Shapes[_shapeIndex].Enabled = !_enable;
+                _context.OnEnabledChanged();
             }
         }
 

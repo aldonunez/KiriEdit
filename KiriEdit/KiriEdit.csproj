@@ -134,6 +134,7 @@
       <DependentUpon>FigureEditView.cs</DependentUpon>
     </Compile>
     <Compile Include="FolderSelectDialog.cs" />
+    <Compile Include="HistoryBuffer.cs" />
     <Compile Include="IShell.cs" />
     <Compile Include="IView.cs" />
     <Compile Include="MdiDocumentContainer.cs" />
