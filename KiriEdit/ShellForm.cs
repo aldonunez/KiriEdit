@@ -402,5 +402,31 @@ namespace KiriEdit
 
             _documentContainer.Activate((IView) menuItem.Tag);
         }
+
+        private void redoMenuItem_Click(object sender, EventArgs e)
+        {
+            _documentContainer.CurrentView.HistoryBuffer.Redo();
+        }
+
+        private void undoMenuItem_Click(object sender, EventArgs e)
+        {
+            _documentContainer.CurrentView.HistoryBuffer.Undo();
+        }
+
+        private void editMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+            if (_documentContainer.Count == 0 || _documentContainer.CurrentView.HistoryBuffer == null)
+            {
+                redoMenuItem.Enabled = false;
+                undoMenuItem.Enabled = false;
+            }
+            else
+            {
+                var history = _documentContainer.CurrentView.HistoryBuffer;
+
+                redoMenuItem.Enabled = history.RedoCount > 0;
+                undoMenuItem.Enabled = history.UndoCount > 0;
+            }
+        }
     }
 }

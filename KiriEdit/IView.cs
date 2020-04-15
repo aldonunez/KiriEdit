@@ -19,6 +19,7 @@ namespace KiriEdit
         Form Form { get; }
         string DocumentTitle { get; }
         bool IsDirty { get; }
+        HistoryBuffer HistoryBuffer { get; }
 
         bool Save();
     }
