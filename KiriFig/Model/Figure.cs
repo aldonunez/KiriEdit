@@ -431,6 +431,15 @@ namespace KiriFig.Model
             _shapes.Remove(oldShape2);
 
             _shapes.AddRange(newShapes);
+
+            // Set the new enabled states to the combination of the old enabled states.
+
+            bool oldEnabledState = oldShape1.Enabled && oldShape2.Enabled;
+
+            foreach (var shape in newShapes)
+            {
+                shape.Enabled = oldEnabledState;
+            }
         }
 
 
