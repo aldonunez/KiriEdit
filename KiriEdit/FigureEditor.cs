@@ -835,6 +835,16 @@ namespace KiriEdit
                 _idToObj.Remove(id);
                 _objToId.Remove(obj);
             }
+
+            public int Import<T>(T obj)
+            {
+                int id = GetId(obj);
+
+                if (id < 0)
+                    id = Add(-1, obj);
+
+                return id;
+            }
         }
 
 
@@ -935,11 +945,7 @@ namespace KiriEdit
                 _context = context;
                 _x = x;
                 _y = y;
-
-                _edgeSingle = _context.GetId(edge);
-
-                if (_edgeSingle < 0)
-                    _edgeSingle = _context.Add(-1, edge);
+                _edgeSingle = _context.Import(edge);
             }
 
             public AddDeletePointCommandBase(FigureContext context, PointGroup pointGroup)
@@ -948,16 +954,8 @@ namespace KiriEdit
                 _x = pointGroup.Points[0].X;
                 _y = pointGroup.Points[0].Y;
                 _pointGroup = _context.GetId(pointGroup);
-
-                _edgeDouble1 = _context.GetId(pointGroup.Points[0].IncomingEdge);
-
-                if (_edgeDouble1 < 0)
-                    _edgeDouble1 = _context.Add(-1, pointGroup.Points[0].IncomingEdge);
-
-                _edgeDouble2 = _context.GetId(pointGroup.Points[0].OutgoingEdge);
-
-                if (_edgeDouble2 < 0)
-                    _edgeDouble2 = _context.Add(-1, pointGroup.Points[0].OutgoingEdge);
+                _edgeDouble1 = _context.Import(pointGroup.Points[0].IncomingEdge);
+                _edgeDouble2 = _context.Import(pointGroup.Points[0].OutgoingEdge);
             }
 
             public void Add()
