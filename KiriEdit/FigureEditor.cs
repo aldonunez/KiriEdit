@@ -82,12 +82,12 @@ namespace KiriEdit
 
             foreach (var pointGroup in _document.Figure.PointGroups)
             {
-                _context.AddPointGroup(-1, pointGroup);
+                _context.Add(-1, pointGroup);
             }
 
             foreach (var cut in _document.Figure.Cuts)
             {
-                _context.AddCut(-1, cut);
+                _context.Add(-1, cut);
             }
         }
 
@@ -786,17 +786,10 @@ namespace KiriEdit
         private class FigureContext
         {
             private FigureEditor _figureEditor;
-            private int _nextPointGroupId;
-            private int _nextCutId;
-            private int _nextEdgeId;
+            private int _nextId;
 
-            private Dictionary<int, PointGroup> _idToPointGroup = new Dictionary<int, PointGroup>();
-            private Dictionary<int, Cut> _idToCut = new Dictionary<int, Cut>();
-            private Dictionary<int, Edge> _idToEdge = new Dictionary<int, Edge>();
-
-            private Dictionary<PointGroup, int> _pointGroupToId = new Dictionary<PointGroup, int>();
-            private Dictionary<Cut, int> _cutToId = new Dictionary<Cut, int>();
-            private Dictionary<Edge, int> _edgeToId = new Dictionary<Edge, int>();
+            private Dictionary<int, object> _idToObj = new Dictionary<int, object>();
+            private Dictionary<object, int> _objToId = new Dictionary<object, int>();
 
             public Figure Figure => _figureEditor._document.Figure;
 
@@ -811,94 +804,36 @@ namespace KiriEdit
                 _figureEditor.OnModified();
             }
 
-            public int GetPointGroupId(PointGroup pointGroup)
+            public int GetId<T>(T obj)
             {
-                return _pointGroupToId[pointGroup];
-            }
-
-            public PointGroup GetPointGroup(int id)
-            {
-                return _idToPointGroup[id];
-            }
-
-            public int AddPointGroup(int id, PointGroup pointGroup)
-            {
-                if (id < 0)
-                    id = _nextPointGroupId++;
-
-                _idToPointGroup.Add(id, pointGroup);
-                _pointGroupToId.Add(pointGroup, id);
-
-                return id;
-            }
-
-            public void RemovePointGroup(int id)
-            {
-                PointGroup pointGroup = _idToPointGroup[id];
-
-                _idToPointGroup.Remove(id);
-                _pointGroupToId.Remove(pointGroup);
-            }
-
-            public int GetCutId(Cut cut)
-            {
-                return _cutToId[cut];
-            }
-
-            public Cut GetCut(int id)
-            {
-                return _idToCut[id];
-            }
-
-            public int AddCut(int id, Cut cut)
-            {
-                if (id < 0)
-                    id = _nextCutId++;
-
-                _idToCut.Add(id, cut);
-                _cutToId.Add(cut, id);
-
-                return id;
-            }
-
-            public void RemoveCut(int id)
-            {
-                Cut cut = _idToCut[id];
-
-                _idToCut.Remove(id);
-                _cutToId.Remove(cut);
-            }
-
-            public int GetEdgeId(Edge edge)
-            {
-                if (!_edgeToId.ContainsKey(edge))
+                if (!_objToId.ContainsKey(obj))
                     return -1;
 
-                return _edgeToId[edge];
+                return _objToId[obj];
             }
 
-            public Edge GetEdge(int id)
+            public T Get<T>(int id)
             {
-                return _idToEdge[id];
+                return (T) _idToObj[id];
             }
 
-            public int AddEdge(int id, Edge edge)
+            public int Add<T>(int id, T obj)
             {
                 if (id < 0)
-                    id = _nextEdgeId++;
+                    id = _nextId++;
 
-                _idToEdge.Add(id, edge);
-                _edgeToId.Add(edge, id);
+                _idToObj.Add(id, obj);
+                _objToId.Add(obj, id);
 
                 return id;
             }
 
-            public void RemoveEdge(int id)
+            public void Remove<T>(int id)
             {
-                Edge edge = _idToEdge[id];
+                T obj = (T) _idToObj[id];
 
-                _idToEdge.Remove(id);
-                _edgeToId.Remove(edge);
+                _idToObj.Remove(id);
+                _objToId.Remove(obj);
             }
         }
 
@@ -912,36 +847,36 @@ namespace KiriEdit
             public AddDeleteCutCommandBase(FigureContext context, PointGroup pointGroup1, PointGroup pointGroup2)
             {
                 _context = context;
-                _pointGroup1 = _context.GetPointGroupId(pointGroup1);
-                _pointGroup2 = _context.GetPointGroupId(pointGroup2);
+                _pointGroup1 = _context.GetId(pointGroup1);
+                _pointGroup2 = _context.GetId(pointGroup2);
             }
 
             public AddDeleteCutCommandBase(FigureContext context, Cut cut)
             {
                 _context = context;
-                _cut = _context.GetCutId(cut);
-                _pointGroup1 = _context.GetPointGroupId(cut.PairedEdge1.P1.Group);
-                _pointGroup2 = _context.GetPointGroupId(cut.PairedEdge1.P2.Group);
+                _cut = _context.GetId(cut);
+                _pointGroup1 = _context.GetId(cut.PairedEdge1.P1.Group);
+                _pointGroup2 = _context.GetId(cut.PairedEdge1.P2.Group);
             }
 
             public void Add()
             {
-                PointGroup pg1 = _context.GetPointGroup(_pointGroup1);
-                PointGroup pg2 = _context.GetPointGroup(_pointGroup2);
+                PointGroup pg1 = _context.Get<PointGroup>(_pointGroup1);
+                PointGroup pg2 = _context.Get<PointGroup>(_pointGroup2);
 
                 var (p1, p2) = Figure.FindPointsForCut(pg1, pg2);
 
                 Cut cut = _context.Figure.AddCut(p1, p2);
 
-                _cut = _context.AddCut(_cut, cut);
+                _cut = _context.Add(_cut, cut);
                 _context.OnModifiedShapes();
             }
 
             public void Delete()
             {
-                Cut cut = _context.GetCut(_cut);
+                Cut cut = _context.Get<Cut>(_cut);
 
-                _context.RemoveCut(_cut);
+                _context.Remove<Cut>(_cut);
                 _context.Figure.DeleteCut(cut);
                 _context.OnModifiedShapes();
             }
@@ -1001,10 +936,10 @@ namespace KiriEdit
                 _x = x;
                 _y = y;
 
-                _edgeSingle = _context.GetEdgeId(edge);
+                _edgeSingle = _context.GetId(edge);
 
                 if (_edgeSingle < 0)
-                    _edgeSingle = _context.AddEdge(-1, edge);
+                    _edgeSingle = _context.Add(-1, edge);
             }
 
             public AddDeletePointCommandBase(FigureContext context, PointGroup pointGroup)
@@ -1012,43 +947,43 @@ namespace KiriEdit
                 _context = context;
                 _x = pointGroup.Points[0].X;
                 _y = pointGroup.Points[0].Y;
-                _pointGroup = _context.GetPointGroupId(pointGroup);
+                _pointGroup = _context.GetId(pointGroup);
 
-                _edgeDouble1 = _context.GetEdgeId(pointGroup.Points[0].IncomingEdge);
+                _edgeDouble1 = _context.GetId(pointGroup.Points[0].IncomingEdge);
 
                 if (_edgeDouble1 < 0)
-                    _edgeDouble1 = _context.AddEdge(-1, pointGroup.Points[0].IncomingEdge);
+                    _edgeDouble1 = _context.Add(-1, pointGroup.Points[0].IncomingEdge);
 
-                _edgeDouble2 = _context.GetEdgeId(pointGroup.Points[0].OutgoingEdge);
+                _edgeDouble2 = _context.GetId(pointGroup.Points[0].OutgoingEdge);
 
                 if (_edgeDouble2 < 0)
-                    _edgeDouble2 = _context.AddEdge(-1, pointGroup.Points[0].OutgoingEdge);
+                    _edgeDouble2 = _context.Add(-1, pointGroup.Points[0].OutgoingEdge);
             }
 
             public void Add()
             {
-                Edge edge = _context.GetEdge(_edgeSingle);
+                Edge edge = _context.Get<Edge>(_edgeSingle);
 
                 var p = _context.Figure.AddDiscardablePoint(new Point(_x, _y), edge);
 
-                _context.RemoveEdge(_edgeSingle);
-                _pointGroup = _context.AddPointGroup(_pointGroup, p.Group);
-                _edgeDouble1 = _context.AddEdge(_edgeDouble1, p.IncomingEdge);
-                _edgeDouble2 = _context.AddEdge(_edgeDouble2, p.OutgoingEdge);
+                _context.Remove<Edge>(_edgeSingle);
+                _pointGroup = _context.Add(_pointGroup, p.Group);
+                _edgeDouble1 = _context.Add(_edgeDouble1, p.IncomingEdge);
+                _edgeDouble2 = _context.Add(_edgeDouble2, p.OutgoingEdge);
 
                 _context.OnModifiedShapes();
             }
 
             public void Delete()
             {
-                PointGroup pg = _context.GetPointGroup(_pointGroup);
+                PointGroup pg = _context.Get<PointGroup>(_pointGroup);
 
                 var edge = _context.Figure.DeleteDiscardablePoint(pg);
 
-                _context.RemovePointGroup(_pointGroup);
-                _context.RemoveEdge(_edgeDouble1);
-                _context.RemoveEdge(_edgeDouble2);
-                _edgeSingle = _context.AddEdge(_edgeSingle, edge);
+                _context.Remove<PointGroup>(_pointGroup);
+                _context.Remove<Edge>(_edgeDouble1);
+                _context.Remove<Edge>(_edgeDouble2);
+                _edgeSingle = _context.Add(_edgeSingle, edge);
 
                 _context.OnModifiedShapes();
             }
