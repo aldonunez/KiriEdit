@@ -146,15 +146,13 @@ namespace KiriFig.Model
             return splitResult;
         }
 
-        public void DeleteDiscardablePoint(PointGroup pointGroup)
+        public Edge DeleteDiscardablePoint(PointGroup pointGroup)
         {
             if (pointGroup.IsFixed)
                 throw new ApplicationException("Can't delete a fixed point group.");
 
             if (pointGroup.Points.Count > 1)
                 throw new ApplicationException("Can't delete a point group that has more than one point.");
-
-            Debug.Assert(pointGroup.Points.Count == 1);
 
             Point pointToDelete = pointGroup.Points[0];
 
@@ -174,21 +172,20 @@ namespace KiriFig.Model
                 fixedPointAfter = fixedPointAfter.OutgoingEdge.P2;
             }
 
-            // Collect the points between the endpoints.
-
             Edge firstEdgeToReplace = fixedPointBefore.OutgoingEdge;
 
-            // Replace the path between the original endpoints with the original edge.
+            // Copy the original edge so that we can split it up.
 
             Edge directEdge = (Edge) fixedPointBefore.Group.OriginalOutgoingEdge.Clone();
 
-            directEdge.P1 = fixedPointBefore;
-            directEdge.P2 = fixedPointAfter;
+            directEdge.P1 = new Point(fixedPointBefore.X, fixedPointBefore.Y);
+            directEdge.P2 = new Point(fixedPointAfter.X, fixedPointAfter.Y);
 
-            fixedPointBefore.OutgoingEdge = directEdge;
-            fixedPointAfter.IncomingEdge = directEdge;
+            // Keep the original points and edges. But, successively split the copy of the original
+            // edge in order to calculate the combined edge with the best accuracy.
 
-            // Add the points we collected except for the one to remove.
+            Point pointBefore = pointToDelete.IncomingEdge.P1;
+            Point pointAfter = pointToDelete.OutgoingEdge.P2;
 
             var edge = directEdge;
 
@@ -200,7 +197,21 @@ namespace KiriFig.Model
                 var splitResult = SplitEdge(p, edge);
 
                 edge = splitResult.edgeAfter;
+
+                if (p == pointAfter)
+                {
+                    edge = splitResult.edgeBefore;
+                    break;
+                }
             }
+
+            // Patch the combined edge around the deleted point.
+
+            edge.P1 = pointBefore;
+            edge.P2 = pointAfter;
+
+            pointAfter.IncomingEdge = edge;
+            pointAfter.IncomingEdge.P1.OutgoingEdge = edge;
 
             _pointGroups.Remove(pointGroup);
 
@@ -208,6 +219,8 @@ namespace KiriFig.Model
 
             if (pointToDelete.Contour.FirstPoint == pointToDelete)
                 pointToDelete.Contour.FirstPoint = fixedPointBefore;
+
+            return pointBefore.OutgoingEdge;
         }
 
         public Cut AddCut(Point point1, Point point2)
@@ -421,7 +434,7 @@ namespace KiriFig.Model
         }
 
 
-        #region FindPointsForCut
+#region FindPointsForCut
 
         private struct FindPointsResult
         {
@@ -546,6 +559,6 @@ namespace KiriFig.Model
             return dotProduct1 + dotProduct2;
         }
 
-        #endregion
+#endregion
     }
 }
