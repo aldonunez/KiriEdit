@@ -120,12 +120,10 @@ namespace KiriEdit
 
             int index = color.B - 1;
 
-            _document.Figure.Shapes[index].Enabled = !_document.Figure.Shapes[index].Enabled;
+            var cmd = new EnableShapeCommand(_context, index, !_document.Figure.Shapes[index].Enabled);
 
-            DrawCanvas();
-            canvas.Invalidate();
-
-            OnModified();
+            cmd.Apply();
+            History.Add(cmd);
         }
 
         // Find a point group given a point in screen coordinates.
@@ -222,6 +220,12 @@ namespace KiriEdit
         private void RedrawOverlay()
         {
             DrawOverlay();
+            canvas.Invalidate();
+        }
+
+        private void RedrawCanvas()
+        {
+            DrawCanvas();
             canvas.Invalidate();
         }
 
@@ -804,6 +808,12 @@ namespace KiriEdit
                 _figureEditor.OnModified();
             }
 
+            public void OnEnabledChanged()
+            {
+                _figureEditor.RedrawCanvas();
+                _figureEditor.OnModified();
+            }
+
             public int GetId<T>(T obj)
             {
                 if (!_objToId.ContainsKey(obj))
@@ -1022,6 +1032,33 @@ namespace KiriEdit
             public override void Unapply()
             {
                 base.Add();
+            }
+        }
+
+
+        private class EnableShapeCommand : HistoryCommand
+        {
+            private readonly FigureContext _context;
+            private int _shapeIndex;
+            private bool _enable;
+
+            public EnableShapeCommand(FigureContext figureContext, int shapeIndex, bool enable)
+            {
+                _context = figureContext;
+                _shapeIndex = shapeIndex;
+                _enable = enable;
+            }
+
+            public override void Apply()
+            {
+                _context.Figure.Shapes[_shapeIndex].Enabled = _enable;
+                _context.OnEnabledChanged();
+            }
+
+            public override void Unapply()
+            {
+                _context.Figure.Shapes[_shapeIndex].Enabled = !_enable;
+                _context.OnEnabledChanged();
             }
         }
 
