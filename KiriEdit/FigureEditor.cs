@@ -82,7 +82,7 @@ namespace KiriEdit
 
             foreach (var pointGroup in _document.Figure.PointGroups)
             {
-                _context.AddPointGroup(pointGroup);
+                _context.AddPointGroup(-1, pointGroup);
             }
 
             foreach (var cut in _document.Figure.Cuts)
@@ -609,21 +609,25 @@ namespace KiriEdit
             {
                 if (_candidateEdge != null)
                 {
-                    var point = new Point((int) _candidatePoint.X, (int) _candidatePoint.Y);
+                    var cmd = new AddPointCommand(
+                        _parent._context,
+                        (int) _candidatePoint.X,
+                        (int) _candidatePoint.Y,
+                        _candidateEdge);
 
-                    _parent._document.Figure.AddDiscardablePoint(point, _candidateEdge);
+                    cmd.Apply();
+                    _parent.History.Add(cmd);
 
                     _candidateEdge = null;
-                    _parent.RebuildCanvas();
-                    _parent.OnModified();
                 }
                 else if (_hilitGroup != null)
                 {
-                    _parent._document.Figure.DeleteDiscardablePoint(_hilitGroup);
+                    var cmd = new DeletePointCommand(_parent._context, _hilitGroup);
+
+                    cmd.Apply();
+                    _parent.History.Add(cmd);
 
                     _hilitGroup = null;
-                    _parent.RebuildCanvas();
-                    _parent.OnModified();
                 }
             }
 
@@ -784,12 +788,15 @@ namespace KiriEdit
             private FigureEditor _figureEditor;
             private int _nextPointGroupId;
             private int _nextCutId;
+            private int _nextEdgeId;
 
             private Dictionary<int, PointGroup> _idToPointGroup = new Dictionary<int, PointGroup>();
             private Dictionary<int, Cut> _idToCut = new Dictionary<int, Cut>();
+            private Dictionary<int, Edge> _idToEdge = new Dictionary<int, Edge>();
 
             private Dictionary<PointGroup, int> _pointGroupToId = new Dictionary<PointGroup, int>();
             private Dictionary<Cut, int> _cutToId = new Dictionary<Cut, int>();
+            private Dictionary<Edge, int> _edgeToId = new Dictionary<Edge, int>();
 
             public Figure Figure => _figureEditor._document.Figure;
 
@@ -814,12 +821,23 @@ namespace KiriEdit
                 return _idToPointGroup[id];
             }
 
-            public void AddPointGroup(PointGroup pointGroup)
+            public int AddPointGroup(int id, PointGroup pointGroup)
             {
-                int id = _nextPointGroupId++;
+                if (id < 0)
+                    id = _nextPointGroupId++;
 
                 _idToPointGroup.Add(id, pointGroup);
                 _pointGroupToId.Add(pointGroup, id);
+
+                return id;
+            }
+
+            public void RemovePointGroup(int id)
+            {
+                PointGroup pointGroup = _idToPointGroup[id];
+
+                _idToPointGroup.Remove(id);
+                _pointGroupToId.Remove(pointGroup);
             }
 
             public int GetCutId(Cut cut)
@@ -849,6 +867,38 @@ namespace KiriEdit
 
                 _idToCut.Remove(id);
                 _cutToId.Remove(cut);
+            }
+
+            public int GetEdgeId(Edge edge)
+            {
+                if (!_edgeToId.ContainsKey(edge))
+                    return -1;
+
+                return _edgeToId[edge];
+            }
+
+            public Edge GetEdge(int id)
+            {
+                return _idToEdge[id];
+            }
+
+            public int AddEdge(int id, Edge edge)
+            {
+                if (id < 0)
+                    id = _nextEdgeId++;
+
+                _idToEdge.Add(id, edge);
+                _edgeToId.Add(edge, id);
+
+                return id;
+            }
+
+            public void RemoveEdge(int id)
+            {
+                Edge edge = _idToEdge[id];
+
+                _idToEdge.Remove(id);
+                _edgeToId.Remove(edge);
             }
         }
 
@@ -935,6 +985,113 @@ namespace KiriEdit
             }
         }
 
-#endregion
+
+        private abstract class AddDeletePointCommandBase : HistoryCommand
+        {
+            private FigureContext _context;
+            private int _x, _y;
+            private int _pointGroup = -1;
+            private int _edgeSingle = -1;
+            private int _edgeDouble1 = -1;
+            private int _edgeDouble2 = -1;
+
+            public AddDeletePointCommandBase(FigureContext context, int x, int y, Edge edge)
+            {
+                _context = context;
+                _x = x;
+                _y = y;
+
+                _edgeSingle = _context.GetEdgeId(edge);
+
+                if (_edgeSingle < 0)
+                    _edgeSingle = _context.AddEdge(-1, edge);
+            }
+
+            public AddDeletePointCommandBase(FigureContext context, PointGroup pointGroup)
+            {
+                _context = context;
+                _x = pointGroup.Points[0].X;
+                _y = pointGroup.Points[0].Y;
+                _pointGroup = _context.GetPointGroupId(pointGroup);
+
+                _edgeDouble1 = _context.GetEdgeId(pointGroup.Points[0].IncomingEdge);
+
+                if (_edgeDouble1 < 0)
+                    _edgeDouble1 = _context.AddEdge(-1, pointGroup.Points[0].IncomingEdge);
+
+                _edgeDouble2 = _context.GetEdgeId(pointGroup.Points[0].OutgoingEdge);
+
+                if (_edgeDouble2 < 0)
+                    _edgeDouble2 = _context.AddEdge(-1, pointGroup.Points[0].OutgoingEdge);
+            }
+
+            public void Add()
+            {
+                Edge edge = _context.GetEdge(_edgeSingle);
+
+                var p = _context.Figure.AddDiscardablePoint(new Point(_x, _y), edge);
+
+                _context.RemoveEdge(_edgeSingle);
+                _pointGroup = _context.AddPointGroup(_pointGroup, p.Group);
+                _edgeDouble1 = _context.AddEdge(_edgeDouble1, p.IncomingEdge);
+                _edgeDouble2 = _context.AddEdge(_edgeDouble2, p.OutgoingEdge);
+
+                _context.OnModifiedShapes();
+            }
+
+            public void Delete()
+            {
+                PointGroup pg = _context.GetPointGroup(_pointGroup);
+
+                var edge = _context.Figure.DeleteDiscardablePoint(pg);
+
+                _context.RemovePointGroup(_pointGroup);
+                _context.RemoveEdge(_edgeDouble1);
+                _context.RemoveEdge(_edgeDouble2);
+                _edgeSingle = _context.AddEdge(_edgeSingle, edge);
+
+                _context.OnModifiedShapes();
+            }
+        }
+
+
+        private class AddPointCommand : AddDeletePointCommandBase
+        {
+            public AddPointCommand(FigureContext context, int x, int y, Edge edge) :
+                base(context, x, y, edge)
+            {
+            }
+
+            public override void Apply()
+            {
+                base.Add();
+            }
+
+            public override void Unapply()
+            {
+                base.Delete();
+            }
+        }
+
+
+        private class DeletePointCommand : AddDeletePointCommandBase
+        {
+            public DeletePointCommand(FigureContext context, PointGroup pointGroup) :
+                base(context, pointGroup)
+            {
+            }
+
+            public override void Apply()
+            {
+                base.Delete();
+            }
+
+            public override void Unapply()
+            {
+                base.Add();
+            }
+        }
+
+        #endregion
     }
 }
