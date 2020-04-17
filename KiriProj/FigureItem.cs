@@ -71,7 +71,7 @@ namespace KiriProj
             Deleted?.Invoke(this, EventArgs.Empty);
         }
 
-        internal static FigureItem Make(CharacterItem characterItem, string name)
+        internal static FigureItem Make(CharacterItem characterItem, string name, FigureItem template)
         {
             string fileName = name + ".kefig";
             string figurePath = System.IO.Path.Combine(characterItem.RootPath, fileName);
@@ -85,7 +85,7 @@ namespace KiriProj
 
             var figureItem = new FigureItem(figurePath, characterItem);
 
-            FigureDocument pieceDoc = characterItem.MasterFigureItem.Open();
+            FigureDocument pieceDoc = template.Open();
 
             figureItem.Save(pieceDoc);
 

@@ -100,10 +100,12 @@ namespace KiriEdit
             if (piecesListView.SelectedIndices.Count == 0)
             {
                 deletePieceButton.Enabled = false;
+                copyPieceButton.Enabled = false;
             }
             else
             {
                 deletePieceButton.Enabled = true;
+                copyPieceButton.Enabled = true;
             }
         }
 
@@ -176,22 +178,40 @@ namespace KiriEdit
                 DeletePiece(piecesListView.SelectedItems[0]);
         }
 
+        private void copyPieceButton_Click(object sender, EventArgs e)
+        {
+            if (piecesListView.SelectedItems.Count > 0)
+                CopyPiece(piecesListView.SelectedItems[0]);
+        }
+
         private void PiecesListView_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Delete)
                 deletePieceButton_Click(sender, e);
         }
 
-        private void AddPiece()
+        private void AddPiece(FigureItem template)
         {
             // TODO: make this an instance method
             string fileName = CharacterItem.FindNextFileName(Project, _characterItem.CodePoint);
             string name = Path.GetFileNameWithoutExtension(fileName);
 
-            FigureItem figureItem = _characterItem.AddItem(name);
+            FigureItem figureItem = _characterItem.AddItem(name, template);
 
             LoadPiece(figureItem);
             LoadProgressPicture();
+        }
+
+        private void AddPiece()
+        {
+            AddPiece(_characterItem.MasterFigureItem);
+        }
+
+        private void CopyPiece(ListViewItem listViewItem)
+        {
+            var figureItem = (FigureItem) listViewItem.Tag;
+
+            AddPiece(figureItem);
         }
 
         private void ReplacePieceImage(FigureItem figureItem)

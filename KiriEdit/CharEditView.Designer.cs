@@ -40,23 +40,24 @@
             this.components = new System.ComponentModel.Container();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.progressPictureBox = new System.Windows.Forms.PictureBox();
             this.masterLabel = new System.Windows.Forms.Label();
-            this.masterPictureBox = new System.Windows.Forms.PictureBox();
             this.piecesLabel = new System.Windows.Forms.Label();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.addPieceButton = new System.Windows.Forms.ToolStripButton();
-            this.deletePieceButton = new System.Windows.Forms.ToolStripButton();
             this.piecesListView = new System.Windows.Forms.ListView();
             this.piecesImageList = new System.Windows.Forms.ImageList(this.components);
+            this.progressPictureBox = new System.Windows.Forms.PictureBox();
+            this.masterPictureBox = new System.Windows.Forms.PictureBox();
+            this.addPieceButton = new System.Windows.Forms.ToolStripButton();
+            this.deletePieceButton = new System.Windows.Forms.ToolStripButton();
+            this.copyPieceButton = new System.Windows.Forms.ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.progressPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.masterPictureBox)).BeginInit();
-            this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -91,20 +92,6 @@
             this.panel1.Size = new System.Drawing.Size(130, 225);
             this.panel1.TabIndex = 0;
             // 
-            // progressPictureBox
-            // 
-            this.progressPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.progressPictureBox.BackColor = System.Drawing.Color.White;
-            this.progressPictureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.progressPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.progressPictureBox.Location = new System.Drawing.Point(3, 126);
-            this.progressPictureBox.Name = "progressPictureBox";
-            this.progressPictureBox.Size = new System.Drawing.Size(124, 85);
-            this.progressPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
-            this.progressPictureBox.TabIndex = 5;
-            this.progressPictureBox.TabStop = false;
-            // 
             // masterLabel
             // 
             this.masterLabel.AutoSize = true;
@@ -115,20 +102,6 @@
             this.masterLabel.TabIndex = 2;
             this.masterLabel.Text = "Master:";
             this.masterLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // masterPictureBox
-            // 
-            this.masterPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.masterPictureBox.BackColor = System.Drawing.Color.White;
-            this.masterPictureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.masterPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.masterPictureBox.Location = new System.Drawing.Point(3, 19);
-            this.masterPictureBox.Name = "masterPictureBox";
-            this.masterPictureBox.Size = new System.Drawing.Size(124, 85);
-            this.masterPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
-            this.masterPictureBox.TabIndex = 3;
-            this.masterPictureBox.TabStop = false;
             // 
             // piecesLabel
             // 
@@ -145,12 +118,62 @@
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addPieceButton,
-            this.deletePieceButton});
+            this.deletePieceButton,
+            this.copyPieceButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(130, 25);
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
+            // 
+            // piecesListView
+            // 
+            this.piecesListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.piecesListView.HideSelection = false;
+            this.piecesListView.LargeImageList = this.piecesImageList;
+            this.piecesListView.Location = new System.Drawing.Point(0, 0);
+            this.piecesListView.MultiSelect = false;
+            this.piecesListView.Name = "piecesListView";
+            this.piecesListView.Size = new System.Drawing.Size(256, 250);
+            this.piecesListView.TabIndex = 1;
+            this.piecesListView.UseCompatibleStateImageBehavior = false;
+            this.piecesListView.ItemActivate += new System.EventHandler(this.piecesListView_ItemActivate);
+            this.piecesListView.SelectedIndexChanged += new System.EventHandler(this.PiecesListView_SelectedIndexChanged);
+            this.piecesListView.KeyUp += new System.Windows.Forms.KeyEventHandler(this.PiecesListView_KeyUp);
+            // 
+            // piecesImageList
+            // 
+            this.piecesImageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
+            this.piecesImageList.ImageSize = new System.Drawing.Size(32, 32);
+            this.piecesImageList.TransparentColor = System.Drawing.Color.Transparent;
+            // 
+            // progressPictureBox
+            // 
+            this.progressPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.progressPictureBox.BackColor = System.Drawing.Color.White;
+            this.progressPictureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.progressPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.progressPictureBox.Location = new System.Drawing.Point(3, 126);
+            this.progressPictureBox.Name = "progressPictureBox";
+            this.progressPictureBox.Size = new System.Drawing.Size(124, 85);
+            this.progressPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.progressPictureBox.TabIndex = 5;
+            this.progressPictureBox.TabStop = false;
+            // 
+            // masterPictureBox
+            // 
+            this.masterPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.masterPictureBox.BackColor = System.Drawing.Color.White;
+            this.masterPictureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.masterPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.masterPictureBox.Location = new System.Drawing.Point(3, 19);
+            this.masterPictureBox.Name = "masterPictureBox";
+            this.masterPictureBox.Size = new System.Drawing.Size(124, 85);
+            this.masterPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.masterPictureBox.TabIndex = 3;
+            this.masterPictureBox.TabStop = false;
             // 
             // addPieceButton
             // 
@@ -173,26 +196,16 @@
             this.deletePieceButton.Text = "Delete piece";
             this.deletePieceButton.Click += new System.EventHandler(this.deletePieceButton_Click);
             // 
-            // piecesListView
+            // copyPieceButton
             // 
-            this.piecesListView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.piecesListView.HideSelection = false;
-            this.piecesListView.LargeImageList = this.piecesImageList;
-            this.piecesListView.Location = new System.Drawing.Point(0, 0);
-            this.piecesListView.MultiSelect = false;
-            this.piecesListView.Name = "piecesListView";
-            this.piecesListView.Size = new System.Drawing.Size(256, 250);
-            this.piecesListView.TabIndex = 1;
-            this.piecesListView.UseCompatibleStateImageBehavior = false;
-            this.piecesListView.ItemActivate += new System.EventHandler(this.piecesListView_ItemActivate);
-            this.piecesListView.KeyUp += new System.Windows.Forms.KeyEventHandler(this.PiecesListView_KeyUp);
-            this.piecesListView.SelectedIndexChanged += new System.EventHandler(this.PiecesListView_SelectedIndexChanged);
-            // 
-            // piecesImageList
-            // 
-            this.piecesImageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
-            this.piecesImageList.ImageSize = new System.Drawing.Size(32, 32);
-            this.piecesImageList.TransparentColor = System.Drawing.Color.Transparent;
+            this.copyPieceButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.copyPieceButton.Enabled = false;
+            this.copyPieceButton.Image = global::KiriEdit.Properties.Resources.Copy;
+            this.copyPieceButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.copyPieceButton.Name = "copyPieceButton";
+            this.copyPieceButton.Size = new System.Drawing.Size(23, 22);
+            this.copyPieceButton.Text = "Copy piece";
+            this.copyPieceButton.Click += new System.EventHandler(this.copyPieceButton_Click);
             // 
             // CharEditView
             // 
@@ -210,10 +223,10 @@
             this.splitContainer1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.progressPictureBox)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.masterPictureBox)).EndInit();
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.progressPictureBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.masterPictureBox)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -231,5 +244,6 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.ImageList piecesImageList;
         private System.Windows.Forms.PictureBox progressPictureBox;
+        private System.Windows.Forms.ToolStripButton copyPieceButton;
     }
 }

@@ -182,7 +182,7 @@ namespace KiriProj
 
         // TODO: RenameItem?
 
-        public FigureItem AddItem(string name)
+        public FigureItem AddItem(string name, FigureItem template)
         {
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentException();
@@ -195,7 +195,7 @@ namespace KiriProj
                     throw new ApplicationException();
             }
 
-            var figureItem = FigureItem.Make(this, name);
+            var figureItem = FigureItem.Make(this, name, template);
 
             _figureItems.Add(figureItem);
             Project.NotifyItemModified(this);
