@@ -16,13 +16,14 @@ namespace KiriEdit
     public partial class CharacterGrid : UserControl
     {
         private const float HeightToWidth = 37f / 32f;
-        const float SelectionBoxRatio = 1.3f;
+        private const float SelectionBoxRatio = 1.3f;
 
         private CharGridRendererArgs _renderArgs;
         private Font _curFont;
         private CharSet _charSet = new SequentialCharSet(null, 0, 0xFFFF);
         private int _columns = 10;
         private int _curIndex = -1;
+        private bool _mouseDown;
 
         public event EventHandler SelectedIndexChanged;
 
@@ -90,12 +91,20 @@ namespace KiriEdit
 
         private void CharacterGrid_MouseDown(object sender, MouseEventArgs e)
         {
+            if (e.Button == MouseButtons.Left)
+                _mouseDown = true;
+
             SelectByMouse(e);
+        }
+
+        private void CharacterGrid_MouseUp(object sender, MouseEventArgs e)
+        {
+            _mouseDown = false;
         }
 
         private void CharacterGrid_MouseMove(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
+            if (_mouseDown)
                 SelectByMouse(e);
         }
 

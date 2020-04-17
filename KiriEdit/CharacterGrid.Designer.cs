@@ -63,6 +63,7 @@
             this.LostFocus += new System.EventHandler(this.CharacterGrid_LostFocus);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.CharacterGrid_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.CharacterGrid_MouseMove);
+            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.CharacterGrid_MouseUp);
             this.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.CharacterGrid_MouseWheel);
             this.Resize += new System.EventHandler(this.CharacterGrid_Resize);
             this.ResumeLayout(false);
