@@ -10,3 +10,9 @@ Some icons come from Fugue Icons, and are covered by the following license:
   These icons are licensed under a Creative Commons
   Attribution 3.0 License.
   <http://creativecommons.org/licenses/by/3.0/>
+
+
+FolderSelectDialog.cs and Reflector.cs files in the KiriEdit project are taken
+from http://www.lyquidity.com/devblog/?p=136 , where the webpage states:
+
+  There’s no license as such as you are free to take and do with the code what you will.
