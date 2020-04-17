@@ -40,8 +40,14 @@ namespace KiriEdit
             _documentContainer = new MdiDocumentContainer(this);
             _documentContainer.ViewsChanged += _documentContainer_ViewsChanged;
             _documentContainer.ViewActivate += _documentContainer_ViewActivate;
+            _documentContainer.HistoryChanged += _documentContainer_HistoryChanged;
 
             EnterNothingMode();
+        }
+
+        private void _documentContainer_HistoryChanged(object sender, EventArgs e)
+        {
+            UpdateHistoryMenus();
         }
 
         private void WindowMenuItem_DropDownOpening(object sender, EventArgs e)
@@ -52,6 +58,7 @@ namespace KiriEdit
         private void _documentContainer_ViewActivate(object sender, EventArgs e)
         {
             UpdateViewHostingState();
+            UpdateHistoryMenus();
         }
 
         private void _documentContainer_ViewsChanged(object sender, ViewsChangedEventArgs e)
@@ -68,6 +75,22 @@ namespace KiriEdit
                 {
                     _runningDocTable.Remove(e.View.ProjectItem);
                 }
+            }
+        }
+
+        private void UpdateHistoryMenus()
+        {
+            if (_documentContainer.Count == 0 || _documentContainer.CurrentView.HistoryBuffer == null)
+            {
+                redoMenuItem.Enabled = false;
+                undoMenuItem.Enabled = false;
+            }
+            else
+            {
+                var history = _documentContainer.CurrentView.HistoryBuffer;
+
+                redoMenuItem.Enabled = history.RedoCount > 0;
+                undoMenuItem.Enabled = history.UndoCount > 0;
             }
         }
 
@@ -405,28 +428,14 @@ namespace KiriEdit
 
         private void redoMenuItem_Click(object sender, EventArgs e)
         {
-            _documentContainer.CurrentView.HistoryBuffer.Redo();
+            if (_documentContainer.Count > 0 && _documentContainer.CurrentView.HistoryBuffer != null)
+                _documentContainer.CurrentView.HistoryBuffer.Redo();
         }
 
         private void undoMenuItem_Click(object sender, EventArgs e)
         {
-            _documentContainer.CurrentView.HistoryBuffer.Undo();
-        }
-
-        private void editMenuItem_DropDownOpening(object sender, EventArgs e)
-        {
-            if (_documentContainer.Count == 0 || _documentContainer.CurrentView.HistoryBuffer == null)
-            {
-                redoMenuItem.Enabled = false;
-                undoMenuItem.Enabled = false;
-            }
-            else
-            {
-                var history = _documentContainer.CurrentView.HistoryBuffer;
-
-                redoMenuItem.Enabled = history.RedoCount > 0;
-                undoMenuItem.Enabled = history.UndoCount > 0;
-            }
+            if (_documentContainer.Count > 0 && _documentContainer.CurrentView.HistoryBuffer != null)
+                _documentContainer.CurrentView.HistoryBuffer.Undo();
         }
     }
 }

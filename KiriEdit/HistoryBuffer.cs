@@ -15,6 +15,8 @@ namespace KiriEdit
         private List<HistoryCommand> _commands = new List<HistoryCommand>();
         private int _topUndoIndex = -1;
 
+        public event EventHandler HistoryChanged;
+
         public int UndoCount => _topUndoIndex + 1;
 
         public int RedoCount => (_commands.Count - 1) - _topUndoIndex;
@@ -22,25 +24,29 @@ namespace KiriEdit
         public void Undo()
         {
             if (_topUndoIndex < 0)
-                throw new InvalidOperationException();
+                return;
 
             var cmd = _commands[_topUndoIndex];
 
             cmd.Unapply();
 
             _topUndoIndex--;
+
+            OnHistoryChanged();
         }
 
         public void Redo()
         {
             if (_topUndoIndex >= _commands.Count - 1)
-                throw new InvalidOperationException();
+                return;
 
             _topUndoIndex++;
 
             var cmd = _commands[_topUndoIndex];
 
             cmd.Apply();
+
+            OnHistoryChanged();
         }
 
         public void Add(HistoryCommand command)
@@ -52,6 +58,13 @@ namespace KiriEdit
 
             _commands.Add(command);
             _topUndoIndex++;
+
+            OnHistoryChanged();
+        }
+
+        private void OnHistoryChanged()
+        {
+            HistoryChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 

@@ -46,6 +46,7 @@ namespace KiriEdit
 
         public event ViewsChangedEventHandler ViewsChanged;
         public event EventHandler ViewActivate;
+        public event EventHandler HistoryChanged;
 
         public MdiDocumentContainer(Form form)
         {
@@ -82,6 +83,9 @@ namespace KiriEdit
                 view.Form.WindowState = FormWindowState.Maximized;
                 view.Form.FormClosed += Form_FormClosed;
                 view.Form.Show();
+
+                if (view.HistoryBuffer != null)
+                    view.HistoryBuffer.HistoryChanged += HistoryBuffer_HistoryChanged;
             }
             catch
             {
@@ -100,7 +104,15 @@ namespace KiriEdit
             IView view = (IView) sender;
             _views.Remove(view);
 
+            if (view.HistoryBuffer != null)
+                view.HistoryBuffer.HistoryChanged -= HistoryBuffer_HistoryChanged;
+
             ViewsChanged?.Invoke(this, new ViewsChangedEventArgs(view, ViewsChangedAction.Removed));
+        }
+
+        private void HistoryBuffer_HistoryChanged(object sender, EventArgs e)
+        {
+            HistoryChanged?.Invoke(sender, e);
         }
 
         // Enumerate views in order with most recent first.
