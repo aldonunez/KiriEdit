@@ -80,9 +80,10 @@ namespace KiriFig
             if (curContour == null)
                 return;
 
-            if (curContour.FirstPoint == null || curContour.FirstPoint == curPoint)
+            if (curContour.FirstPoint == curPoint)
             {
                 _contours.Remove(curContour);
+                _pointGroups.Remove(curPoint.Group);
                 return;
             }
 
@@ -128,6 +129,9 @@ namespace KiriFig
 
         private int LineToFunc(ref FTVector to, IntPtr user)
         {
+            if (to.X == curPoint.X && to.Y == curPoint.Y)
+                return 0;
+
             x = to.X;
             y = to.Y;
             Console.WriteLine("LineTo: {0}, {1}", x, y);
