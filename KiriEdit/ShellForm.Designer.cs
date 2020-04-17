@@ -194,6 +194,7 @@
             this.windowMenuItem.Name = "windowMenuItem";
             this.windowMenuItem.Size = new System.Drawing.Size(63, 20);
             this.windowMenuItem.Text = "&Window";
+            this.windowMenuItem.DropDownOpening += WindowMenuItem_DropDownOpening;
             // 
             // closeAllDocumentsMenuItem
             // 
