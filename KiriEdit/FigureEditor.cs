@@ -5,15 +5,15 @@
    See the LICENSE.txt file for details.
 */
 
+using KiriFig;
+using KiriFig.Model;
 using KiriProj;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
-using KiriFig;
-using KiriFig.Model;
 using Point = KiriFig.Model.Point;
-using System.Collections.Generic;
 
 namespace KiriEdit
 {
@@ -91,6 +91,12 @@ namespace KiriEdit
             }
         }
 
+        private void AddHistory(HistoryCommand command)
+        {
+            if (History != null)
+                History.Add(command);
+        }
+
         private void OnModified()
         {
             Modified?.Invoke(this, EventArgs.Empty);
@@ -123,7 +129,7 @@ namespace KiriEdit
             var cmd = new EnableShapeCommand(_context, index, !_document.Figure.Shapes[index].Enabled);
 
             cmd.Apply();
-            History.Add(cmd);
+            AddHistory(cmd);
         }
 
         // Find a point group given a point in screen coordinates.
@@ -433,7 +439,7 @@ namespace KiriEdit
                 var cmd = new DeleteCutCommand(_parent._context, cut);
 
                 cmd.Apply();
-                _parent.History.Add(cmd);
+                _parent.AddHistory(cmd);
             }
 
             private void TryCommitLine(object sender, MouseEventArgs e)
@@ -445,7 +451,7 @@ namespace KiriEdit
                     var cmd = new AddCutCommand(_parent._context, _candidatePoint1.Group, _candidatePoint2.Group);
 
                     cmd.Apply();
-                    _parent.History.Add(cmd);
+                    _parent.AddHistory(cmd);
 
                     _lineStartGroup = null;
                     _lineEndGroup = null;
@@ -620,7 +626,7 @@ namespace KiriEdit
                         _candidateEdge);
 
                     cmd.Apply();
-                    _parent.History.Add(cmd);
+                    _parent.AddHistory(cmd);
 
                     _candidateEdge = null;
                 }
@@ -629,7 +635,7 @@ namespace KiriEdit
                     var cmd = new DeletePointCommand(_parent._context, _hilitGroup);
 
                     cmd.Apply();
-                    _parent.History.Add(cmd);
+                    _parent.AddHistory(cmd);
 
                     _hilitGroup = null;
                 }
