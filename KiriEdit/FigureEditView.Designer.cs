@@ -150,6 +150,7 @@
             this.ClientSize = new System.Drawing.Size(391, 250);
             this.Controls.Add(this.splitContainer1);
             this.Name = "FigureEditView";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FigureEditView_FormClosed);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FigureEditView_FormClosing);
             this.Load += new System.EventHandler(this.FigureEditView_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);

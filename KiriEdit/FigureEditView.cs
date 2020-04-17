@@ -89,6 +89,11 @@ namespace KiriEdit
                 Text += "*";
         }
 
+        private void FigureEditView_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            _figureItem.IsDirty = false;
+        }
+
         private void FigureEditView_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (e.CloseReason == CloseReason.UserClosing && !_deleted)
