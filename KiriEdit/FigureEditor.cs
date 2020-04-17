@@ -79,16 +79,6 @@ namespace KiriEdit
                 return;
 
             _context = new FigureContext(this);
-
-            foreach (var pointGroup in _document.Figure.PointGroups)
-            {
-                _context.Add(-1, pointGroup);
-            }
-
-            foreach (var cut in _document.Figure.Cuts)
-            {
-                _context.Add(-1, cut);
-            }
         }
 
         private void AddHistory(HistoryCommand command)
@@ -820,7 +810,7 @@ namespace KiriEdit
                 _figureEditor.OnModified();
             }
 
-            public int GetId<T>(T obj)
+            private int GetId<T>(T obj)
             {
                 if (!_objToId.ContainsKey(obj))
                     return -1;
@@ -873,16 +863,16 @@ namespace KiriEdit
             public AddDeleteCutCommandBase(FigureContext context, PointGroup pointGroup1, PointGroup pointGroup2)
             {
                 _context = context;
-                _pointGroup1 = _context.GetId(pointGroup1);
-                _pointGroup2 = _context.GetId(pointGroup2);
+                _pointGroup1 = _context.Import(pointGroup1);
+                _pointGroup2 = _context.Import(pointGroup2);
             }
 
             public AddDeleteCutCommandBase(FigureContext context, Cut cut)
             {
                 _context = context;
-                _cut = _context.GetId(cut);
-                _pointGroup1 = _context.GetId(cut.PairedEdge1.P1.Group);
-                _pointGroup2 = _context.GetId(cut.PairedEdge1.P2.Group);
+                _cut = _context.Import(cut);
+                _pointGroup1 = _context.Import(cut.PairedEdge1.P1.Group);
+                _pointGroup2 = _context.Import(cut.PairedEdge1.P2.Group);
             }
 
             public void Add()
@@ -969,7 +959,7 @@ namespace KiriEdit
                 _context = context;
                 _x = pointGroup.Points[0].X;
                 _y = pointGroup.Points[0].Y;
-                _pointGroup = _context.GetId(pointGroup);
+                _pointGroup = _context.Import(pointGroup);
                 _edgeDouble1 = _context.Import(pointGroup.Points[0].IncomingEdge);
                 _edgeDouble2 = _context.Import(pointGroup.Points[0].OutgoingEdge);
             }
