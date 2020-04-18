@@ -46,12 +46,14 @@
         {
             this.components = new System.ComponentModel.Container();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.charListBox = new System.Windows.Forms.ListBox();
+            this.charListBox = new System.Windows.Forms.ListView();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.sortComboBox = new System.Windows.Forms.ComboBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.addListCharButton = new System.Windows.Forms.ToolStripButton();
             this.deleteListCharButton = new System.Windows.Forms.ToolStripButton();
-            this.charGrid = new KiriEdit.CharacterGrid();
             this.panel2 = new System.Windows.Forms.Panel();
             this.charDescriptionLabel = new System.Windows.Forms.Label();
             this.findCharButton = new System.Windows.Forms.Button();
@@ -61,6 +63,7 @@
             this.addCharacterMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteCharacterMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editCharacterMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.charGrid = new KiriEdit.CharacterGrid();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -98,15 +101,36 @@
             // 
             // charListBox
             // 
+            this.charListBox.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2,
+            this.columnHeader3});
             this.charListBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.charListBox.FormattingEnabled = true;
+            this.charListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.charListBox.FullRowSelect = true;
+            this.charListBox.HideSelection = false;
             this.charListBox.Location = new System.Drawing.Point(0, 46);
+            this.charListBox.MultiSelect = false;
             this.charListBox.Name = "charListBox";
             this.charListBox.Size = new System.Drawing.Size(121, 219);
             this.charListBox.TabIndex = 2;
+            this.charListBox.UseCompatibleStateImageBehavior = false;
+            this.charListBox.View = System.Windows.Forms.View.Details;
             this.charListBox.SelectedIndexChanged += new System.EventHandler(this.charListBox_SelectedIndexChanged);
             this.charListBox.DoubleClick += new System.EventHandler(this.CharListBox_DoubleClick);
             this.charListBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.CharListBox_KeyUp);
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "Code point";
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "Char.";
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "Pieces";
             // 
             // sortComboBox
             // 
@@ -147,20 +171,6 @@
             this.deleteListCharButton.Size = new System.Drawing.Size(23, 22);
             this.deleteListCharButton.Text = "Delete character";
             this.deleteListCharButton.Click += new System.EventHandler(this.deleteListCharButton_Click);
-            // 
-            // charGrid
-            // 
-            this.charGrid.Columns = 20;
-            this.charGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.charGrid.Location = new System.Drawing.Point(8, 32);
-            this.charGrid.Margin = new System.Windows.Forms.Padding(2);
-            this.charGrid.Name = "charGrid";
-            this.charGrid.OnCharacterColor = System.Drawing.Color.Red;
-            this.charGrid.Size = new System.Drawing.Size(285, 170);
-            this.charGrid.TabIndex = 0;
-            this.charGrid.SelectedIndexChanged += new System.EventHandler(this.charGrid_SelectedIndexChanged);
-            this.charGrid.DoubleClick += new System.EventHandler(this.CharGrid_DoubleClick);
-            this.charGrid.MouseUp += new System.Windows.Forms.MouseEventHandler(this.CharGrid_MouseUp);
             // 
             // panel2
             // 
@@ -219,28 +229,42 @@
             this.deleteCharacterMenuItem,
             this.editCharacterMenuItem});
             this.characterContextMenu.Name = "characterContextMenu";
-            this.characterContextMenu.Size = new System.Drawing.Size(181, 92);
+            this.characterContextMenu.Size = new System.Drawing.Size(172, 70);
             // 
             // addCharacterMenuItem
             // 
             this.addCharacterMenuItem.Name = "addCharacterMenuItem";
-            this.addCharacterMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.addCharacterMenuItem.Size = new System.Drawing.Size(171, 22);
             this.addCharacterMenuItem.Text = "Add character";
             this.addCharacterMenuItem.Click += new System.EventHandler(this.addCharacterMenuItem_Click);
             // 
             // deleteCharacterMenuItem
             // 
             this.deleteCharacterMenuItem.Name = "deleteCharacterMenuItem";
-            this.deleteCharacterMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.deleteCharacterMenuItem.Size = new System.Drawing.Size(171, 22);
             this.deleteCharacterMenuItem.Text = "Delete character ...";
             this.deleteCharacterMenuItem.Click += new System.EventHandler(this.deleteCharacterMenuItem_Click);
             // 
             // editCharacterMenuItem
             // 
             this.editCharacterMenuItem.Name = "editCharacterMenuItem";
-            this.editCharacterMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.editCharacterMenuItem.Size = new System.Drawing.Size(171, 22);
             this.editCharacterMenuItem.Text = "Edit character";
             this.editCharacterMenuItem.Click += new System.EventHandler(this.editCharacterMenuItem_Click);
+            // 
+            // charGrid
+            // 
+            this.charGrid.Columns = 20;
+            this.charGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.charGrid.Location = new System.Drawing.Point(8, 32);
+            this.charGrid.Margin = new System.Windows.Forms.Padding(2);
+            this.charGrid.Name = "charGrid";
+            this.charGrid.OnCharacterColor = System.Drawing.Color.Red;
+            this.charGrid.Size = new System.Drawing.Size(285, 170);
+            this.charGrid.TabIndex = 0;
+            this.charGrid.SelectedIndexChanged += new System.EventHandler(this.charGrid_SelectedIndexChanged);
+            this.charGrid.DoubleClick += new System.EventHandler(this.CharGrid_DoubleClick);
+            this.charGrid.MouseUp += new System.Windows.Forms.MouseEventHandler(this.CharGrid_MouseUp);
             // 
             // CharMapView
             // 
@@ -269,7 +293,7 @@
         #endregion
 
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.ListBox charListBox;
+        private System.Windows.Forms.ListView charListBox;
         private System.Windows.Forms.ComboBox sortComboBox;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton addListCharButton;
@@ -284,5 +308,8 @@
         private System.Windows.Forms.ToolStripMenuItem addCharacterMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteCharacterMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editCharacterMenuItem;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.ColumnHeader columnHeader2;
+        private System.Windows.Forms.ColumnHeader columnHeader3;
     }
 }

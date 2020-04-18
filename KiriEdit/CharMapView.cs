@@ -70,10 +70,7 @@ namespace KiriEdit
             {
                 if (listItem.CodePoint == charItem.CodePoint)
                 {
-                    listItem.Text = MakeCharListItemText(charItem);
-                    // This hack forces the ListBox to refresh the text.
-                    charListBox.DrawMode = DrawMode.OwnerDrawFixed;
-                    charListBox.DrawMode = DrawMode.Normal;
+                    listItem.Refresh();
                     break;
                 }
             }
@@ -89,10 +86,13 @@ namespace KiriEdit
 
         private void CharListBox_DoubleClick(object sender, EventArgs e)
         {
-            var charListItem = (CharListItem) charListBox.SelectedItem;
+            if (charListBox.SelectedItems.Count > 0)
+            {
+                var charListItem = (CharListItem) charListBox.SelectedItems[0];
 
-            if (charListItem != null)
-                Shell.OpenItem(charListItem.CharacterItem);
+                if (charListItem != null)
+                    Shell.OpenItem(charListItem.CharacterItem);
+            }
         }
 
         private void addListCharButton_Click(object sender, EventArgs e)
@@ -135,8 +135,8 @@ namespace KiriEdit
 
         private void deleteListCharButton_Click(object sender, EventArgs e)
         {
-            if (charListBox.SelectedIndex >= 0)
-                DeleteListItem((CharListItem) charListBox.SelectedItem);
+            if (charListBox.SelectedItems.Count > 0)
+                DeleteListItem((CharListItem) charListBox.SelectedItems[0]);
         }
 
         private void DeleteListItem(CharListItem listItem)
@@ -167,11 +167,11 @@ namespace KiriEdit
 
         private void charListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            deleteListCharButton.Enabled = charListBox.SelectedIndex >= 0;
+            deleteListCharButton.Enabled = charListBox.SelectedItems.Count > 0;
 
-            if (charListBox.SelectedIndex >= 0)
+            if (charListBox.SelectedItems.Count > 0)
             {
-                var listItem = (CharListItem) charListBox.SelectedItem;
+                var listItem = (CharListItem) charListBox.SelectedItems[0];
                 int index = charGrid.CharSet.MapToIndex(listItem.CodePoint);
                 charGrid.SelectCharacter(index);
             }
@@ -265,12 +265,20 @@ namespace KiriEdit
         {
             _charListItems.Sort(CompareChars);
 
-            object selListItem = charListBox.SelectedItem;
+            ListViewItem selListItem = null;
+
+            if (charListBox.SelectedItems.Count > 0)
+                selListItem = charListBox.SelectedItems[0];
 
             charListBox.Items.Clear();
             charListBox.Items.AddRange(_charListItems.ToArray());
 
-            charListBox.SelectedItem = selListItem;
+            if (selListItem != null)
+                selListItem.Selected = true;
+
+            charListBox.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+            charListBox.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+            columnHeader3.AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
         }
 
         private int CompareChars(CharListItem a, CharListItem b)
@@ -287,10 +295,7 @@ namespace KiriEdit
         private static string MakeCharListItemText(CharacterItem item)
         {
             var codePoint = item.CodePoint;
-            var text = string.Format("U+{0:X6} - {1} ({2})",
-                codePoint,
-                CharUtils.GetString(codePoint),
-                item.PieceFigureItems.Count);
+            var text = string.Format("U+{0:X6}", codePoint);
             return text;
         }
 
@@ -448,9 +453,8 @@ namespace KiriEdit
 
         #region Inner classes
 
-        private class CharListItem
+        private class CharListItem : ListViewItem
         {
-            public string Text;
             public uint CodePoint;
             public string String;
             public CharacterItem CharacterItem;
@@ -461,6 +465,14 @@ namespace KiriEdit
                 CodePoint = codePoint;
                 String = CharUtils.GetString(codePoint);
                 CharacterItem = characterItem;
+
+                SubItems.Add(String);
+                SubItems.Add(characterItem.PieceFigureItems.Count.ToString());
+            }
+
+            public void Refresh()
+            {
+                SubItems[2].Text = CharacterItem.PieceFigureItems.Count.ToString();
             }
 
             public override string ToString()
