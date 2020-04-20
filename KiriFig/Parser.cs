@@ -84,7 +84,7 @@ namespace KiriFig
 
             int id = -1;
 
-            if (CharIsDigit(_iChar))
+            if (_iChar == '-' || CharIsDigit(_iChar))
             {
                 id = ReadInteger();
             }

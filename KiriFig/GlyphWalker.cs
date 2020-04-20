@@ -18,6 +18,7 @@ namespace KiriFig
         private Contour _curContour;
         private Point _curPoint;
         private int _x, _y;
+        private int _nextEdge;
 
         private List<Contour> _contours = new List<Contour>();
         private List<PointGroup> _pointGroups = new List<PointGroup>();
@@ -132,7 +133,7 @@ namespace KiriFig
 
             var newPoint = new Point(_x, _y);
 
-            var edge = new LineEdge(_curPoint, newPoint);
+            var edge = new LineEdge(_curPoint, newPoint, _nextEdge++);
             _curPoint.OutgoingEdge = edge;
             newPoint.IncomingEdge = edge;
 
@@ -161,7 +162,7 @@ namespace KiriFig
             var newPoint = new Point(_x, _y);
             var controlPoint = new Point(controlX, controlY);
 
-            var edge = new ConicEdge(_curPoint, controlPoint, newPoint);
+            var edge = new ConicEdge(_curPoint, controlPoint, newPoint, _nextEdge++);
             _curPoint.OutgoingEdge = edge;
             newPoint.IncomingEdge = edge;
 
@@ -193,7 +194,7 @@ namespace KiriFig
             var controlPoint1 = new Point(controlX1, controlY1);
             var controlPoint2 = new Point(controlX2, controlY2);
 
-            var edge = new CubicEdge(_curPoint, controlPoint1, controlPoint2, newPoint);
+            var edge = new CubicEdge(_curPoint, controlPoint1, controlPoint2, newPoint, _nextEdge++);
             _curPoint.OutgoingEdge = edge;
             newPoint.IncomingEdge = edge;
 

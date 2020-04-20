@@ -251,8 +251,8 @@ namespace KiriFig.Model
 
             // Add a line edge between old points and between new points.
 
-            LineEdge lineForNew = new LineEdge(newPoint1, newPoint2, unbreakable: true);
-            LineEdge lineForOld = new LineEdge(point2, point1, unbreakable: true);
+            LineEdge lineForNew = new LineEdge(newPoint1, newPoint2, -1, unbreakable: true);
+            LineEdge lineForOld = new LineEdge(point2, point1, -1, unbreakable: true);
 
             newPoint1.OutgoingEdge = lineForNew;
             newPoint2.IncomingEdge = lineForNew;

@@ -77,6 +77,7 @@ namespace KiriFig.Model
     {
         public EdgeType Type { get; }
         public bool Unbreakable { get; }
+        public int Label { get; } = -1;
 
         // P1 is the first control point, C0.
 
@@ -87,10 +88,14 @@ namespace KiriFig.Model
 
         public Point P2;
 
-        protected Edge(EdgeType type, bool unbreakable = false)
+        protected Edge(EdgeType type, int label, bool unbreakable = false)
         {
+            if (!unbreakable && label < 0)
+                throw new ArgumentOutOfRangeException(nameof(label));
+
             Type = type;
             Unbreakable = unbreakable;
+            Label = label;
         }
 
         public abstract BBox GetBBox();
@@ -101,8 +106,8 @@ namespace KiriFig.Model
 
     public class LineEdge : Edge
     {
-        public LineEdge(Point p1, Point p2, bool unbreakable = false) :
-            base(EdgeType.Line, unbreakable)
+        public LineEdge(Point p1, Point p2, int label, bool unbreakable = false) :
+            base(EdgeType.Line, label, unbreakable)
         {
             P1 = p1;
             P2 = p2;
@@ -131,8 +136,8 @@ namespace KiriFig.Model
             var (t, p) = GetProjectedPoint(point.X, point.Y);
 
             var nearestPoint = Point.Trunc(p);
-            var edgeBefore = new LineEdge(P1, nearestPoint);
-            var edgeAfter = new LineEdge(nearestPoint, P2);
+            var edgeBefore = new LineEdge(P1, nearestPoint, Label);
+            var edgeAfter = new LineEdge(nearestPoint, P2, Label);
 
             return new SplitResult(nearestPoint, edgeBefore, edgeAfter, t);
         }
@@ -167,8 +172,8 @@ namespace KiriFig.Model
     {
         public Point C1;
 
-        public ConicEdge(Point p1, Point c1, Point p2) :
-            base(EdgeType.Conic)
+        public ConicEdge(Point p1, Point c1, Point p2, int label) :
+            base(EdgeType.Conic, label)
         {
             P1 = p1;
             C1 = c1;
@@ -217,8 +222,8 @@ namespace KiriFig.Model
             Point b0 = Point.Trunc(curve2.C1);
             Point midPoint = Point.Trunc(curve2.C0);
 
-            ConicEdge edge1 = new ConicEdge(P1, a0, midPoint);
-            ConicEdge edge2 = new ConicEdge(midPoint, b0, P2);
+            ConicEdge edge1 = new ConicEdge(P1, a0, midPoint, Label);
+            ConicEdge edge2 = new ConicEdge(midPoint, b0, P2, Label);
 
             return new SplitResult(midPoint, edge1, edge2, t);
         }
@@ -229,8 +234,8 @@ namespace KiriFig.Model
         public Point C1;
         public Point C2;
 
-        public CubicEdge(Point p1, Point c1, Point c2, Point p2) :
-            base(EdgeType.Cubic)
+        public CubicEdge(Point p1, Point c1, Point c2, Point p2, int label) :
+            base(EdgeType.Cubic, label)
         {
             P1 = p1;
             C1 = c1;
@@ -284,8 +289,8 @@ namespace KiriFig.Model
             Point b1 = Point.Trunc(curve2.C2);
             Point midPoint = Point.Trunc(curve2.C0);
 
-            CubicEdge edge1 = new CubicEdge(P1, a0, a1, midPoint);
-            CubicEdge edge2 = new CubicEdge(midPoint, b0, b1, P2);
+            CubicEdge edge1 = new CubicEdge(P1, a0, a1, midPoint, Label);
+            CubicEdge edge2 = new CubicEdge(midPoint, b0, b1, P2, Label);
 
             return new SplitResult(midPoint, edge1, edge2, t);
         }

@@ -157,7 +157,7 @@ namespace KiriFig
                 {
                     case "line":
                         {
-                            LineEdge lineEdge = new LineEdge(pg0.Points[0], pg1.Points[0]);
+                            LineEdge lineEdge = new LineEdge(pg0.Points[0], pg1.Points[0], id);
                             edge = lineEdge;
                         }
                         break;
@@ -167,7 +167,7 @@ namespace KiriFig
                             int c1X = attrs[3].GetInteger();
                             int c1Y = attrs[4].GetInteger();
                             Point c1 = new Point(c1X, c1Y);
-                            ConicEdge conicEdge = new ConicEdge(pg0.Points[0], c1, pg1.Points[0]);
+                            ConicEdge conicEdge = new ConicEdge(pg0.Points[0], c1, pg1.Points[0], id);
                             edge = conicEdge;
                         }
                         break;
@@ -180,7 +180,7 @@ namespace KiriFig
                             int c2Y = attrs[6].GetInteger();
                             Point c1 = new Point(c1X, c1Y);
                             Point c2 = new Point(c2X, c2Y);
-                            CubicEdge cubicEdge = new CubicEdge(pg0.Points[0], c1, c2, pg1.Points[0]);
+                            CubicEdge cubicEdge = new CubicEdge(pg0.Points[0], c1, c2, pg1.Points[0], id);
                             edge = cubicEdge;
                         }
                         break;
@@ -274,7 +274,7 @@ namespace KiriFig
                     case "line":
                         {
                             bool unbreakable = attrs[3].GetInteger() != 0;
-                            LineEdge lineEdge = new LineEdge(p0, p1, unbreakable);
+                            LineEdge lineEdge = new LineEdge(p0, p1, id, unbreakable);
                             edge = lineEdge;
                         }
                         break;
@@ -284,7 +284,7 @@ namespace KiriFig
                             int c1X = attrs[3].GetInteger();
                             int c1Y = attrs[4].GetInteger();
                             Point c1 = new Point(c1X, c1Y);
-                            ConicEdge conicEdge = new ConicEdge(p0, c1, p1);
+                            ConicEdge conicEdge = new ConicEdge(p0, c1, p1, id);
                             edge = conicEdge;
                         }
                         break;
@@ -297,7 +297,7 @@ namespace KiriFig
                             int c2Y = attrs[6].GetInteger();
                             Point c1 = new Point(c1X, c1Y);
                             Point c2 = new Point(c2X, c2Y);
-                            CubicEdge cubicEdge = new CubicEdge(p0, c1, c2, p1);
+                            CubicEdge cubicEdge = new CubicEdge(p0, c1, c2, p1, id);
                             edge = cubicEdge;
                         }
                         break;

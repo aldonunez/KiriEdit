@@ -136,8 +136,6 @@ namespace KiriFig
 
             foreach (var pair in sortedTable)
             {
-                _writer.Write("    edge");
-
                 int id0, id1;
                 Point c1, c2;
                 bool unbreakable;
@@ -145,6 +143,8 @@ namespace KiriFig
                 edge = pair.Value;
                 id0 = pair.Key;
                 id1 = _pointToId[edge.P2];
+
+                _writer.Write("    {0} edge", edge.Label);
 
                 switch (edge.Type)
                 {
@@ -176,9 +176,9 @@ namespace KiriFig
                 if (!pointGroup.IsFixed)
                     continue;
 
-                _writer.Write("  original-edge");
-
                 Edge edge = pointGroup.OriginalOutgoingEdge;
+
+                _writer.Write("  {0} original-edge", edge.Label);
 
                 int id0, id1, id2, id3;
                 Point c1, c2;
