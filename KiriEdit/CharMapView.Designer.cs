@@ -52,8 +52,7 @@
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.sortComboBox = new System.Windows.Forms.ComboBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.addListCharButton = new System.Windows.Forms.ToolStripButton();
-            this.deleteListCharButton = new System.Windows.Forms.ToolStripButton();
+            this.charGrid = new KiriEdit.CharacterGrid();
             this.panel2 = new System.Windows.Forms.Panel();
             this.charDescriptionLabel = new System.Windows.Forms.Label();
             this.findCharButton = new System.Windows.Forms.Button();
@@ -63,7 +62,9 @@
             this.addCharacterMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteCharacterMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editCharacterMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.charGrid = new KiriEdit.CharacterGrid();
+            this.addListCharButton = new System.Windows.Forms.ToolStripButton();
+            this.deleteListCharButton = new System.Windows.Forms.ToolStripButton();
+            this.checkCompleteButton = new System.Windows.Forms.ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -145,32 +146,27 @@
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addListCharButton,
-            this.deleteListCharButton});
+            this.deleteListCharButton,
+            this.checkCompleteButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(121, 25);
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
             // 
-            // addListCharButton
+            // charGrid
             // 
-            this.addListCharButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.addListCharButton.Image = global::KiriEdit.Properties.Resources.Add;
-            this.addListCharButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.addListCharButton.Name = "addListCharButton";
-            this.addListCharButton.Size = new System.Drawing.Size(23, 22);
-            this.addListCharButton.Text = "Add character";
-            this.addListCharButton.Click += new System.EventHandler(this.addListCharButton_Click);
-            // 
-            // deleteListCharButton
-            // 
-            this.deleteListCharButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.deleteListCharButton.Image = global::KiriEdit.Properties.Resources.Delete;
-            this.deleteListCharButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.deleteListCharButton.Name = "deleteListCharButton";
-            this.deleteListCharButton.Size = new System.Drawing.Size(23, 22);
-            this.deleteListCharButton.Text = "Delete character";
-            this.deleteListCharButton.Click += new System.EventHandler(this.deleteListCharButton_Click);
+            this.charGrid.Columns = 20;
+            this.charGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.charGrid.Location = new System.Drawing.Point(8, 32);
+            this.charGrid.Margin = new System.Windows.Forms.Padding(2);
+            this.charGrid.Name = "charGrid";
+            this.charGrid.OnCharacterColor = System.Drawing.Color.Red;
+            this.charGrid.Size = new System.Drawing.Size(285, 170);
+            this.charGrid.TabIndex = 0;
+            this.charGrid.SelectedIndexChanged += new System.EventHandler(this.charGrid_SelectedIndexChanged);
+            this.charGrid.DoubleClick += new System.EventHandler(this.CharGrid_DoubleClick);
+            this.charGrid.MouseUp += new System.Windows.Forms.MouseEventHandler(this.CharGrid_MouseUp);
             // 
             // panel2
             // 
@@ -252,19 +248,35 @@
             this.editCharacterMenuItem.Text = "Edit character";
             this.editCharacterMenuItem.Click += new System.EventHandler(this.editCharacterMenuItem_Click);
             // 
-            // charGrid
+            // addListCharButton
             // 
-            this.charGrid.Columns = 20;
-            this.charGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.charGrid.Location = new System.Drawing.Point(8, 32);
-            this.charGrid.Margin = new System.Windows.Forms.Padding(2);
-            this.charGrid.Name = "charGrid";
-            this.charGrid.OnCharacterColor = System.Drawing.Color.Red;
-            this.charGrid.Size = new System.Drawing.Size(285, 170);
-            this.charGrid.TabIndex = 0;
-            this.charGrid.SelectedIndexChanged += new System.EventHandler(this.charGrid_SelectedIndexChanged);
-            this.charGrid.DoubleClick += new System.EventHandler(this.CharGrid_DoubleClick);
-            this.charGrid.MouseUp += new System.Windows.Forms.MouseEventHandler(this.CharGrid_MouseUp);
+            this.addListCharButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.addListCharButton.Image = global::KiriEdit.Properties.Resources.Add;
+            this.addListCharButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.addListCharButton.Name = "addListCharButton";
+            this.addListCharButton.Size = new System.Drawing.Size(23, 22);
+            this.addListCharButton.Text = "Add character";
+            this.addListCharButton.Click += new System.EventHandler(this.addListCharButton_Click);
+            // 
+            // deleteListCharButton
+            // 
+            this.deleteListCharButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.deleteListCharButton.Image = global::KiriEdit.Properties.Resources.Delete;
+            this.deleteListCharButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.deleteListCharButton.Name = "deleteListCharButton";
+            this.deleteListCharButton.Size = new System.Drawing.Size(23, 22);
+            this.deleteListCharButton.Text = "Delete character";
+            this.deleteListCharButton.Click += new System.EventHandler(this.deleteListCharButton_Click);
+            // 
+            // checkCompleteButton
+            // 
+            this.checkCompleteButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.checkCompleteButton.Image = global::KiriEdit.Properties.Resources.CheckState;
+            this.checkCompleteButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.checkCompleteButton.Name = "checkCompleteButton";
+            this.checkCompleteButton.Size = new System.Drawing.Size(23, 22);
+            this.checkCompleteButton.Text = "Check complete";
+            this.checkCompleteButton.Click += new System.EventHandler(this.checkCompleteButton_Click);
             // 
             // CharMapView
             // 
@@ -311,5 +323,6 @@
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.ColumnHeader columnHeader3;
+        private System.Windows.Forms.ToolStripButton checkCompleteButton;
     }
 }

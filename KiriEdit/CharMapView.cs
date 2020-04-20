@@ -450,6 +450,38 @@ namespace KiriEdit
             CharGrid_DoubleClick(sender, e);
         }
 
+        private void checkCompleteButton_Click(object sender, EventArgs e)
+        {
+            CalculateComplete();
+
+            foreach (var listItem in _charListItems)
+            {
+                listItem.Refresh();
+            }
+        }
+
+        private void CalculateComplete()
+        {
+            foreach (var charItem in Project.Characters)
+            {
+                FigureDocument masterDoc = charItem.MasterFigureItem.Open();
+
+                var completionTool = new KiriFig.CompletionTool(masterDoc.Figure);
+
+                foreach (var piece in charItem.PieceFigureItems)
+                {
+                    var document = piece.Open();
+
+                    completionTool.AddComponentFigure(document.Figure);
+                }
+
+                if (completionTool.CalculateComplete())
+                    charItem.Completion = CompletionState.Complete;
+                else
+                    charItem.Completion = CompletionState.Incomplete;
+            }
+        }
+
 
         #region Inner classes
 
@@ -467,12 +499,27 @@ namespace KiriEdit
                 CharacterItem = characterItem;
 
                 SubItems.Add(String);
-                SubItems.Add(characterItem.PieceFigureItems.Count.ToString());
+                SubItems.Add(GetStatusString());
             }
 
             public void Refresh()
             {
-                SubItems[2].Text = CharacterItem.PieceFigureItems.Count.ToString();
+                SubItems[2].Text = GetStatusString();
+            }
+
+            private string GetStatusString()
+            {
+                switch (CharacterItem.Completion)
+                {
+                    case CompletionState.Complete:
+                        return "Complete";
+
+                    case CompletionState.Incomplete:
+                        return CharacterItem.PieceFigureItems.Count.ToString() + " (Incomplete)";
+
+                    default:
+                        return CharacterItem.PieceFigureItems.Count.ToString();
+                }
             }
 
             public override string ToString()

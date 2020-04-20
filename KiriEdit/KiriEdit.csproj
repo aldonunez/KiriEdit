@@ -238,5 +238,8 @@
   <ItemGroup>
     <None Include="Resources\document-copy.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\spell-check.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -25,6 +25,13 @@ namespace KiriProj
         }
     }
 
+    public enum CompletionState
+    {
+        Unknown,
+        Incomplete,
+        Complete
+    }
+
     public class CharacterItem
     {
         private const string CharacterFolderSearchPattern = "U_*";
@@ -41,9 +48,12 @@ namespace KiriProj
         public Project Project { get; }
         public uint CodePoint { get; }
         public string RootPath { get; }
+
         // TODO: Use MasterFigureItem
         public FigureItem MasterFigureItem { get; }
         public IReadOnlyList<FigureItem> PieceFigureItems => _figureItems;
+
+        public CompletionState Completion { get; set; }
 
         private CharacterItem(Project project, uint codePoint, bool enumPieces = false)
         {
@@ -227,6 +237,8 @@ namespace KiriProj
 
         public void DeleteItem(FigureItem item, int index)
         {
+            Completion = CompletionState.Unknown;
+
             _figureItems.RemoveAt(index);
             item.Delete();
 
@@ -255,6 +267,8 @@ namespace KiriProj
 
         internal void NotifyItemModified(FigureItem figureItem)
         {
+            Completion = CompletionState.Unknown;
+
             if (FigureItemModified != null)
             {
                 var args = new FigureItemModifiedEventArgs(figureItem);
