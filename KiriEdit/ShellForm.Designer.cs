@@ -52,6 +52,8 @@
             this.window3MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.checkCompleteMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -143,7 +145,9 @@
             // 
             this.editMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.undoMenuItem,
-            this.redoMenuItem});
+            this.redoMenuItem,
+            this.toolStripSeparator4,
+            this.checkCompleteMenuItem});
             this.editMenuItem.Name = "editMenuItem";
             this.editMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editMenuItem.Text = "&Edit";
@@ -177,7 +181,7 @@
             // characterMapMenuItem
             // 
             this.characterMapMenuItem.Name = "characterMapMenuItem";
-            this.characterMapMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.characterMapMenuItem.Size = new System.Drawing.Size(180, 22);
             this.characterMapMenuItem.Text = "Character &Map";
             this.characterMapMenuItem.Click += new System.EventHandler(this.characterMapMenuItem_Click);
             // 
@@ -254,6 +258,17 @@
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
             // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(177, 6);
+            // 
+            // checkCompleteMenuItem
+            // 
+            this.checkCompleteMenuItem.Name = "checkCompleteMenuItem";
+            this.checkCompleteMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.checkCompleteMenuItem.Text = "&Check complete";
+            // 
             // ShellForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -300,6 +315,8 @@
         private System.Windows.Forms.ToolStripMenuItem editMenuItem;
         private System.Windows.Forms.ToolStripMenuItem undoMenuItem;
         private System.Windows.Forms.ToolStripMenuItem redoMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripMenuItem checkCompleteMenuItem;
     }
 }
 
