@@ -203,7 +203,7 @@ namespace KiriProj
                 return item;
             }
 
-            public void Add(CharacterItem item)
+            internal void Add(CharacterItem item)
             {
                 AddInternal(item.CodePoint, item);
             }
