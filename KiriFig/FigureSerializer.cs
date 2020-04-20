@@ -64,7 +64,12 @@ namespace KiriFig
         private void WritePointGroup(PointGroup pointGroup)
         {
             int id = _pointGroupToId[pointGroup];
-            _writer.WriteLine("  {0} pointgroup {1}", id, pointGroup.IsFixed ? 1 : 0);
+            _writer.Write("  {0} pointgroup {1}", id, pointGroup.IsFixed ? 1 : 0);
+            if (!pointGroup.IsFixed)
+            {
+                _writer.Write(" {0}", pointGroup.NormalT);
+            }
+            _writer.WriteLine();
         }
 
         private void WriteContours()

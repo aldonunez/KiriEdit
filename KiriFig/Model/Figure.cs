@@ -124,7 +124,7 @@ namespace KiriFig.Model
 
             var splitResult = SplitEdge(point, edge);
 
-            var newGroup = new PointGroup();
+            var newGroup = new PointGroup(splitResult.t);
             newGroup.Points.Add(splitResult.nearestPoint);
             splitResult.nearestPoint.Group = newGroup;
             splitResult.nearestPoint.Contour = edge.P1.Contour;

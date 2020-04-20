@@ -298,13 +298,24 @@ namespace KiriFig.Model
 
     public class PointGroup
     {
+        public const int MaxNormalT = 100_000;
+        public const int Epsilon = 10;
+
         public bool IsFixed { get; }
+        public int NormalT { get; }
         public Edge OriginalIncomingEdge { get; set; }
         public Edge OriginalOutgoingEdge { get; set; }
         public List<Point> Points { get; } = new List<Point>();
 
-        public PointGroup()
+        public PointGroup(double t)
         {
+            int normalT = (int) (t * MaxNormalT);
+            NormalT = normalT;
+        }
+
+        public PointGroup(int normalT)
+        {
+            NormalT = normalT;
         }
 
         public PointGroup(bool isFixed)

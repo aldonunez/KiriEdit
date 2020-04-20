@@ -128,8 +128,20 @@ namespace KiriFig
                     throw new ApplicationException();
 
                 bool isFixed = attrs[0].GetInteger() != 0;
+                PointGroup pointGroup;
 
-                var pointGroup = new PointGroup(isFixed);
+                if (isFixed)
+                {
+                    pointGroup = new PointGroup(isFixed);
+                }
+                else
+                {
+                    if (attrs.Count != 2)
+                        throw new ApplicationException();
+
+                    int normalT = attrs[1].GetInteger();
+                    pointGroup = new PointGroup(normalT);
+                }
 
                 _pointGroups.Add(id, pointGroup);
             }
