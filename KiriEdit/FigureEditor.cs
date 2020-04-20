@@ -730,13 +730,13 @@ namespace KiriEdit
 
                         if (box.Contains(p.X, p.Y))
                         {
-                            PointD? optProjection = edge.GetProjectedPoint(p.X, p.Y);
+                            var (t, optProjection) = edge.GetProjectedPoint(p.X, p.Y);
 
-                            if (optProjection.HasValue)
+                            if (t >= 0 && t <= 1)
                             {
                                 PointF projection = new PointF(
-                                    (float) optProjection.Value.X,
-                                    (float) optProjection.Value.Y);
+                                    (float) optProjection.X,
+                                    (float) optProjection.Y);
 
                                 float dX = p.X - projection.X;
                                 float dY = p.Y - projection.Y;

@@ -33,12 +33,14 @@ namespace KiriFig.Model
         public Point nearestPoint;
         public Edge edgeBefore;
         public Edge edgeAfter;
+        public double t;
 
-        public SplitResult(Point nearestPoint, Edge edgeBefore, Edge edgeAfter)
+        public SplitResult(Point nearestPoint, Edge edgeBefore, Edge edgeAfter, double t)
         {
             this.nearestPoint = nearestPoint;
             this.edgeBefore = edgeBefore;
             this.edgeAfter = edgeAfter;
+            this.t = t;
         }
     }
 
@@ -93,7 +95,7 @@ namespace KiriFig.Model
 
         public abstract BBox GetBBox();
         internal abstract SplitResult Split(Point point);
-        public abstract PointD? GetProjectedPoint(int x, int y);
+        public abstract (double, PointD) GetProjectedPoint(int x, int y);
         public abstract object Clone();
     }
 
@@ -126,28 +128,16 @@ namespace KiriFig.Model
 
         internal override SplitResult Split(Point point)
         {
-            var valueNearestPoint = FindNearestPoint(point);
+            var (t, p) = GetProjectedPoint(point.X, point.Y);
 
-            var nearestPoint = new Point(valueNearestPoint);
+            var nearestPoint = Point.Trunc(p);
             var edgeBefore = new LineEdge(P1, nearestPoint);
             var edgeAfter = new LineEdge(nearestPoint, P2);
 
-            return new SplitResult(nearestPoint, edgeBefore, edgeAfter);
+            return new SplitResult(nearestPoint, edgeBefore, edgeAfter, t);
         }
 
-        private ValuePoint FindNearestPoint(Point point)
-        {
-            PointD? optNearestPoint = GetProjectedPoint(point.X, point.Y);
-
-            if (optNearestPoint.HasValue)
-            {
-                return new ValuePoint((int) optNearestPoint.Value.X, (int) optNearestPoint.Value.Y);
-            }
-
-            return P1.ToValuePoint();
-        }
-
-        public override PointD? GetProjectedPoint(int x, int y)
+        public override (double, PointD) GetProjectedPoint(int x, int y)
         {
             int dX = x - P1.X;
             int dY = y - P1.Y;
@@ -163,13 +153,13 @@ namespace KiriFig.Model
 
                 if (t >= 0 && t <= 1)
                 {
-                    return new PointD(
+                    return (t, new PointD(
                         P1.X + t * dEdgeX,
-                        P1.Y + t * dEdgeY);
+                        P1.Y + t * dEdgeY));
                 }
             }
 
-            return null;
+            return (-1, new PointD());
         }
     }
 
@@ -202,13 +192,7 @@ namespace KiriFig.Model
             return bbox;
         }
 
-        public override PointD? GetProjectedPoint(int x, int y)
-        {
-            var (_, p) = GetProjectedPointAndT(x, y);
-            return p;
-        }
-
-        internal (double, PointD) GetProjectedPointAndT(int x, int y)
+        public override (double, PointD) GetProjectedPoint(int x, int y)
         {
             var curve = new Curve(
                 P1.ToPointD(),
@@ -236,7 +220,7 @@ namespace KiriFig.Model
             ConicEdge edge1 = new ConicEdge(P1, a0, midPoint);
             ConicEdge edge2 = new ConicEdge(midPoint, b0, P2);
 
-            return new SplitResult(midPoint, edge1, edge2);
+            return new SplitResult(midPoint, edge1, edge2, t);
         }
     }
 
@@ -271,13 +255,7 @@ namespace KiriFig.Model
             return bbox;
         }
 
-        public override PointD? GetProjectedPoint(int x, int y)
-        {
-            var (_, p) = GetProjectedPointAndT(x, y);
-            return p;
-        }
-
-        internal (double, PointD) GetProjectedPointAndT(int x, int y)
+        public override (double, PointD) GetProjectedPoint(int x, int y)
         {
             var curve = new Curve(
                 P1.ToPointD(),
@@ -309,7 +287,7 @@ namespace KiriFig.Model
             CubicEdge edge1 = new CubicEdge(P1, a0, a1, midPoint);
             CubicEdge edge2 = new CubicEdge(midPoint, b0, b1, P2);
 
-            return new SplitResult(midPoint, edge1, edge2);
+            return new SplitResult(midPoint, edge1, edge2, t);
         }
     }
 
