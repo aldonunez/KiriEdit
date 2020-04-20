@@ -72,6 +72,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CompletionTool.cs" />
     <Compile Include="Curve.cs" />
     <Compile Include="FigureDeserialzer.cs" />
     <Compile Include="FigureSerializer.cs" />

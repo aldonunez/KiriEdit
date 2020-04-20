@@ -12,7 +12,7 @@ namespace KiriFig
 {
     public static class Utils
     {
-        public static float GetBisectorAngle(Point p1, Point p2, Point p3)
+        internal static float GetBisectorAngle(Point p1, Point p2, Point p3)
         {
             // Calculate angles.
 
@@ -43,7 +43,7 @@ namespace KiriFig
         // Calculate the dot product of the unit line segment from refPoint at angle projected onto
         // the line segment from refPoint to targetPoint.
 
-        public static float GetAngleDotProduct(float angle, Point refPoint, Point targetPoint)
+        internal static float GetAngleDotProduct(float angle, Point refPoint, Point targetPoint)
         {
             float unitBisectorX = (float) Math.Cos(angle);
             float unitBisectorY = (float) Math.Sin(angle);
