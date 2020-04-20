@@ -724,6 +724,10 @@ namespace KiriEdit
                     foreach (var point in group.Points)
                     {
                         Edge edge = point.OutgoingEdge;
+
+                        if (edge.Unbreakable)
+                            continue;
+
                         BBox box = edge.GetBBox();
 
                         box.Inflate(padding, padding);
