@@ -33,7 +33,7 @@ namespace KiriEdit
 
     internal delegate void ViewsChangedEventHandler(object sender, ViewsChangedEventArgs e);
 
-    internal class MdiDocumentContainer
+    internal class MdiDocumentContainer : IEnumerable<IView>
     {
         // Store views in order with most recent at the end. This avoids shuffling all
         // elements every time one is moved.
@@ -148,6 +148,16 @@ namespace KiriEdit
         {
             var viewForm = (Form) view;
             viewForm.Activate();
+        }
+
+        public IEnumerator<IView> GetEnumerator()
+        {
+            return EnumerateViews();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return EnumerateViews();
         }
 
 

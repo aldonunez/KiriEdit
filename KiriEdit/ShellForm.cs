@@ -445,5 +445,14 @@ namespace KiriEdit
                 form.ShowDialog();
             }
         }
+
+        private void windowsMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var form = new WindowsForm())
+            {
+                form.DocumentContainer = _documentContainer;
+                form.ShowDialog();
+            }
+        }
     }
 }

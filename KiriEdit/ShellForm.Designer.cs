@@ -51,9 +51,9 @@
             this.window2MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.window3MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.helpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutAppMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.mainMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -248,14 +248,7 @@
             this.windowsMenuItem.Name = "windowsMenuItem";
             this.windowsMenuItem.Size = new System.Drawing.Size(184, 22);
             this.windowsMenuItem.Text = "Windows ...";
-            // 
-            // statusStrip1
-            // 
-            this.statusStrip1.Location = new System.Drawing.Point(0, 270);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(533, 22);
-            this.statusStrip1.TabIndex = 1;
-            this.statusStrip1.Text = "statusStrip1";
+            this.windowsMenuItem.Click += new System.EventHandler(this.windowsMenuItem_Click);
             // 
             // helpMenuItem
             // 
@@ -268,9 +261,17 @@
             // aboutAppMenuItem
             // 
             this.aboutAppMenuItem.Name = "aboutAppMenuItem";
-            this.aboutAppMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.aboutAppMenuItem.Size = new System.Drawing.Size(147, 22);
             this.aboutAppMenuItem.Text = "&About KiriEdit";
             this.aboutAppMenuItem.Click += new System.EventHandler(this.aboutAppMenuItem_Click);
+            // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Location = new System.Drawing.Point(0, 270);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(533, 22);
+            this.statusStrip1.TabIndex = 1;
+            this.statusStrip1.Text = "statusStrip1";
             // 
             // ShellForm
             // 
