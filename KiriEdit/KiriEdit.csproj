@@ -101,6 +101,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AboutBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutBox.Designer.cs">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="CharacterGrid.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -114,7 +120,7 @@
       <DependentUpon>CharEditView.cs</DependentUpon>
     </Compile>
     <Compile Include="CharMapView.cs">
-      <SubType>UserControl</SubType>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="CharMapView.Designer.cs">
       <DependentUpon>CharMapView.cs</DependentUpon>
@@ -160,6 +166,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reflector.cs" />
     <Compile Include="SystemFigurePainter.cs" />
+    <EmbeddedResource Include="AboutBox.resx">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="CharacterGrid.resx">
       <DependentUpon>CharacterGrid.cs</DependentUpon>
     </EmbeddedResource>

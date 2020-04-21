@@ -437,5 +437,13 @@ namespace KiriEdit
             if (_documentContainer.Count > 0 && _documentContainer.CurrentView.HistoryBuffer != null)
                 _documentContainer.CurrentView.HistoryBuffer.Undo();
         }
+
+        private void aboutAppMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var form = new AboutBox())
+            {
+                form.ShowDialog();
+            }
+        }
     }
 }

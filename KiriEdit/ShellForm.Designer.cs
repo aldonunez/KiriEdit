@@ -52,6 +52,8 @@
             this.window3MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.helpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutAppMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -61,7 +63,8 @@
             this.fileMenuItem,
             this.editMenuItem,
             this.viewMenuItem,
-            this.windowMenuItem});
+            this.windowMenuItem,
+            this.helpMenuItem});
             this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.mainMenuStrip.Name = "mainMenuStrip";
             this.mainMenuStrip.Size = new System.Drawing.Size(533, 24);
@@ -153,7 +156,7 @@
             this.undoMenuItem.Enabled = false;
             this.undoMenuItem.Name = "undoMenuItem";
             this.undoMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.undoMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.undoMenuItem.Size = new System.Drawing.Size(144, 22);
             this.undoMenuItem.Text = "&Undo";
             this.undoMenuItem.Click += new System.EventHandler(this.undoMenuItem_Click);
             // 
@@ -162,7 +165,7 @@
             this.redoMenuItem.Enabled = false;
             this.redoMenuItem.Name = "redoMenuItem";
             this.redoMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
-            this.redoMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.redoMenuItem.Size = new System.Drawing.Size(144, 22);
             this.redoMenuItem.Text = "&Redo";
             this.redoMenuItem.Click += new System.EventHandler(this.redoMenuItem_Click);
             // 
@@ -254,6 +257,21 @@
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
             // 
+            // helpMenuItem
+            // 
+            this.helpMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aboutAppMenuItem});
+            this.helpMenuItem.Name = "helpMenuItem";
+            this.helpMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpMenuItem.Text = "&Help";
+            // 
+            // aboutAppMenuItem
+            // 
+            this.aboutAppMenuItem.Name = "aboutAppMenuItem";
+            this.aboutAppMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.aboutAppMenuItem.Text = "&About KiriEdit";
+            this.aboutAppMenuItem.Click += new System.EventHandler(this.aboutAppMenuItem_Click);
+            // 
             // ShellForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -300,6 +318,8 @@
         private System.Windows.Forms.ToolStripMenuItem editMenuItem;
         private System.Windows.Forms.ToolStripMenuItem undoMenuItem;
         private System.Windows.Forms.ToolStripMenuItem redoMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem helpMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aboutAppMenuItem;
     }
 }
 
