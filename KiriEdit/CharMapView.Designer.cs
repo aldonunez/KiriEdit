@@ -98,8 +98,8 @@
             this.splitContainer1.Panel2.Controls.Add(this.panel1);
             this.splitContainer1.Panel2.Padding = new System.Windows.Forms.Padding(8, 0, 8, 0);
             this.splitContainer1.Panel2MinSize = 300;
-            this.splitContainer1.Size = new System.Drawing.Size(427, 265);
-            this.splitContainer1.SplitterDistance = 121;
+            this.splitContainer1.Size = new System.Drawing.Size(431, 265);
+            this.splitContainer1.SplitterDistance = 125;
             this.splitContainer1.SplitterWidth = 5;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -118,7 +118,7 @@
             this.charListBox.Location = new System.Drawing.Point(0, 46);
             this.charListBox.MultiSelect = false;
             this.charListBox.Name = "charListBox";
-            this.charListBox.Size = new System.Drawing.Size(121, 219);
+            this.charListBox.Size = new System.Drawing.Size(125, 219);
             this.charListBox.SmallImageList = this.mainImageList;
             this.charListBox.TabIndex = 2;
             this.charListBox.UseCompatibleStateImageBehavior = false;
@@ -130,7 +130,7 @@
             // columnHeader1
             // 
             this.columnHeader1.Text = "";
-            this.columnHeader1.Width = 24;
+            this.columnHeader1.Width = 27;
             // 
             // columnHeader2
             // 
@@ -150,14 +150,14 @@
             this.mainImageList.TransparentColor = System.Drawing.Color.Transparent;
             this.mainImageList.Images.SetKeyName(0, "tick.png");
             this.mainImageList.Images.SetKeyName(1, "pencil.png");
-            this.mainImageList.Images.SetKeyName(2, "tick-small-white.png");
+            this.mainImageList.Images.SetKeyName(2, "tick-white.png");
             // 
             // sortComboBox
             // 
             this.sortComboBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.sortComboBox.Location = new System.Drawing.Point(0, 25);
             this.sortComboBox.Name = "sortComboBox";
-            this.sortComboBox.Size = new System.Drawing.Size(121, 21);
+            this.sortComboBox.Size = new System.Drawing.Size(125, 21);
             this.sortComboBox.TabIndex = 1;
             this.sortComboBox.SelectedIndexChanged += new System.EventHandler(this.SortComboBox_SelectedIndexChanged);
             // 
@@ -169,7 +169,7 @@
             this.checkCompleteButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(121, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(125, 25);
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -301,7 +301,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(427, 265);
+            this.ClientSize = new System.Drawing.Size(431, 265);
             this.Controls.Add(this.splitContainer1);
             this.Name = "CharMapView";
             this.Text = "Character Map";
