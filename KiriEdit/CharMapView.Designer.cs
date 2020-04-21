@@ -45,14 +45,19 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CharMapView));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.charListBox = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.mainImageList = new System.Windows.Forms.ImageList(this.components);
             this.sortComboBox = new System.Windows.Forms.ComboBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.charGrid = new KiriEdit.CharacterGrid();
+            this.addListCharButton = new System.Windows.Forms.ToolStripButton();
+            this.deleteListCharButton = new System.Windows.Forms.ToolStripButton();
+            this.checkCompleteButton = new System.Windows.Forms.ToolStripButton();
             this.panel2 = new System.Windows.Forms.Panel();
             this.charDescriptionLabel = new System.Windows.Forms.Label();
             this.findCharButton = new System.Windows.Forms.Button();
@@ -62,9 +67,7 @@
             this.addCharacterMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteCharacterMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editCharacterMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.addListCharButton = new System.Windows.Forms.ToolStripButton();
-            this.deleteListCharButton = new System.Windows.Forms.ToolStripButton();
-            this.checkCompleteButton = new System.Windows.Forms.ToolStripButton();
+            this.charGrid = new KiriEdit.CharacterGrid();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -105,15 +108,18 @@
             this.charListBox.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader2,
-            this.columnHeader3});
+            this.columnHeader3,
+            this.columnHeader4});
             this.charListBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.charListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.charListBox.FullRowSelect = true;
+            this.charListBox.GridLines = true;
             this.charListBox.HideSelection = false;
             this.charListBox.Location = new System.Drawing.Point(0, 46);
             this.charListBox.MultiSelect = false;
             this.charListBox.Name = "charListBox";
             this.charListBox.Size = new System.Drawing.Size(121, 219);
+            this.charListBox.SmallImageList = this.mainImageList;
             this.charListBox.TabIndex = 2;
             this.charListBox.UseCompatibleStateImageBehavior = false;
             this.charListBox.View = System.Windows.Forms.View.Details;
@@ -123,15 +129,28 @@
             // 
             // columnHeader1
             // 
-            this.columnHeader1.Text = "Code point";
+            this.columnHeader1.Text = "";
+            this.columnHeader1.Width = 24;
             // 
             // columnHeader2
             // 
-            this.columnHeader2.Text = "Char.";
+            this.columnHeader2.Text = "Code point";
             // 
             // columnHeader3
             // 
-            this.columnHeader3.Text = "Pieces";
+            this.columnHeader3.Text = "Character";
+            // 
+            // columnHeader4
+            // 
+            this.columnHeader4.Text = "Pieces";
+            // 
+            // mainImageList
+            // 
+            this.mainImageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("mainImageList.ImageStream")));
+            this.mainImageList.TransparentColor = System.Drawing.Color.Transparent;
+            this.mainImageList.Images.SetKeyName(0, "tick.png");
+            this.mainImageList.Images.SetKeyName(1, "pencil.png");
+            this.mainImageList.Images.SetKeyName(2, "tick-small-white.png");
             // 
             // sortComboBox
             // 
@@ -154,19 +173,35 @@
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
             // 
-            // charGrid
+            // addListCharButton
             // 
-            this.charGrid.Columns = 20;
-            this.charGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.charGrid.Location = new System.Drawing.Point(8, 32);
-            this.charGrid.Margin = new System.Windows.Forms.Padding(2);
-            this.charGrid.Name = "charGrid";
-            this.charGrid.OnCharacterColor = System.Drawing.Color.Red;
-            this.charGrid.Size = new System.Drawing.Size(285, 170);
-            this.charGrid.TabIndex = 0;
-            this.charGrid.SelectedIndexChanged += new System.EventHandler(this.charGrid_SelectedIndexChanged);
-            this.charGrid.DoubleClick += new System.EventHandler(this.CharGrid_DoubleClick);
-            this.charGrid.MouseUp += new System.Windows.Forms.MouseEventHandler(this.CharGrid_MouseUp);
+            this.addListCharButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.addListCharButton.Image = global::KiriEdit.Properties.Resources.Add;
+            this.addListCharButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.addListCharButton.Name = "addListCharButton";
+            this.addListCharButton.Size = new System.Drawing.Size(23, 22);
+            this.addListCharButton.Text = "Add character";
+            this.addListCharButton.Click += new System.EventHandler(this.addListCharButton_Click);
+            // 
+            // deleteListCharButton
+            // 
+            this.deleteListCharButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.deleteListCharButton.Image = global::KiriEdit.Properties.Resources.Delete;
+            this.deleteListCharButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.deleteListCharButton.Name = "deleteListCharButton";
+            this.deleteListCharButton.Size = new System.Drawing.Size(23, 22);
+            this.deleteListCharButton.Text = "Delete character";
+            this.deleteListCharButton.Click += new System.EventHandler(this.deleteListCharButton_Click);
+            // 
+            // checkCompleteButton
+            // 
+            this.checkCompleteButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.checkCompleteButton.Image = global::KiriEdit.Properties.Resources.CheckState;
+            this.checkCompleteButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.checkCompleteButton.Name = "checkCompleteButton";
+            this.checkCompleteButton.Size = new System.Drawing.Size(23, 22);
+            this.checkCompleteButton.Text = "Check complete";
+            this.checkCompleteButton.Click += new System.EventHandler(this.checkCompleteButton_Click);
             // 
             // panel2
             // 
@@ -248,35 +283,19 @@
             this.editCharacterMenuItem.Text = "Edit character";
             this.editCharacterMenuItem.Click += new System.EventHandler(this.editCharacterMenuItem_Click);
             // 
-            // addListCharButton
+            // charGrid
             // 
-            this.addListCharButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.addListCharButton.Image = global::KiriEdit.Properties.Resources.Add;
-            this.addListCharButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.addListCharButton.Name = "addListCharButton";
-            this.addListCharButton.Size = new System.Drawing.Size(23, 22);
-            this.addListCharButton.Text = "Add character";
-            this.addListCharButton.Click += new System.EventHandler(this.addListCharButton_Click);
-            // 
-            // deleteListCharButton
-            // 
-            this.deleteListCharButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.deleteListCharButton.Image = global::KiriEdit.Properties.Resources.Delete;
-            this.deleteListCharButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.deleteListCharButton.Name = "deleteListCharButton";
-            this.deleteListCharButton.Size = new System.Drawing.Size(23, 22);
-            this.deleteListCharButton.Text = "Delete character";
-            this.deleteListCharButton.Click += new System.EventHandler(this.deleteListCharButton_Click);
-            // 
-            // checkCompleteButton
-            // 
-            this.checkCompleteButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.checkCompleteButton.Image = global::KiriEdit.Properties.Resources.CheckState;
-            this.checkCompleteButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.checkCompleteButton.Name = "checkCompleteButton";
-            this.checkCompleteButton.Size = new System.Drawing.Size(23, 22);
-            this.checkCompleteButton.Text = "Check complete";
-            this.checkCompleteButton.Click += new System.EventHandler(this.checkCompleteButton_Click);
+            this.charGrid.Columns = 20;
+            this.charGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.charGrid.Location = new System.Drawing.Point(8, 32);
+            this.charGrid.Margin = new System.Windows.Forms.Padding(2);
+            this.charGrid.Name = "charGrid";
+            this.charGrid.OnCharacterColor = System.Drawing.Color.Red;
+            this.charGrid.Size = new System.Drawing.Size(285, 170);
+            this.charGrid.TabIndex = 0;
+            this.charGrid.SelectedIndexChanged += new System.EventHandler(this.charGrid_SelectedIndexChanged);
+            this.charGrid.DoubleClick += new System.EventHandler(this.CharGrid_DoubleClick);
+            this.charGrid.MouseUp += new System.Windows.Forms.MouseEventHandler(this.CharGrid_MouseUp);
             // 
             // CharMapView
             // 
@@ -324,5 +343,7 @@
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.ColumnHeader columnHeader3;
         private System.Windows.Forms.ToolStripButton checkCompleteButton;
+        private System.Windows.Forms.ImageList mainImageList;
+        private System.Windows.Forms.ColumnHeader columnHeader4;
     }
 }

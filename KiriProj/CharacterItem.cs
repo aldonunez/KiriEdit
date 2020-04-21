@@ -237,7 +237,8 @@ namespace KiriProj
 
         public void DeleteItem(FigureItem item, int index)
         {
-            Completion = CompletionState.Unknown;
+            if (Completion == CompletionState.Complete)
+                Completion = CompletionState.Unknown;
 
             _figureItems.RemoveAt(index);
             item.Delete();

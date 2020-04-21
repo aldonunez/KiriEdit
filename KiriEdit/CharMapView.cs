@@ -195,6 +195,8 @@ namespace KiriEdit
             sortComboBox.DisplayMember = "DisplayName";
             // Leave auto-complete turned off, because it's too slow to load.
 
+            // Get font information and set up the font.
+
             _fontCollection = new PrivateFontCollection();
             _fontCollection.AddFontFile(Project.FontPath);
 
@@ -205,6 +207,8 @@ namespace KiriEdit
             charGrid.Font = new Font(fontFamily, 12, (FontStyle) Project.FontStyle);
             fontNameLabel.Text = Project.FontName;
 
+            // Set up the character set for the grid.
+
             int CharSetMapSize = SequentialCharSet.GetRecommendedMapSize(CharSetSize);
             int[] residencyMap = new int[CharSetMapSize];
             LoadResidencyMap(residencyMap);
@@ -214,6 +218,10 @@ namespace KiriEdit
                 (int) FirstCodePoint,
                 (int) LastCodePoint);
             charGrid.CharSet = charSet;
+
+            // There's a bug in the framework. The image isn't shown in the header unless you do this.
+
+            columnHeader1.ImageIndex = 2;
         }
 
         private FontFamily FindFontFamily(PrivateFontCollection collection)
@@ -276,9 +284,14 @@ namespace KiriEdit
             if (selListItem != null)
                 selListItem.Selected = true;
 
-            charListBox.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
-            charListBox.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+            // Resize columns.
+
+            columnHeader2.AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
+            columnHeader2.AutoResize(ColumnHeaderAutoResizeStyle.HeaderSize);
+
             columnHeader3.AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
+
+            columnHeader4.AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
         }
 
         private int CompareChars(CharListItem a, CharListItem b)
@@ -493,32 +506,34 @@ namespace KiriEdit
 
             public CharListItem(string text, uint codePoint, CharacterItem characterItem)
             {
-                Text = text;
                 CodePoint = codePoint;
                 String = CharUtils.GetString(codePoint);
                 CharacterItem = characterItem;
 
+                SubItems.Add(text);
                 SubItems.Add(String);
                 SubItems.Add(GetStatusString());
+                ImageIndex = GetStatusImage();
             }
 
             public void Refresh()
             {
-                SubItems[2].Text = GetStatusString();
+                SubItems[3].Text = GetStatusString();
+                ImageIndex = GetStatusImage();
             }
 
             private string GetStatusString()
             {
+                return CharacterItem.PieceFigureItems.Count.ToString();
+            }
+
+            private int GetStatusImage()
+            {
                 switch (CharacterItem.Completion)
                 {
-                    case CompletionState.Complete:
-                        return "Complete";
-
-                    case CompletionState.Incomplete:
-                        return CharacterItem.PieceFigureItems.Count.ToString() + " (Incomplete)";
-
-                    default:
-                        return CharacterItem.PieceFigureItems.Count.ToString();
+                    case CompletionState.Complete: return 0;
+                    case CompletionState.Incomplete: return 1;
+                    default: return -1;
                 }
             }
 
