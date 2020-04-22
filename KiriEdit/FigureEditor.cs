@@ -138,7 +138,7 @@ namespace KiriEdit
 
         private PointGroup FindPointGroupWc(int x, int y)
         {
-            float wcCircleRadius = CircleRadius * _curControlScaleSingle * _screenToWorldScale;
+            float wcCircleRadius = ScreenToWorld(CircleRadius);
 
             foreach (var pointGroup in _document.Figure.PointGroups)
             {
@@ -694,7 +694,7 @@ namespace KiriEdit
 
                 // Only show a point along an edge, if it's near enough to it.
 
-                float visibleDistance = 10 * _parent._curControlScaleSingle * _parent._screenToWorldScale;
+                float visibleDistance = _parent.ScreenToWorld(10);
 
                 if (result.Edge != null && result.Distance <= visibleDistance)
                 {
@@ -786,7 +786,7 @@ namespace KiriEdit
 
             private EdgeSearchResult FindNearestEdgeSc(int x, int y)
             {
-                // Change cursor point and padding amount to world coordinates.
+                // Change cursor point and margin amount to world coordinates.
 
                 PointF[] pointFs = new PointF[1] { new PointF(x, y) };
 
@@ -794,7 +794,7 @@ namespace KiriEdit
 
                 var p = new System.Drawing.Point((int) pointFs[0].X, (int) pointFs[0].Y);
 
-                int padding = (int) (20 * _parent._curControlScaleSingle * _parent._screenToWorldScale);
+                int margin = (int) _parent.ScreenToWorld(20);
 
                 // Check every edge whose bounding box the mouse cursor is in.
                 // Find the nearest point to the mouse cursor among these edges.
@@ -817,7 +817,7 @@ namespace KiriEdit
 
                         BBox box = edge.GetBBox();
 
-                        box.Inflate(padding, padding);
+                        box.Inflate(margin, margin);
 
                         if (box.Contains(p.X, p.Y))
                         {
