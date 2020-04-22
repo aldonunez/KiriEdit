@@ -376,9 +376,9 @@ namespace KiriEdit
             }
         }
 
-        private float ScreenToWorld(float f)
+        private float ScreenToWorld(float scalar)
         {
-            return f * _curControlScaleSingle * _screenToWorldScale;
+            return scalar * _curControlScaleSingle * _screenToWorldScale;
         }
 
 
