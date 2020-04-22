@@ -23,6 +23,7 @@ namespace KiriEdit
         private const float CirclePenWidth = 1;
         private const float LinePenWidth = 4;
         private const float LineBoundingWidth = LinePenWidth + 4;
+        private const float SnapMargin = 10;
 
         private FigureDocument _document;
         private FigureContext _context;
@@ -375,6 +376,11 @@ namespace KiriEdit
             }
         }
 
+        private float ScreenToWorld(float f)
+        {
+            return f * _curControlScaleSingle * _screenToWorldScale;
+        }
+
 
         #region Inner classes
 
@@ -723,7 +729,7 @@ namespace KiriEdit
 
                 BBox bbox = edge.GetBBox();
 
-                int padding = (int) (10 * _parent._curControlScaleSingle * _parent._screenToWorldScale);
+                int margin = (int) _parent.ScreenToWorld(SnapMargin);
 
                 // Look at each point that doesn't align with the edge's endpoints.
 
@@ -744,12 +750,12 @@ namespace KiriEdit
                         double t2 = double.NaN;
                         double t;
 
-                        if (p.X - padding >= bbox.Left && p.X + padding <= bbox.Right)
+                        if (p.X - margin >= bbox.Left && p.X + margin <= bbox.Right)
                         {
                             t1 = edge.GetIntersection(referenceT, p.X, Axis.X);
                         }
 
-                        if (p.Y - padding >= bbox.Bottom && p.Y + padding <= bbox.Top)
+                        if (p.Y - margin >= bbox.Bottom && p.Y + margin <= bbox.Top)
                         {
                             t2 = edge.GetIntersection(referenceT, p.Y, Axis.Y);
                         }
