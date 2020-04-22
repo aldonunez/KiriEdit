@@ -641,12 +641,14 @@ namespace KiriEdit
                 public float Distance;
                 public Edge Edge;
                 public PointF Point;
+                public double T;
 
-                public EdgeSearchResult(float distance, Edge edge, PointF point)
+                public EdgeSearchResult(float distance, Edge edge, PointF point, double t)
                 {
                     Distance = distance;
                     Edge = edge;
                     Point = point;
+                    T = t;
                 }
             }
 
@@ -689,13 +691,89 @@ namespace KiriEdit
 
                 if (result.Edge != null && result.Distance <= visibleDistance)
                 {
-                    _candidateEdge = result.Edge;
-                    _candidatePoint = result.Point;
+                    if (true)
+                    {
+                        double t = FindPointToSnapTo(result.Edge, result.T);
+
+                        if (t >= 0 && t <= 1)
+                        {
+                            PointD p = result.Edge.Calculate(t);
+
+                            _candidateEdge = result.Edge;
+                            _candidatePoint = new PointF((float) p.X, (float) p.Y);
+                        }
+                        else
+                        {
+                            _candidateEdge = result.Edge;
+                            _candidatePoint = result.Point;
+                        }
+                    }
+                    else
+                    {
+                        _candidateEdge = result.Edge;
+                        _candidatePoint = result.Point;
+                    }
                 }
                 else
                 {
                     _candidateEdge = null;
                 }
+            }
+
+            private double FindPointToSnapTo(Edge edge, double referenceT)
+            {
+                double leastT = 2;
+
+                BBox bbox = edge.GetBBox();
+
+                int padding = (int) (20 * _parent._curControlScaleSingle * _parent._screenToWorldScale);
+
+                // Look at each point that doesn't coincide (align?) with the edge's endpoints.
+
+                foreach (var pointGroup in _parent.Document.Figure.PointGroups)
+                {
+                    foreach (var p in pointGroup.Points)
+                    {
+                        // TODO: check approximately equal
+
+                        if (p.X == edge.P1.X
+                            || p.Y == edge.P1.Y
+                            || p.X == edge.P2.X
+                            || p.Y == edge.P2.Y)
+                            continue;
+
+                        // If a horizontal or vertical ray from a point crosses the edge, then consider it.
+                        // Either ray might cross the edge.
+
+                        double t1 = double.NaN;
+                        double t2 = double.NaN;
+                        double t;
+
+                        if (p.X - padding >= bbox.Left && p.X + padding <= bbox.Right)
+                        {
+                            t1 = edge.GetIntersectionNearTWithX(referenceT, p.X);
+                        }
+
+                        if (p.Y - padding >= bbox.Bottom && p.Y + padding <= bbox.Top)
+                        {
+                            t2 = edge.GetIntersectionNearTWithY(referenceT, p.Y);
+                        }
+
+                        if (double.IsNaN(t1))
+                            t = t2;
+                        else if (double.IsNaN(t2))
+                            t = t1;
+                        else if (Math.Abs(referenceT - t1) < Math.Abs(referenceT - t2))
+                            t = t1;
+                        else
+                            t = t2;
+
+                        if (!double.IsNaN(t) && Math.Abs(referenceT - t) < Math.Abs(referenceT - leastT))
+                            leastT = t;
+                    }
+                }
+
+                return leastT;
             }
 
             private EdgeSearchResult FindNearestEdgeSc(int x, int y)
@@ -718,6 +796,7 @@ namespace KiriEdit
                 result.Distance = float.PositiveInfinity;
                 result.Edge = null;
                 result.Point = new PointF();
+                result.T = -1;
 
                 foreach (var group in _parent._document.Figure.PointGroups)
                 {
@@ -752,6 +831,7 @@ namespace KiriEdit
                                     result.Distance = distance;
                                     result.Edge = edge;
                                     result.Point = projection;
+                                    result.T = t;
                                 }
                             }
                         }

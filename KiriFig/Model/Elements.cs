@@ -101,6 +101,9 @@ namespace KiriFig.Model
         public abstract BBox GetBBox();
         internal abstract SplitResult Split(Point point);
         public abstract (double, PointD) GetProjectedPoint(int x, int y);
+        public abstract double GetIntersectionNearTWithY(double referenceT, int y);
+        public abstract double GetIntersectionNearTWithX(double referenceT, int x);
+        public abstract PointD Calculate(double t);
         public abstract object Clone();
     }
 
@@ -166,6 +169,26 @@ namespace KiriFig.Model
 
             return (-1, new PointD());
         }
+
+        // There can only be one intersection, so referenceT doesn't matter.
+
+        public override double GetIntersectionNearTWithY(double referenceT, int y)
+        {
+            return (double) (y - P1.Y) / (P2.Y - P1.Y);
+        }
+
+        public override double GetIntersectionNearTWithX(double referenceT, int x)
+        {
+            return (double) (x - P1.X) / (P2.X - P1.X);
+        }
+
+        public override PointD Calculate(double t)
+        {
+            double x = (P2.X - P1.X) * t + P1.X;
+            double y = (P2.Y - P1.Y) * t + P1.Y;
+
+            return new PointD(x, y);
+        }
     }
 
     public class ConicEdge : Edge
@@ -178,6 +201,16 @@ namespace KiriFig.Model
             P1 = p1;
             C1 = c1;
             P2 = p2;
+        }
+
+        public override PointD Calculate(double t)
+        {
+            var curve = new Curve(
+                P1.ToPointD(),
+                C1.ToPointD(),
+                P2.ToPointD());
+
+            return curve.CalcConic(t);
         }
 
         public override object Clone()
@@ -195,6 +228,48 @@ namespace KiriFig.Model
                 Bottom = Math.Min(P1.Y, Math.Min(P2.Y, C1.Y)),
             };
             return bbox;
+        }
+
+        public override double GetIntersectionNearTWithX(double referenceT, int x)
+        {
+            var curve = new Curve(
+                P1.ToPointD(),
+                C1.ToPointD(),
+                P2.ToPointD());
+
+            var solutions = curve.SolveConicWithX(x);
+
+            if (double.IsNaN(solutions.T1))
+                return solutions.T2;
+
+            if (double.IsNaN(solutions.T2))
+                return solutions.T1;
+
+            if (Math.Abs(referenceT - solutions.T1) < Math.Abs(referenceT - solutions.T2))
+                return solutions.T1;
+            else
+                return solutions.T2;
+        }
+
+        public override double GetIntersectionNearTWithY(double referenceT, int y)
+        {
+            var curve = new Curve(
+                P1.ToPointD(),
+                C1.ToPointD(),
+                P2.ToPointD());
+
+            var solutions = curve.SolveConicWithY(y);
+
+            if (double.IsNaN(solutions.T1))
+                return solutions.T2;
+
+            if (double.IsNaN(solutions.T2))
+                return solutions.T1;
+
+            if (Math.Abs(referenceT - solutions.T1) < Math.Abs(referenceT - solutions.T2))
+                return solutions.T1;
+            else
+                return solutions.T2;
         }
 
         public override (double, PointD) GetProjectedPoint(int x, int y)
@@ -243,6 +318,17 @@ namespace KiriFig.Model
             P2 = p2;
         }
 
+        public override PointD Calculate(double t)
+        {
+            var curve = new Curve(
+                P1.ToPointD(),
+                C1.ToPointD(),
+                C2.ToPointD(),
+                P2.ToPointD());
+
+            return curve.CalcCubic(t);
+        }
+
         public override object Clone()
         {
             return MemberwiseClone();
@@ -258,6 +344,16 @@ namespace KiriFig.Model
                 Bottom = Math.Min(P1.Y, Math.Min(P2.Y, Math.Min(C1.Y, C2.Y))),
             };
             return bbox;
+        }
+
+        public override double GetIntersectionNearTWithX(double referenceT, int x)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override double GetIntersectionNearTWithY(double referenceT, int y)
+        {
+            throw new NotImplementedException();
         }
 
         public override (double, PointD) GetProjectedPoint(int x, int y)
