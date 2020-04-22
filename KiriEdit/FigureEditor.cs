@@ -23,6 +23,7 @@ namespace KiriEdit
         private const float CirclePenWidth = 1;
         private const float LinePenWidth = 4;
         private const float LineBoundingWidth = LinePenWidth + 4;
+        private const float SnapMargin = 10;
 
         private FigureDocument _document;
         private FigureContext _context;
@@ -375,6 +376,11 @@ namespace KiriEdit
             }
         }
 
+        private float ScreenToWorld(float scalar)
+        {
+            return scalar * _curControlScaleSingle * _screenToWorldScale;
+        }
+
 
         #region Inner classes
 
@@ -592,6 +598,7 @@ namespace KiriEdit
             private PointF _candidatePoint;
             private Edge _candidateEdge;
             private PointGroup _hilitGroup;
+            private Point _snapPoint;
 
             public PointTool(FigureEditor parent)
             {
@@ -641,12 +648,14 @@ namespace KiriEdit
                 public float Distance;
                 public Edge Edge;
                 public PointF Point;
+                public double T;
 
-                public EdgeSearchResult(float distance, Edge edge, PointF point)
+                public EdgeSearchResult(float distance, Edge edge, PointF point, double t)
                 {
                     Distance = distance;
                     Edge = edge;
                     Point = point;
+                    T = t;
                 }
             }
 
@@ -689,6 +698,21 @@ namespace KiriEdit
 
                 if (result.Edge != null && result.Distance <= visibleDistance)
                 {
+                    _snapPoint = null;
+
+                    if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
+                    {
+                        var (t, point) = FindPointToSnapTo(result.Edge, result.T);
+
+                        if (point != null)
+                        {
+                            PointD p = result.Edge.Calculate(t);
+
+                            result.Point = new PointF((float) p.X, (float) p.Y);
+                            _snapPoint = point;
+                        }
+                    }
+
                     _candidateEdge = result.Edge;
                     _candidatePoint = result.Point;
                 }
@@ -696,6 +720,68 @@ namespace KiriEdit
                 {
                     _candidateEdge = null;
                 }
+            }
+
+            private (double, Point) FindPointToSnapTo(Edge edge, double referenceT)
+            {
+                double leastT = 2;
+                Point point = null;
+
+                BBox bbox = edge.GetBBox();
+
+                int margin = (int) _parent.ScreenToWorld(SnapMargin);
+
+                // Look at each point that doesn't align with the edge's endpoints.
+
+                foreach (var pointGroup in _parent.Document.Figure.PointGroups)
+                {
+                    foreach (var p in pointGroup.Points)
+                    {
+                        if (p.X == edge.P1.X
+                            || p.Y == edge.P1.Y
+                            || p.X == edge.P2.X
+                            || p.Y == edge.P2.Y)
+                            continue;
+
+                        // If a horizontal or vertical ray from a point crosses the edge, then consider it.
+                        // Either ray might cross the edge.
+
+                        double t1 = double.NaN;
+                        double t2 = double.NaN;
+                        double t;
+
+                        if (p.X - margin >= bbox.Left && p.X + margin <= bbox.Right)
+                        {
+                            t1 = edge.GetIntersection(referenceT, p.X, Axis.X);
+                        }
+
+                        if (p.Y - margin >= bbox.Bottom && p.Y + margin <= bbox.Top)
+                        {
+                            t2 = edge.GetIntersection(referenceT, p.Y, Axis.Y);
+                        }
+
+                        // See which of the two crossings is nearer. Keep in mind that they might not exist.
+
+                        if (double.IsNaN(t1))
+                            t = t2;
+                        else if (double.IsNaN(t2))
+                            t = t1;
+                        else if (Math.Abs(referenceT - t1) < Math.Abs(referenceT - t2))
+                            t = t1;
+                        else
+                            t = t2;
+
+                        // Of all the points, look for the one that's nearest the reference t value.
+
+                        if (!double.IsNaN(t) && Math.Abs(referenceT - t) < Math.Abs(referenceT - leastT))
+                        {
+                            leastT = t;
+                            point = p;
+                        }
+                    }
+                }
+
+                return (leastT, point);
             }
 
             private EdgeSearchResult FindNearestEdgeSc(int x, int y)
@@ -718,6 +804,7 @@ namespace KiriEdit
                 result.Distance = float.PositiveInfinity;
                 result.Edge = null;
                 result.Point = new PointF();
+                result.T = -1;
 
                 foreach (var group in _parent._document.Figure.PointGroups)
                 {
@@ -752,6 +839,7 @@ namespace KiriEdit
                                     result.Distance = distance;
                                     result.Edge = edge;
                                     result.Point = projection;
+                                    result.T = t;
                                 }
                             }
                         }
@@ -782,6 +870,23 @@ namespace KiriEdit
                         pointFs[0].Y - circleRadius,
                         circleRadius * 2,
                         circleRadius * 2);
+
+                    if (_snapPoint != null)
+                    {
+                        PointF begin = pointFs[0];
+
+                        pointFs[0] = new PointF(_snapPoint.X, _snapPoint.Y);
+                        _parent._worldToScreenMatrix.TransformPoints(pointFs);
+
+                        pen.Color = Color.Yellow;
+
+                        graphics.DrawLine(
+                            pen,
+                            begin.X,
+                            begin.Y,
+                            pointFs[0].X,
+                            pointFs[0].Y);
+                    }
                 }
             }
         }

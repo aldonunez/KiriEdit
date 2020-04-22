@@ -17,6 +17,27 @@ namespace KiriFig
             Cubic,
         }
 
+        public struct Solutions
+        {
+            public double T1;
+            public double T2;
+            public double T3;
+
+            public Solutions(double t1, double t2)
+            {
+                T1 = t1;
+                T2 = t2;
+                T3 = double.NaN;
+            }
+
+            public Solutions(double t1, double t2, double t3)
+            {
+                T1 = t1;
+                T2 = t2;
+                T3 = t3;
+            }
+        }
+
         private readonly CurveType _curveType;
         private PointD c0;
         private PointD c1;
@@ -258,6 +279,40 @@ namespace KiriFig
             Curve curve2 = new Curve(midP, b2, b4, c3);
 
             return (curve1, curve2);
+        }
+
+        public Solutions SolveConicWithX(int x)
+        {
+            double a = C0.X - 2 * C1.X + C2.X;
+            double sqrt = Math.Sqrt(x * a + C1.X * C1.X - C0.X * C2.X);
+
+            double t1 = (C0.X - C1.X - sqrt) / a;
+            double t2 = (C0.X - C1.X + sqrt) / a;
+
+            if (t1 < 0 || t1 > 1)
+                t1 = double.NaN;
+
+            if (t2 < 0 || t2 > 1)
+                t2 = double.NaN;
+
+            return new Solutions(t1, t2);
+        }
+
+        public Solutions SolveConicWithY(int y)
+        {
+            double a = C0.Y - 2 * C1.Y + C2.Y;
+            double sqrt = Math.Sqrt(y * a + C1.Y * C1.Y - C0.Y * C2.Y);
+
+            double t1 = (C0.Y - C1.Y - sqrt) / a;
+            double t2 = (C0.Y - C1.Y + sqrt) / a;
+
+            if (t1 < 0 || t1 > 1)
+                t1 = double.NaN;
+
+            if (t2 < 0 || t2 > 1)
+                t2 = double.NaN;
+
+            return new Solutions(t1, t2);
         }
     }
 
