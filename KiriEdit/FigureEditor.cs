@@ -691,7 +691,7 @@ namespace KiriEdit
 
                 if (result.Edge != null && result.Distance <= visibleDistance)
                 {
-                    if (true)
+                    if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
                     {
                         double t = FindPointToSnapTo(result.Edge, result.T);
 
@@ -728,7 +728,7 @@ namespace KiriEdit
 
                 int padding = (int) (20 * _parent._curControlScaleSingle * _parent._screenToWorldScale);
 
-                // Look at each point that doesn't coincide (align?) with the edge's endpoints.
+                // Look at each point that doesn't align with the edge's endpoints.
 
                 foreach (var pointGroup in _parent.Document.Figure.PointGroups)
                 {
