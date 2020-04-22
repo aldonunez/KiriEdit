@@ -723,7 +723,7 @@ namespace KiriEdit
 
                 BBox bbox = edge.GetBBox();
 
-                int padding = (int) (20 * _parent._curControlScaleSingle * _parent._screenToWorldScale);
+                int padding = (int) (10 * _parent._curControlScaleSingle * _parent._screenToWorldScale);
 
                 // Look at each point that doesn't align with the edge's endpoints.
 
