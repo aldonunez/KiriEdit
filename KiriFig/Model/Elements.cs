@@ -51,6 +51,12 @@ namespace KiriFig.Model
         Cubic
     }
 
+    public enum Axis
+    {
+        X,
+        Y
+    }
+
     public struct BBox
     {
         public int Left;
@@ -101,8 +107,7 @@ namespace KiriFig.Model
         public abstract BBox GetBBox();
         internal abstract SplitResult Split(Point point);
         public abstract (double, PointD) GetProjectedPoint(int x, int y);
-        public abstract double GetIntersectionNearTWithY(double referenceT, int y);
-        public abstract double GetIntersectionNearTWithX(double referenceT, int x);
+        public abstract double GetIntersection(double referenceT, int coordinate, Axis axis);
         public abstract PointD Calculate(double t);
         public abstract object Clone();
     }
@@ -172,14 +177,12 @@ namespace KiriFig.Model
 
         // There can only be one intersection, so referenceT doesn't matter.
 
-        public override double GetIntersectionNearTWithY(double referenceT, int y)
+        public override double GetIntersection(double referenceT, int coordinate, Axis axis)
         {
-            return (double) (y - P1.Y) / (P2.Y - P1.Y);
-        }
-
-        public override double GetIntersectionNearTWithX(double referenceT, int x)
-        {
-            return (double) (x - P1.X) / (P2.X - P1.X);
+            if (axis == Axis.X)
+                return (double) (coordinate - P1.X) / (P2.X - P1.X);
+            else
+                return (double) (coordinate - P1.Y) / (P2.Y - P1.Y);
         }
 
         public override PointD Calculate(double t)
@@ -230,35 +233,19 @@ namespace KiriFig.Model
             return bbox;
         }
 
-        public override double GetIntersectionNearTWithX(double referenceT, int x)
+        public override double GetIntersection(double referenceT, int coordinate, Axis axis)
         {
             var curve = new Curve(
                 P1.ToPointD(),
                 C1.ToPointD(),
                 P2.ToPointD());
 
-            var solutions = curve.SolveConicWithX(x);
+            Curve.Solutions solutions;
 
-            if (double.IsNaN(solutions.T1))
-                return solutions.T2;
-
-            if (double.IsNaN(solutions.T2))
-                return solutions.T1;
-
-            if (Math.Abs(referenceT - solutions.T1) < Math.Abs(referenceT - solutions.T2))
-                return solutions.T1;
+            if (axis == Axis.X)
+                solutions = curve.SolveConicWithX(coordinate);
             else
-                return solutions.T2;
-        }
-
-        public override double GetIntersectionNearTWithY(double referenceT, int y)
-        {
-            var curve = new Curve(
-                P1.ToPointD(),
-                C1.ToPointD(),
-                P2.ToPointD());
-
-            var solutions = curve.SolveConicWithY(y);
+                solutions = curve.SolveConicWithY(coordinate);
 
             if (double.IsNaN(solutions.T1))
                 return solutions.T2;
@@ -346,12 +333,7 @@ namespace KiriFig.Model
             return bbox;
         }
 
-        public override double GetIntersectionNearTWithX(double referenceT, int x)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override double GetIntersectionNearTWithY(double referenceT, int y)
+        public override double GetIntersection(double referenceT, int coordinate, Axis axis)
         {
             throw new NotImplementedException();
         }

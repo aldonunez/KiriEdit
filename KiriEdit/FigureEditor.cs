@@ -746,12 +746,12 @@ namespace KiriEdit
 
                         if (p.X - padding >= bbox.Left && p.X + padding <= bbox.Right)
                         {
-                            t1 = edge.GetIntersectionNearTWithX(referenceT, p.X);
+                            t1 = edge.GetIntersection(referenceT, p.X, Axis.X);
                         }
 
                         if (p.Y - padding >= bbox.Bottom && p.Y + padding <= bbox.Top)
                         {
-                            t2 = edge.GetIntersectionNearTWithY(referenceT, p.Y);
+                            t2 = edge.GetIntersection(referenceT, p.Y, Axis.Y);
                         }
 
                         // See which of the two crossings is nearer. Keep in mind that they might not exist.
