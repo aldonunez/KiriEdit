@@ -171,7 +171,7 @@ namespace KiriEdit
 
         private void RebuildCanvas()
         {
-            if (_document == null || !IsHandleCreated)
+            if (_document == null || !IsHandleCreated || canvas.Width == 0 || canvas.Height == 0)
                 return;
 
             if (canvas.BackgroundImage != null)
