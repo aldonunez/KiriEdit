@@ -592,6 +592,7 @@ namespace KiriEdit
             private PointF _candidatePoint;
             private Edge _candidateEdge;
             private PointGroup _hilitGroup;
+            private Point _snapPoint;
 
             public PointTool(FigureEditor parent)
             {
@@ -691,28 +692,23 @@ namespace KiriEdit
 
                 if (result.Edge != null && result.Distance <= visibleDistance)
                 {
+                    _snapPoint = null;
+
                     if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
                     {
-                        double t = FindPointToSnapTo(result.Edge, result.T);
+                        var (t, point) = FindPointToSnapTo(result.Edge, result.T);
 
                         if (t >= 0 && t <= 1)
                         {
                             PointD p = result.Edge.Calculate(t);
 
-                            _candidateEdge = result.Edge;
-                            _candidatePoint = new PointF((float) p.X, (float) p.Y);
-                        }
-                        else
-                        {
-                            _candidateEdge = result.Edge;
-                            _candidatePoint = result.Point;
+                            result.Point = new PointF((float) p.X, (float) p.Y);
+                            _snapPoint = point;
                         }
                     }
-                    else
-                    {
-                        _candidateEdge = result.Edge;
-                        _candidatePoint = result.Point;
-                    }
+
+                    _candidateEdge = result.Edge;
+                    _candidatePoint = result.Point;
                 }
                 else
                 {
@@ -720,9 +716,10 @@ namespace KiriEdit
                 }
             }
 
-            private double FindPointToSnapTo(Edge edge, double referenceT)
+            private (double, Point) FindPointToSnapTo(Edge edge, double referenceT)
             {
                 double leastT = 2;
+                Point point = null;
 
                 BBox bbox = edge.GetBBox();
 
@@ -769,11 +766,14 @@ namespace KiriEdit
                             t = t2;
 
                         if (!double.IsNaN(t) && Math.Abs(referenceT - t) < Math.Abs(referenceT - leastT))
+                        {
                             leastT = t;
+                            point = p;
+                        }
                     }
                 }
 
-                return leastT;
+                return (leastT, point);
             }
 
             private EdgeSearchResult FindNearestEdgeSc(int x, int y)
@@ -862,6 +862,23 @@ namespace KiriEdit
                         pointFs[0].Y - circleRadius,
                         circleRadius * 2,
                         circleRadius * 2);
+
+                    if (_snapPoint != null)
+                    {
+                        PointF begin = pointFs[0];
+
+                        pointFs[0] = new PointF(_snapPoint.X, _snapPoint.Y);
+                        _parent._worldToScreenMatrix.TransformPoints(pointFs);
+
+                        pen.Color = Color.Yellow;
+
+                        graphics.DrawLine(
+                            pen,
+                            begin.X,
+                            begin.Y,
+                            pointFs[0].X,
+                            pointFs[0].Y);
+                    }
                 }
             }
         }
