@@ -698,7 +698,7 @@ namespace KiriEdit
                     {
                         var (t, point) = FindPointToSnapTo(result.Edge, result.T);
 
-                        if (t >= 0 && t <= 1)
+                        if (point != null)
                         {
                             PointD p = result.Edge.Calculate(t);
 
@@ -731,8 +731,6 @@ namespace KiriEdit
                 {
                     foreach (var p in pointGroup.Points)
                     {
-                        // TODO: check approximately equal
-
                         if (p.X == edge.P1.X
                             || p.Y == edge.P1.Y
                             || p.X == edge.P2.X
@@ -756,6 +754,8 @@ namespace KiriEdit
                             t2 = edge.GetIntersectionNearTWithY(referenceT, p.Y);
                         }
 
+                        // See which of the two crossings is nearer. Keep in mind that they might not exist.
+
                         if (double.IsNaN(t1))
                             t = t2;
                         else if (double.IsNaN(t2))
@@ -764,6 +764,8 @@ namespace KiriEdit
                             t = t1;
                         else
                             t = t2;
+
+                        // Of all the points, look for the one that's nearest the reference t value.
 
                         if (!double.IsNaN(t) && Math.Abs(referenceT - t) < Math.Abs(referenceT - leastT))
                         {
