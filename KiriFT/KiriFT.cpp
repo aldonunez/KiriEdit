@@ -115,7 +115,10 @@ namespace KiriFT
                 throw gcnew FreeTypeException(error);
 
             if (   ftName.platform_id == TT_PLATFORM_MICROSOFT
-                && ftName.encoding_id == TT_MS_ID_UNICODE_CS)
+                && (   ftName.encoding_id == TT_MS_ID_UNICODE_CS
+                    || ftName.encoding_id == TT_MS_ID_UCS_4
+                    || ftName.encoding_id == TT_MS_ID_SYMBOL_CS)
+                )
             {
                 managedName.Index = i;
                 m_filteredSfntNames->Add( managedName );
