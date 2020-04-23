@@ -11,6 +11,8 @@ namespace KiriFig
 {
     public struct Curve
     {
+        private const double Epsilon = .00001;
+
         private enum CurveType
         {
             Conic,
@@ -313,6 +315,141 @@ namespace KiriFig
                 t2 = double.NaN;
 
             return new Solutions(t1, t2);
+        }
+
+        public int SolveCubicWithX(int x, double[] roots)
+        {
+            return SolveCubic(C0.X, C1.X, C2.X, C3.X, x, roots);
+        }
+
+        public int SolveCubicWithY(int y, double[] roots)
+        {
+            return SolveCubic(C0.Y, C1.Y, C2.Y, C3.Y, y, roots);
+        }
+
+        private struct Solutions2
+        {
+            public double[] Roots { get; }
+            public int Count { get; private set; }
+
+            public Solutions2(double[] roots)
+            {
+                Roots = roots;
+                Count = 0;
+            }
+
+            public void Add(double root)
+            {
+                if (root >= 0 && root <= 1)
+                {
+                    Roots[Count] = root;
+                    Count++;
+                }
+            }
+        }
+
+        // Use Cardano's algorithm to solve the cubic component function for t.
+        // This is based on explanations in:
+        //  https://trans4mind.com/personal_development/mathematics/polynomials/cubicAlgebra.htm
+        //  https://pomax.github.io/bezierinfo/#extremities
+
+        private static int SolveCubic(double c0, double c1, double c2, double c3, int coordinate, double[] roots)
+        {
+            var solutions = new Solutions2(roots);
+
+            double a = 3 * c0 - 6 * c1 + 3 * c2;
+            double b = -3 * c0 + 3 * c1;
+            double c = c0 - coordinate;
+            double d = -c0 + 3 * c1 - 3 * c2 + c3;
+
+            double q;
+
+            // Check the coefficients to see if the curve is really of a lower order.
+
+            if (AboutEqual(d, 0))
+            {
+                if (AboutEqual(a, 0))
+                {
+                    if (AboutEqual(b, 0))
+                        // The curve isn't even linear. There are no solutions.
+                        return 0;
+
+                    // The curve is linear. There's at most one solution.
+                    solutions.Add(-c / b);
+                    return solutions.Count;
+                }
+
+                // The curve is quardratic. There are at most two solutions.
+                q = Math.Sqrt(b * b - 4 * a * c);
+                double _2a = 2 * a;
+                solutions.Add((q - b) / _2a);
+                solutions.Add((-b - q) / _2a);
+                return solutions.Count;
+            }
+
+            // A cubic solution is indeed needed.
+
+            a /= d;
+            b /= d;
+            c /= d;
+
+            double p = (3 * b - a * a) / 3;
+            double p3 = p / 3;
+            q = (2 * a * a * a - 9 * a * b + 27 * c) / 27;
+            double q2 = q / 2;
+            double discriminant = q2 * q2 + p3 * p3 * p3;
+
+            // There are three possible real roots.
+            if (discriminant < 0)
+            {
+                double mp3 = -p / 3;
+                double r = Math.Sqrt(mp3 * mp3 * mp3);
+                double t = -q / (2 * r);
+                double cosphi;
+
+                if (t < -1)
+                    cosphi = -1;
+                else if (t > 1)
+                    cosphi = 1;
+                else
+                    cosphi = t;
+
+                double phi = Math.Acos(cosphi);
+                double t1 = 2 * CubeRoot(r);
+                solutions.Add(t1 * Math.Cos(phi / 3) - a / 3);
+                solutions.Add(t1 * Math.Cos((phi + 2 * Math.PI) / 3) - a / 3);
+                solutions.Add(t1 * Math.Cos((phi + 4 * Math.PI) / 3) - a / 3);
+                return solutions.Count;
+            }
+
+            // There are three possible real roots. But two of them are equal.
+            if (discriminant == 0)
+            {
+                double u = -CubeRoot(q2);
+                solutions.Add(2 * u - a / 3);
+                solutions.Add(-u - a / 3);
+                return solutions.Count;
+            }
+
+            // There's one real root and two complex roots.
+            double sd = Math.Sqrt(discriminant);
+            double u1 = CubeRoot(sd - q2);
+            double v1 = CubeRoot(sd + q2);
+            solutions.Add(u1 - v1 - a / 3);
+            return solutions.Count;
+        }
+
+        private static bool AboutEqual(double a, double b)
+        {
+            return Math.Abs(a - b) < Epsilon;
+        }
+
+        private static double CubeRoot(double x)
+        {
+            if (x < 0)
+                return -Math.Pow(-x, 1 / 3d);
+
+            return Math.Pow(x, 1 / 3d);
         }
     }
 

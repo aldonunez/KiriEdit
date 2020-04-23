@@ -335,7 +335,38 @@ namespace KiriFig.Model
 
         public override double GetIntersection(double referenceT, int coordinate, Axis axis)
         {
-            throw new NotImplementedException();
+            var curve = new Curve(
+                P1.ToPointD(),
+                C1.ToPointD(),
+                C2.ToPointD(),
+                P2.ToPointD());
+
+            double[] solutions = new double[3];
+            int solutionCount;
+
+            if (axis == Axis.X)
+                solutionCount = curve.SolveCubicWithX(coordinate, solutions);
+            else
+                solutionCount = curve.SolveCubicWithY(coordinate, solutions);
+
+            switch (solutionCount)
+            {
+                case 3:
+                    if (Math.Abs(referenceT - solutions[2]) < Math.Abs(referenceT - solutions[1]))
+                        solutions[1] = solutions[2];
+                    goto case 2;
+
+                case 2:
+                    if (Math.Abs(referenceT - solutions[0]) < Math.Abs(referenceT - solutions[1]))
+                        return solutions[0];
+                    return solutions[1];
+
+                case 1:
+                    return solutions[0];
+
+                default:
+                    return double.NaN;
+            }
         }
 
         public override (double, PointD) GetProjectedPoint(int x, int y)
