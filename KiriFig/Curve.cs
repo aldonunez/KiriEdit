@@ -19,27 +19,6 @@ namespace KiriFig
             Cubic,
         }
 
-        public struct Solutions
-        {
-            public double T1;
-            public double T2;
-            public double T3;
-
-            public Solutions(double t1, double t2)
-            {
-                T1 = t1;
-                T2 = t2;
-                T3 = double.NaN;
-            }
-
-            public Solutions(double t1, double t2, double t3)
-            {
-                T1 = t1;
-                T2 = t2;
-                T3 = t3;
-            }
-        }
-
         private readonly CurveType _curveType;
         private PointD c0;
         private PointD c1;
@@ -283,38 +262,30 @@ namespace KiriFig
             return (curve1, curve2);
         }
 
-        public Solutions SolveConicWithX(int x)
+        public int SolveConicWithX(int x, double[] roots)
         {
+            var solutions = new Solutions(roots);
+
             double a = C0.X - 2 * C1.X + C2.X;
             double sqrt = Math.Sqrt(x * a + C1.X * C1.X - C0.X * C2.X);
 
-            double t1 = (C0.X - C1.X - sqrt) / a;
-            double t2 = (C0.X - C1.X + sqrt) / a;
+            solutions.Add((C0.X - C1.X - sqrt) / a);
+            solutions.Add((C0.X - C1.X + sqrt) / a);
 
-            if (t1 < 0 || t1 > 1)
-                t1 = double.NaN;
-
-            if (t2 < 0 || t2 > 1)
-                t2 = double.NaN;
-
-            return new Solutions(t1, t2);
+            return solutions.Count;
         }
 
-        public Solutions SolveConicWithY(int y)
+        public int SolveConicWithY(int y, double[] roots)
         {
+            var solutions = new Solutions(roots);
+
             double a = C0.Y - 2 * C1.Y + C2.Y;
             double sqrt = Math.Sqrt(y * a + C1.Y * C1.Y - C0.Y * C2.Y);
 
-            double t1 = (C0.Y - C1.Y - sqrt) / a;
-            double t2 = (C0.Y - C1.Y + sqrt) / a;
+            solutions.Add((C0.Y - C1.Y - sqrt) / a);
+            solutions.Add((C0.Y - C1.Y + sqrt) / a);
 
-            if (t1 < 0 || t1 > 1)
-                t1 = double.NaN;
-
-            if (t2 < 0 || t2 > 1)
-                t2 = double.NaN;
-
-            return new Solutions(t1, t2);
+            return solutions.Count;
         }
 
         public int SolveCubicWithX(int x, double[] roots)
@@ -327,12 +298,12 @@ namespace KiriFig
             return SolveCubic(C0.Y, C1.Y, C2.Y, C3.Y, y, roots);
         }
 
-        private struct Solutions2
+        private struct Solutions
         {
             public double[] Roots { get; }
             public int Count { get; private set; }
 
-            public Solutions2(double[] roots)
+            public Solutions(double[] roots)
             {
                 Roots = roots;
                 Count = 0;
@@ -355,7 +326,7 @@ namespace KiriFig
 
         private static int SolveCubic(double c0, double c1, double c2, double c3, int coordinate, double[] roots)
         {
-            var solutions = new Solutions2(roots);
+            var solutions = new Solutions(roots);
 
             double a = 3 * c0 - 6 * c1 + 3 * c2;
             double b = -3 * c0 + 3 * c1;

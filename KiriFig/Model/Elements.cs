@@ -240,23 +240,27 @@ namespace KiriFig.Model
                 C1.ToPointD(),
                 P2.ToPointD());
 
-            Curve.Solutions solutions;
+            double[] solutions = new double[2];
+            int solutionCount;
 
             if (axis == Axis.X)
-                solutions = curve.SolveConicWithX(coordinate);
+                solutionCount = curve.SolveConicWithX(coordinate, solutions);
             else
-                solutions = curve.SolveConicWithY(coordinate);
+                solutionCount = curve.SolveConicWithY(coordinate, solutions);
 
-            if (double.IsNaN(solutions.T1))
-                return solutions.T2;
+            switch (solutionCount)
+            {
+                case 2:
+                    if (Math.Abs(referenceT - solutions[0]) < Math.Abs(referenceT - solutions[1]))
+                        return solutions[0];
+                    return solutions[1];
 
-            if (double.IsNaN(solutions.T2))
-                return solutions.T1;
+                case 1:
+                    return solutions[0];
 
-            if (Math.Abs(referenceT - solutions.T1) < Math.Abs(referenceT - solutions.T2))
-                return solutions.T1;
-            else
-                return solutions.T2;
+                default:
+                    return double.NaN;
+            }
         }
 
         public override (double, PointD) GetProjectedPoint(int x, int y)
