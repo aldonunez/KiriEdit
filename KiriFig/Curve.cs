@@ -264,26 +264,23 @@ namespace KiriFig
 
         public int SolveConicWithX(int x, double[] roots)
         {
-            var solutions = new Solutions(roots);
-
-            double a = C0.X - 2 * C1.X + C2.X;
-            double sqrt = Math.Sqrt(x * a + C1.X * C1.X - C0.X * C2.X);
-
-            solutions.Add((C0.X - C1.X - sqrt) / a);
-            solutions.Add((C0.X - C1.X + sqrt) / a);
-
-            return solutions.Count;
+            return SolveConic(C0.X, C1.X, C2.X, x, roots);
         }
 
         public int SolveConicWithY(int y, double[] roots)
         {
+            return SolveConic(C0.Y, C1.Y, C2.Y, y, roots);
+        }
+
+        private static int SolveConic(double c0, double c1, double c2, int coordinate, double[] roots)
+        {
             var solutions = new Solutions(roots);
 
-            double a = C0.Y - 2 * C1.Y + C2.Y;
-            double sqrt = Math.Sqrt(y * a + C1.Y * C1.Y - C0.Y * C2.Y);
+            double a = c0 - 2 * c1 + c2;
+            double sqrt = Math.Sqrt(coordinate * a + c1 * c1 - c0 * c2);
 
-            solutions.Add((C0.Y - C1.Y - sqrt) / a);
-            solutions.Add((C0.Y - C1.Y + sqrt) / a);
+            solutions.Add((c0 - c1 - sqrt) / a);
+            solutions.Add((c0 - c1 + sqrt) / a);
 
             return solutions.Count;
         }
