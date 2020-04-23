@@ -19,6 +19,10 @@ namespace KiriEdit
         // TODO: put this somewhere else
         public const string AppTitle = "KiriEdit";
 
+        private const string FontFilter =
+            "KiriEdit project files (*.kiriproj)|*.kiriproj"
+            ;
+
         private Project _project;
         private MdiDocumentContainer _documentContainer;
         private ToolStripMenuItem[] _windowListMenuItems;
@@ -324,6 +328,10 @@ namespace KiriEdit
         {
             using (var dialog = new OpenFileDialog())
             {
+                dialog.Title = "Open Project";
+                dialog.Filter = FontFilter;
+                dialog.CheckFileExists = true;
+
                 if (dialog.ShowDialog() == DialogResult.OK)
                     return dialog.FileName;
             }
