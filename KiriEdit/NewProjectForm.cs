@@ -41,7 +41,7 @@ namespace KiriEdit
             else
             {
                 var item = (FontListItem) typefaceComboBox.SelectedItem;
-                copyrightTextBox.Text = item.Copyright;
+                copyrightTextBox.Text = item.FontInfo.Copyright;
             }
 
             UpdateOKButton();
@@ -236,64 +236,22 @@ namespace KiriEdit
 
         private class FontListItem
         {
-            private struct LocalizedSfntName
-            {
-                public string String;
-                public int LangId;
-            }
-
             private string _itemText;
 
             public int FaceIndex { get; }
-            public string Copyright { get; }
+            public FontInfo FontInfo { get; }
 
             public FontListItem(Face face)
             {
                 FaceIndex = face.FaceIndex;
                 _itemText = string.Format("{0} ({1})", face.FamilyName, face.StyleName);
 
-                uint count = face.GetSfntNameCount();
-                var localizedCopyright = new LocalizedSfntName();
-
-                for (uint i = 0; i < count; i++)
-                {
-                    SfntName sfntName = face.GetSfntName(i);
-
-                    if (sfntName.NameId == 0)
-                    {
-                        SetLocalizedSfntName(sfntName.String, sfntName.LanguageId, ref localizedCopyright);
-                    }
-                }
-
-                Copyright = localizedCopyright.String;
+                FontInfo = new FontInfo(face);
             }
 
             public override string ToString()
             {
                 return _itemText;
-            }
-
-            private void SetLocalizedSfntName(string s, int langId, ref LocalizedSfntName sfntName)
-            {
-                int curLangId = System.Globalization.CultureInfo.CurrentCulture.LCID & 0xFFFF;
-                int curPrimLangId = curLangId & 0x03FF;
-
-                // If the stored string is not set
-                // Or the incoming LANGID = current LANGID
-                // Or the stored LANGID <> current LANGID
-                //      And the incoming primary LANGID = current primary LANGID
-                // Or the stored primary LANGID <> current primary LANGID
-                //      And the incoming primary LANGID = English
-
-                if (sfntName.String == null
-                    || langId == curLangId
-                    || ((sfntName.LangId != curLangId) && (langId & 0x03FF) == curPrimLangId)
-                    || ((sfntName.LangId & 0x03FF) != curPrimLangId && (langId & 0x03FF) == 9)
-                    )
-                {
-                    sfntName.String = s;
-                    sfntName.LangId = langId;
-                }
             }
         }
 
