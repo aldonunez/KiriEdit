@@ -37,11 +37,14 @@ namespace KiriEdit
             if (typefaceComboBox.SelectedIndex < 1)
             {
                 copyrightTextBox.Text = "";
+                infoLinkLabel.Enabled = false;
             }
             else
             {
                 var item = (FontListItem) typefaceComboBox.SelectedItem;
                 copyrightTextBox.Text = item.FontInfo.Copyright;
+                infoLinkLabel.Enabled = true;
+                infoLinkLabel.LinkVisited = item.SawInfo;
             }
 
             UpdateOKButton();
@@ -240,6 +243,7 @@ namespace KiriEdit
 
             public int FaceIndex { get; }
             public FontInfo FontInfo { get; }
+            public bool SawInfo { get; set; }
 
             public FontListItem(Face face)
             {
@@ -256,5 +260,19 @@ namespace KiriEdit
         }
 
         #endregion
+
+        private void infoLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            var listItem = (FontListItem) typefaceComboBox.SelectedItem;
+
+            listItem.SawInfo = true;
+            infoLinkLabel.LinkVisited = true;
+
+            using (var form = new FontInfoForm())
+            {
+                form.FontInfo = listItem.FontInfo;
+                form.ShowDialog();
+            }
+        }
     }
 }

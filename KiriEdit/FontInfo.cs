@@ -9,7 +9,7 @@ using KiriFT;
 
 namespace KiriEdit
 {
-    internal class FontInfo
+    public class FontInfo
     {
         private struct LocalizedSfntName
         {
@@ -17,29 +17,58 @@ namespace KiriEdit
             public int LangId;
         }
 
+        public string FamilyName { get; private set; }
+        public string StyleName { get; private set; }
+
         public string Copyright { get; private set; }
+        public string License { get; private set; }
+        public string LicenseUrl { get; private set; }
+        public string Version { get; private set; }
 
         public FontInfo(Face face)
         {
-            ExtractInfo(face);
+            FamilyName = face.FamilyName;
+            StyleName = face.StyleName;
+
+            ExtractStrings(face);
         }
 
-        private void ExtractInfo(Face face)
+        private void ExtractStrings(Face face)
         {
             uint count = face.GetSfntNameCount();
             var localizedCopyright = new LocalizedSfntName();
+            var localizedLicense = new LocalizedSfntName();
+            var localizedLicenseUrl = new LocalizedSfntName();
+            var localizedVersion = new LocalizedSfntName();
 
             for (uint i = 0; i < count; i++)
             {
                 SfntName sfntName = face.GetSfntName(i);
 
-                if (sfntName.NameId == 0)
+                switch (sfntName.NameId)
                 {
-                    SetLocalizedSfntName(sfntName.String, sfntName.LanguageId, ref localizedCopyright);
+                    case 0:
+                        SetLocalizedSfntName(sfntName.String, sfntName.LanguageId, ref localizedCopyright);
+                        break;
+
+                    case 5:
+                        SetLocalizedSfntName(sfntName.String, sfntName.LanguageId, ref localizedVersion);
+                        break;
+
+                    case 13:
+                        SetLocalizedSfntName(sfntName.String, sfntName.LanguageId, ref localizedLicense);
+                        break;
+
+                    case 14:
+                        SetLocalizedSfntName(sfntName.String, sfntName.LanguageId, ref localizedLicenseUrl);
+                        break;
                 }
             }
 
             Copyright = localizedCopyright.String;
+            License = localizedLicense.String;
+            LicenseUrl = localizedLicenseUrl.String;
+            Version = localizedVersion.String;
         }
 
         private static void SetLocalizedSfntName(string s, int langId, ref LocalizedSfntName sfntName)
