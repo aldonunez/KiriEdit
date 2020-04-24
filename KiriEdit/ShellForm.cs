@@ -27,6 +27,7 @@ namespace KiriEdit
         private MdiDocumentContainer _documentContainer;
         private ToolStripMenuItem[] _windowListMenuItems;
         private Dictionary<object, IView> _runningDocTable = new Dictionary<object, IView>();
+        private FontInfo _fontInfo;
 
         public ShellForm()
         {
@@ -261,6 +262,12 @@ namespace KiriEdit
 
             _project = project;
 
+            using (var lib = new Library())
+            using (var face = lib.OpenFace(_project.FontPath, _project.FaceIndex))
+            {
+                _fontInfo = new FontInfo(face);
+            }
+
             AddView(new CharMapView());
         }
 
@@ -459,6 +466,15 @@ namespace KiriEdit
             using (var form = new WindowsForm())
             {
                 form.DocumentContainer = _documentContainer;
+                form.ShowDialog();
+            }
+        }
+
+        private void fontInfoMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var form = new FontInfoForm())
+            {
+                form.FontInfo = _fontInfo;
                 form.ShowDialog();
             }
         }

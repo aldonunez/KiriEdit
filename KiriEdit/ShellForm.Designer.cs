@@ -54,6 +54,8 @@
             this.helpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutAppMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.fontInfoMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -172,7 +174,9 @@
             // viewMenuItem
             // 
             this.viewMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.characterMapMenuItem});
+            this.characterMapMenuItem,
+            this.toolStripSeparator4,
+            this.fontInfoMenuItem});
             this.viewMenuItem.Name = "viewMenuItem";
             this.viewMenuItem.Size = new System.Drawing.Size(44, 20);
             this.viewMenuItem.Text = "&View";
@@ -180,7 +184,7 @@
             // characterMapMenuItem
             // 
             this.characterMapMenuItem.Name = "characterMapMenuItem";
-            this.characterMapMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.characterMapMenuItem.Size = new System.Drawing.Size(180, 22);
             this.characterMapMenuItem.Text = "Character &Map";
             this.characterMapMenuItem.Click += new System.EventHandler(this.characterMapMenuItem_Click);
             // 
@@ -273,6 +277,18 @@
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
             // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(177, 6);
+            // 
+            // fontInfoMenuItem
+            // 
+            this.fontInfoMenuItem.Name = "fontInfoMenuItem";
+            this.fontInfoMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.fontInfoMenuItem.Text = "&Font Information ...";
+            this.fontInfoMenuItem.Click += new System.EventHandler(this.fontInfoMenuItem_Click);
+            // 
             // ShellForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -321,6 +337,8 @@
         private System.Windows.Forms.ToolStripMenuItem redoMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutAppMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripMenuItem fontInfoMenuItem;
     }
 }
 

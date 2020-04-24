@@ -234,6 +234,20 @@ namespace KiriEdit
             }
         }
 
+        private void infoLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            var listItem = (FontListItem) typefaceComboBox.SelectedItem;
+
+            listItem.SawInfo = true;
+            infoLinkLabel.LinkVisited = true;
+
+            using (var form = new FontInfoForm())
+            {
+                form.FontInfo = listItem.FontInfo;
+                form.ShowDialog();
+            }
+        }
+
 
         #region Inner classes
 
@@ -260,19 +274,5 @@ namespace KiriEdit
         }
 
         #endregion
-
-        private void infoLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            var listItem = (FontListItem) typefaceComboBox.SelectedItem;
-
-            listItem.SawInfo = true;
-            infoLinkLabel.LinkVisited = true;
-
-            using (var form = new FontInfoForm())
-            {
-                form.FontInfo = listItem.FontInfo;
-                form.ShowDialog();
-            }
-        }
     }
 }
