@@ -269,6 +269,7 @@
             this.MinimumSize = new System.Drawing.Size(235, 274);
             this.Name = "NewProjectForm";
             this.ShowInTaskbar = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "New Project";
             this.fontGroupBox.ResumeLayout(false);
             this.fontGroupBox.PerformLayout();

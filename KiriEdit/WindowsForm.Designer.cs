@@ -96,6 +96,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "WindowsForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Windows";
             this.Load += new System.EventHandler(this.WindowsForm_Load);
             this.ResumeLayout(false);

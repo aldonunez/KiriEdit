@@ -190,6 +190,7 @@
             this.Controls.Add(this.label1);
             this.MinimizeBox = false;
             this.Name = "FontInfoForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Font Information";
             this.Load += new System.EventHandler(this.FontInfoForm_Load);
             this.panel1.ResumeLayout(false);
