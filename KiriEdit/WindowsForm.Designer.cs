@@ -32,17 +32,18 @@
             this.activateButton = new System.Windows.Forms.Button();
             this.closeWindowButton = new System.Windows.Forms.Button();
             this.okButton = new System.Windows.Forms.Button();
+            this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // windowsListBox
             // 
-            this.windowsListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.windowsListBox.Location = new System.Drawing.Point(12, 12);
+            this.windowsListBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.windowsListBox.Location = new System.Drawing.Point(0, 0);
+            this.windowsListBox.Margin = new System.Windows.Forms.Padding(0);
             this.windowsListBox.Name = "windowsListBox";
             this.windowsListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.windowsListBox.Size = new System.Drawing.Size(199, 121);
+            this.windowsListBox.Size = new System.Drawing.Size(200, 116);
             this.windowsListBox.TabIndex = 0;
             this.windowsListBox.SelectedIndexChanged += new System.EventHandler(this.windowsListBox_SelectedIndexChanged);
             // 
@@ -83,22 +84,39 @@
             this.okButton.UseVisualStyleBackColor = true;
             this.okButton.Click += new System.EventHandler(this.okButton_Click);
             // 
+            // tableLayoutPanel
+            // 
+            this.tableLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel.ColumnCount = 1;
+            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel.Controls.Add(this.windowsListBox, 0, 0);
+            this.tableLayoutPanel.Location = new System.Drawing.Point(11, 12);
+            this.tableLayoutPanel.Name = "tableLayoutPanel";
+            this.tableLayoutPanel.RowCount = 2;
+            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 36F));
+            this.tableLayoutPanel.Size = new System.Drawing.Size(200, 152);
+            this.tableLayoutPanel.TabIndex = 4;
+            // 
             // WindowsForm
             // 
             this.AcceptButton = this.okButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(340, 176);
+            this.Controls.Add(this.tableLayoutPanel);
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.closeWindowButton);
             this.Controls.Add(this.activateButton);
-            this.Controls.Add(this.windowsListBox);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "WindowsForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Windows";
             this.Load += new System.EventHandler(this.WindowsForm_Load);
+            this.tableLayoutPanel.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -109,5 +127,6 @@
         private System.Windows.Forms.Button activateButton;
         private System.Windows.Forms.Button closeWindowButton;
         private System.Windows.Forms.Button okButton;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel;
     }
 }
