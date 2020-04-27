@@ -236,6 +236,7 @@ namespace KiriEdit
             closeProjectMenuItem.Enabled = false;
             saveAllMenuItem.Enabled = false;
             characterMapMenuItem.Enabled = false;
+            fontInfoMenuItem.Enabled = false;
 
             _documentContainer.Clear();
 
@@ -255,6 +256,7 @@ namespace KiriEdit
             closeProjectMenuItem.Enabled = true;
             saveAllMenuItem.Enabled = true;
             characterMapMenuItem.Enabled = true;
+            fontInfoMenuItem.Enabled = true;
 
             UpdateViewHostingState();
             string baseName = project.Name;

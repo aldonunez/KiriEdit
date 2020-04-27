@@ -284,6 +284,7 @@
             // 
             // fontInfoMenuItem
             // 
+            this.fontInfoMenuItem.Enabled = false;
             this.fontInfoMenuItem.Name = "fontInfoMenuItem";
             this.fontInfoMenuItem.Size = new System.Drawing.Size(180, 22);
             this.fontInfoMenuItem.Text = "&Font Information ...";
