@@ -155,13 +155,13 @@ namespace KiriFig
             public int Distance;
         }
 
-        private void TestLineCrossing(Point p, Point p1, Point p2, ref CrossingInfo crossing)
+        private void TestLineCrossing(Point p, PointD p1, PointD p2, ref CrossingInfo crossing)
         {
             if (   (p1.Y <= p.Y && p2.Y  > p.Y)
                 || (p1.Y  > p.Y && p2.Y <= p.Y))
             {
-                float proportion = (float) (p.Y - p1.Y) / (p2.Y - p1.Y);
-                float intersectX = p1.X + proportion * (p2.X - p1.X);
+                float proportion = (float) ((p.Y - p1.Y) / (p2.Y - p1.Y));
+                float intersectX = (float) (p1.X + proportion * (p2.X - p1.X));
 
                 if (p.X < intersectX)
                 {
@@ -175,20 +175,12 @@ namespace KiriFig
 
         private void TestCrossing(Point p, Edge edge, ref CrossingInfo crossing)
         {
-            if (edge is LineEdge)
+            PointD prevPoint = edge.P1.ToPointD();
+
+            foreach (var pd in edge.Flatten())
             {
-                TestLineCrossing(p, edge.P1, edge.P2, ref crossing);
-            }
-            else if (edge is ConicEdge conicEdge)
-            {
-                TestLineCrossing(p, conicEdge.P1, conicEdge.C1, ref crossing);
-                TestLineCrossing(p, conicEdge.C1, conicEdge.P2, ref crossing);
-            }
-            else if (edge is CubicEdge cubicEdge)
-            {
-                TestLineCrossing(p, cubicEdge.P1, cubicEdge.C1, ref crossing);
-                TestLineCrossing(p, cubicEdge.C1, cubicEdge.C2, ref crossing);
-                TestLineCrossing(p, cubicEdge.C2, cubicEdge.P2, ref crossing);
+                TestLineCrossing(p, prevPoint, pd, ref crossing);
+                prevPoint = pd;
             }
         }
 

@@ -115,6 +115,7 @@ namespace KiriFig.Model
         public abstract (double, PointD) GetProjectedPoint(int x, int y);
         public abstract double GetIntersection(double referenceT, int coordinate, Axis axis);
         public abstract PointD Calculate(double t);
+        public abstract IEnumerable<PointD> Flatten(int segments = 0);
         public abstract object Clone();
     }
 
@@ -198,6 +199,11 @@ namespace KiriFig.Model
 
             return new PointD(x, y);
         }
+
+        public override IEnumerable<PointD> Flatten(int segments)
+        {
+            yield return P2.ToPointD();
+        }
     }
 
     public class ConicEdge : Edge
@@ -225,6 +231,28 @@ namespace KiriFig.Model
         public override object Clone()
         {
             return MemberwiseClone();
+        }
+
+        public override IEnumerable<PointD> Flatten(int segments)
+        {
+            if (segments <= 0)
+                segments = 4;
+
+            var curve = new Curve(
+                P1.ToPointD(),
+                C1.ToPointD(),
+                P2.ToPointD());
+
+            double deltaT = 1d / segments;
+
+            for (double t = deltaT; t < 1d; t += deltaT)
+            {
+                PointD p = curve.CalcConic(t);
+                yield return p;
+            }
+
+            PointD pEnd = curve.CalcConic(1d);
+            yield return pEnd;
         }
 
         public override BBox GetBBox()
@@ -329,6 +357,29 @@ namespace KiriFig.Model
         public override object Clone()
         {
             return MemberwiseClone();
+        }
+
+        public override IEnumerable<PointD> Flatten(int segments)
+        {
+            if (segments <= 0)
+                segments = 6;
+
+            var curve = new Curve(
+                P1.ToPointD(),
+                C1.ToPointD(),
+                C2.ToPointD(),
+                P2.ToPointD());
+
+            double deltaT = 1d / segments;
+
+            for (double t = deltaT; t < 1d; t += deltaT)
+            {
+                PointD p = curve.CalcCubic(t);
+                yield return p;
+            }
+
+            PointD pEnd = curve.CalcCubic(1d);
+            yield return pEnd;
         }
 
         public override BBox GetBBox()

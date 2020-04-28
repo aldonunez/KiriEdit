@@ -174,8 +174,7 @@ namespace KiriEdit
                     new PointF((float) to.X, (float) to.Y)
                 });
 #else
-            _graphicsPath.AddLine((float) _x, (float) _y, (float) control1.X, (float) control1.Y);
-            _graphicsPath.AddLine((float) control1.X, (float) control1.Y, (float) to.X, (float) to.Y);
+            DrawFlattenedCurve(edge);
 #endif
             _x = to.X;
             _y = to.Y;
@@ -197,12 +196,22 @@ namespace KiriEdit
                     new PointF((float) to.X, (float) to.Y)
                 });
 #else
-            _graphicsPath.AddLine((float) _x, (float) _y, (float) c1.X, (float) c1.Y);
-            _graphicsPath.AddLine((float) c1.X, (float) c1.Y, (float) c2.X, (float) c2.Y);
-            _graphicsPath.AddLine((float) c2.X, (float) c2.Y, (float) to.X, (float) to.Y);
+            DrawFlattenedCurve(edge);
 #endif
             _x = to.X;
             _y = to.Y;
+        }
+
+        private void DrawFlattenedCurve(Edge edge)
+        {
+            PointF prevPoint = new PointF(_x, _y);
+
+            foreach (var pd in edge.Flatten())
+            {
+                PointF pf = new PointF((float) pd.X, (float) pd.Y);
+                _graphicsPath.AddLine(prevPoint, pf);
+                prevPoint = pf;
+            }
         }
     }
 }
