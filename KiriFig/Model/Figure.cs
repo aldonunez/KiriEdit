@@ -18,6 +18,7 @@ namespace KiriFig.Model
         public int Height { get; }
         public int OffsetX { get; }
         public int OffsetY { get; }
+        public FaceOrientation FaceOrientation { get; }
 
         private List<Shape> _shapes = new List<Shape>();
         public ReadOnlyCollection<Shape> Shapes { get; }
@@ -29,14 +30,20 @@ namespace KiriFig.Model
         public IReadOnlyList<PointGroup> PointGroups { get; }
 
         private List<Cut> _cuts = new List<Cut>();
+
         public IReadOnlyList<Cut> Cuts { get; }
 
-        public Figure(IEnumerable<PointGroup> pointGroups, IEnumerable<Cut> cuts, int width, int height, int offsetX, int offsetY)
+        public Figure(
+            IEnumerable<PointGroup> pointGroups,
+            IEnumerable<Cut> cuts,
+            int width, int height, int offsetX, int offsetY,
+            FaceOrientation faceOrientation)
         {
             Width = width;
             Height = height;
             OffsetX = offsetX;
             OffsetY = offsetY;
+            FaceOrientation = faceOrientation;
 
             ValidatePointGroups(pointGroups);
             ValidateCuts(cuts);
@@ -412,7 +419,7 @@ namespace KiriFig.Model
 
             // Recalculate shapes.
 
-            var tool = new OutlineTool(contours);
+            var tool = new OutlineTool(contours, FaceOrientation);
             var newShapes = tool.CalculateShapes();
 
             // Assign new shapes to all contours.

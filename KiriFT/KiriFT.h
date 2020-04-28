@@ -72,6 +72,12 @@ namespace KiriFT
         Scalable = 1 << 0,
     };
 
+	public enum class FaceOrientation
+	{
+		ClockwiseOut,
+		ClockwiseIn,
+	};
+
     public value struct SfntName
     {
     public:
@@ -109,6 +115,7 @@ namespace KiriFT
 		property String^ FamilyName { String^ get(); }
 		property String^ StyleName { String^ get(); }
         property FaceFlags Flags { FaceFlags get(); }
+		property String^ Format { String^ get(); }
 
 		void SetPixelSizes(UInt32 width, UInt32 height);
 		FTBBox^ GetFaceBBox();
@@ -121,6 +128,7 @@ namespace KiriFT
 		void Decompose(OutlineHandlers^ handlers);
 
         static Int32 ParseLegacyStyle(String^ styleName);
+		static FaceOrientation GetOrientation( String^ format );
 	};
 
     [Flags]

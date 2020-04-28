@@ -10,6 +10,12 @@ using System.Collections.Generic;
 
 namespace KiriFig.Model
 {
+    public enum FaceOrientation
+    {
+        ClockwiseOut,
+        ClockwiseIn,
+    }
+
     public class Cut
     {
         public LineEdge PairedEdge1 { get; }

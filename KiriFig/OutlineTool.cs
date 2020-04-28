@@ -22,10 +22,12 @@ namespace KiriFig
         }
 
         private IReadOnlyList<Contour> _contours;
+        private readonly FaceOrientation _faceOrientation;
 
-        public OutlineTool(IReadOnlyList<Contour> contours)
+        public OutlineTool(IReadOnlyList<Contour> contours, FaceOrientation faceOrientation)
         {
             _contours = contours;
+            _faceOrientation = faceOrientation;
         }
 
         private static Orientation GetOrientation(Contour contour)
@@ -119,6 +121,14 @@ namespace KiriFig
             foreach (var contour in _contours)
             {
                 Orientation orientation = GetOrientation(contour);
+
+                if (_faceOrientation != FaceOrientation.ClockwiseOut)
+                {
+                    if (orientation == Orientation.Outside)
+                        orientation = Orientation.Inside;
+                    else if (orientation == Orientation.Inside)
+                        orientation = Orientation.Outside;
+                }
 
                 switch (orientation)
                 {

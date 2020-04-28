@@ -35,6 +35,7 @@ namespace KiriFig
         private int _height;
         private int _offsetX;
         private int _offsetY;
+        private FaceOrientation _faceOrientation;
 
         public Figure Figure { get; private set; }
 
@@ -121,6 +122,13 @@ namespace KiriFig
                     throw new ApplicationException();
 
                 _offsetY = attrs[0].GetInteger();
+            }
+            else if (head == "faceOrientation")
+            {
+                if (attrs.Count != 1)
+                    throw new ApplicationException();
+
+                _faceOrientation = (FaceOrientation) attrs[0].GetInteger();
             }
             else if (head == "pointgroup")
             {
@@ -370,7 +378,11 @@ namespace KiriFig
         {
             Parse();
 
-            Figure = new Figure(_pointGroups.Values, _cuts, _width, _height, _offsetX, _offsetY);
+            Figure = new Figure(
+                _pointGroups.Values,
+                _cuts,
+                _width, _height, _offsetX, _offsetY,
+                _faceOrientation);
         }
     }
 

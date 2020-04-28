@@ -51,6 +51,7 @@ namespace KiriFig
             _writer.WriteLine("  height {0}", _figure.Height);
             _writer.WriteLine("  offsetx {0}", _figure.OffsetX);
             _writer.WriteLine("  offsety {0}", _figure.OffsetY);
+            _writer.WriteLine("  faceOrientation {0}", (int) _figure.FaceOrientation);
         }
 
         private void WritePointGroups()

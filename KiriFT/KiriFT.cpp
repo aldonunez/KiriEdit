@@ -17,6 +17,7 @@
 #include FT_PARAMETER_TAGS_H
 #include FT_SFNT_NAMES_H
 #include FT_TRUETYPE_IDS_H
+#include FT_FONT_FORMATS_H
 #undef generic
 
 using namespace System;
@@ -168,6 +169,11 @@ namespace KiriFT
     FaceFlags Face::Flags::get()
     {
         return (FaceFlags) m_face->face_flags;
+    }
+
+    String^ Face::Format::get()
+    {
+        return gcnew String( FT_Get_Font_Format( m_face ) );
     }
 
     void Face::SetPixelSizes(UInt32 width, UInt32 height)
@@ -329,6 +335,18 @@ namespace KiriFT
         }
 
         return style;
+    }
+
+    FaceOrientation Face::GetOrientation( String^ format )
+    {
+        if ( format == nullptr )
+            throw gcnew ArgumentNullException( "format" );
+
+        if ( format->Equals( "TrueType" )
+            || format->Equals( "Type 42" ) )
+            return FaceOrientation::ClockwiseOut;
+
+        return FaceOrientation::ClockwiseIn;
     }
 
     OutlineHandlers::OutlineHandlers(MoveToHandler^ moveTo, LineToHandler^ lineTo, ConicToHandler^ conicTo, CubicToHandler^ cubicTo) :

@@ -9,12 +9,14 @@ using KiriFT;
 using System;
 using System.Collections.Generic;
 using KiriFig.Model;
+using FaceOrientation = KiriFig.Model.FaceOrientation;
 
 namespace KiriFig
 {
     internal class GlyphWalker
     {
         private Face _face;
+        private FaceOrientation _faceOrientation;
         private Contour _curContour;
         private Point _curPoint;
         private int _x, _y;
@@ -28,6 +30,7 @@ namespace KiriFig
         public GlyphWalker(Face face)
         {
             this._face = face;
+            _faceOrientation = (FaceOrientation) Face.GetOrientation(_face.Format);
         }
 
         public void Decompose()
@@ -55,12 +58,12 @@ namespace KiriFig
             int offsetX = bbox.Left;
             int offsetY = faceBbox.Bottom;
 
-            Figure = new Figure(_pointGroups, new Cut[0], width, height, offsetX, offsetY);
+            Figure = new Figure(_pointGroups, new Cut[0], width, height, offsetX, offsetY, _faceOrientation);
         }
 
         private void AssignShapes()
         {
-            var tool = new OutlineTool(_contours);
+            var tool = new OutlineTool(_contours, _faceOrientation);
             var shapes = tool.CalculateShapes();
 
             foreach (var shape in shapes)
