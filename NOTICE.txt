@@ -16,3 +16,9 @@ FolderSelectDialog.cs and Reflector.cs files in the KiriEdit project are taken
 from http://www.lyquidity.com/devblog/?p=136 , where the webpage states:
 
   There’s no license as such as you are free to take and do with the code what you will.
+
+
+The FreeType Project License applies to some linked binary code.
+
+    Portions of this software are copyright © 2019 The FreeType
+    Project (www.freetype.org).  All rights reserved.

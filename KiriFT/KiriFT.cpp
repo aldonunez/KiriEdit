@@ -63,7 +63,7 @@ namespace KiriFT
             { 0, NULL },
             { 0, NULL },
         };
-        FT_Open_Args args;
+        FT_Open_Args args = { 0 };
         FT_Face face;
 
         msclr::interop::marshal_context context;
