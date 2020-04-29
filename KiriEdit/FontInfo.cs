@@ -23,6 +23,7 @@ namespace KiriEdit
         public string Copyright { get; private set; }
         public string License { get; private set; }
         public string LicenseUrl { get; private set; }
+        public string Manufacturer { get; private set; }
         public string Version { get; private set; }
 
         public FontInfo(Face face)
@@ -39,6 +40,7 @@ namespace KiriEdit
             var localizedCopyright = new LocalizedSfntName();
             var localizedLicense = new LocalizedSfntName();
             var localizedLicenseUrl = new LocalizedSfntName();
+            var localizedManufacturer = new LocalizedSfntName();
             var localizedVersion = new LocalizedSfntName();
 
             for (uint i = 0; i < count; i++)
@@ -55,6 +57,10 @@ namespace KiriEdit
                         SetLocalizedSfntName(sfntName.String, sfntName.LanguageId, ref localizedVersion);
                         break;
 
+                    case 8:
+                        SetLocalizedSfntName(sfntName.String, sfntName.LanguageId, ref localizedManufacturer);
+                        break;
+
                     case 13:
                         SetLocalizedSfntName(sfntName.String, sfntName.LanguageId, ref localizedLicense);
                         break;
@@ -68,6 +74,7 @@ namespace KiriEdit
             Copyright = localizedCopyright.String;
             License = localizedLicense.String;
             LicenseUrl = localizedLicenseUrl.String;
+            Manufacturer = localizedManufacturer.String;
             Version = localizedVersion.String;
         }
 

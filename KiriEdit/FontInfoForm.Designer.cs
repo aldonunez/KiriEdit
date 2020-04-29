@@ -41,6 +41,8 @@
             this.versionTextBox = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
+            this.label6 = new System.Windows.Forms.Label();
+            this.manufacturerTextBox = new System.Windows.Forms.TextBox();
             this.panel1.SuspendLayout();
             this.tableLayoutPanel.SuspendLayout();
             this.SuspendLayout();
@@ -48,54 +50,54 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 137);
+            this.label1.Location = new System.Drawing.Point(6, 169);
             this.label1.Margin = new System.Windows.Forms.Padding(6, 9, 6, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(47, 13);
-            this.label1.TabIndex = 9;
+            this.label1.TabIndex = 11;
             this.label1.Text = "License:";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 105);
+            this.label2.Location = new System.Drawing.Point(6, 137);
             this.label2.Margin = new System.Windows.Forms.Padding(6, 9, 6, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(72, 13);
-            this.label2.TabIndex = 7;
+            this.label2.TabIndex = 9;
             this.label2.Text = "License URL:";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 73);
+            this.label3.Location = new System.Drawing.Point(6, 105);
             this.label3.Margin = new System.Windows.Forms.Padding(6, 9, 6, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(54, 13);
-            this.label3.TabIndex = 5;
+            this.label3.TabIndex = 7;
             this.label3.Text = "Copyright:";
             // 
             // licenseTextBox
             // 
             this.licenseTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.licenseTextBox.Location = new System.Drawing.Point(119, 134);
+            this.licenseTextBox.Location = new System.Drawing.Point(119, 166);
             this.licenseTextBox.Margin = new System.Windows.Forms.Padding(6);
             this.licenseTextBox.Multiline = true;
             this.licenseTextBox.Name = "licenseTextBox";
             this.licenseTextBox.ReadOnly = true;
             this.licenseTextBox.Size = new System.Drawing.Size(271, 153);
-            this.licenseTextBox.TabIndex = 10;
+            this.licenseTextBox.TabIndex = 12;
             // 
             // copyrightTextBox
             // 
             this.copyrightTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.copyrightTextBox.Location = new System.Drawing.Point(119, 70);
+            this.copyrightTextBox.Location = new System.Drawing.Point(119, 102);
             this.copyrightTextBox.Margin = new System.Windows.Forms.Padding(6);
             this.copyrightTextBox.Name = "copyrightTextBox";
             this.copyrightTextBox.ReadOnly = true;
             this.copyrightTextBox.Size = new System.Drawing.Size(271, 20);
-            this.copyrightTextBox.TabIndex = 6;
+            this.copyrightTextBox.TabIndex = 8;
             // 
             // label4
             // 
@@ -122,7 +124,7 @@
             // 
             this.closeButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.closeButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.closeButton.Location = new System.Drawing.Point(315, 300);
+            this.closeButton.Location = new System.Drawing.Point(315, 332);
             this.closeButton.Margin = new System.Windows.Forms.Padding(6);
             this.closeButton.Name = "closeButton";
             this.closeButton.Size = new System.Drawing.Size(75, 23);
@@ -150,11 +152,11 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel1.Controls.Add(this.licenseUrlRichTextBox);
-            this.panel1.Location = new System.Drawing.Point(119, 102);
+            this.panel1.Location = new System.Drawing.Point(119, 134);
             this.panel1.Margin = new System.Windows.Forms.Padding(6);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(271, 20);
-            this.panel1.TabIndex = 8;
+            this.panel1.TabIndex = 10;
             // 
             // versionTextBox
             // 
@@ -183,28 +185,52 @@
             this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 113F));
             this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel.Controls.Add(this.typefaceTextBox, 1, 0);
-            this.tableLayoutPanel.Controls.Add(this.label1, 0, 4);
-            this.tableLayoutPanel.Controls.Add(this.label2, 0, 3);
-            this.tableLayoutPanel.Controls.Add(this.label3, 0, 2);
+            this.tableLayoutPanel.Controls.Add(this.label1, 0, 5);
+            this.tableLayoutPanel.Controls.Add(this.label2, 0, 4);
+            this.tableLayoutPanel.Controls.Add(this.label3, 0, 3);
             this.tableLayoutPanel.Controls.Add(this.label5, 0, 1);
             this.tableLayoutPanel.Controls.Add(this.versionTextBox, 1, 1);
             this.tableLayoutPanel.Controls.Add(this.label4, 0, 0);
-            this.tableLayoutPanel.Controls.Add(this.closeButton, 1, 5);
-            this.tableLayoutPanel.Controls.Add(this.panel1, 1, 3);
-            this.tableLayoutPanel.Controls.Add(this.copyrightTextBox, 1, 2);
-            this.tableLayoutPanel.Controls.Add(this.licenseTextBox, 1, 4);
+            this.tableLayoutPanel.Controls.Add(this.closeButton, 1, 6);
+            this.tableLayoutPanel.Controls.Add(this.panel1, 1, 4);
+            this.tableLayoutPanel.Controls.Add(this.copyrightTextBox, 1, 3);
+            this.tableLayoutPanel.Controls.Add(this.licenseTextBox, 1, 5);
+            this.tableLayoutPanel.Controls.Add(this.label6, 0, 2);
+            this.tableLayoutPanel.Controls.Add(this.manufacturerTextBox, 1, 2);
             this.tableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel.Location = new System.Drawing.Point(6, 6);
             this.tableLayoutPanel.Name = "tableLayoutPanel";
-            this.tableLayoutPanel.RowCount = 6;
+            this.tableLayoutPanel.RowCount = 7;
+            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 36F));
-            this.tableLayoutPanel.Size = new System.Drawing.Size(396, 329);
-            this.tableLayoutPanel.TabIndex = 11;
+            this.tableLayoutPanel.Size = new System.Drawing.Size(396, 361);
+            this.tableLayoutPanel.TabIndex = 0;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 73);
+            this.label6.Margin = new System.Windows.Forms.Padding(6, 9, 6, 0);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(73, 13);
+            this.label6.TabIndex = 5;
+            this.label6.Text = "Manufacturer:";
+            // 
+            // manufacturerTextBox
+            // 
+            this.manufacturerTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.manufacturerTextBox.Location = new System.Drawing.Point(119, 70);
+            this.manufacturerTextBox.Margin = new System.Windows.Forms.Padding(6);
+            this.manufacturerTextBox.Name = "manufacturerTextBox";
+            this.manufacturerTextBox.ReadOnly = true;
+            this.manufacturerTextBox.Size = new System.Drawing.Size(271, 20);
+            this.manufacturerTextBox.TabIndex = 6;
             // 
             // FontInfoForm
             // 
@@ -212,7 +238,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.closeButton;
-            this.ClientSize = new System.Drawing.Size(408, 341);
+            this.ClientSize = new System.Drawing.Size(408, 373);
             this.Controls.Add(this.tableLayoutPanel);
             this.MinimizeBox = false;
             this.Name = "FontInfoForm";
@@ -242,5 +268,7 @@
         private System.Windows.Forms.TextBox versionTextBox;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox manufacturerTextBox;
     }
 }

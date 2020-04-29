@@ -24,6 +24,7 @@ namespace KiriEdit
 
             copyrightTextBox.Text = FontInfo.Copyright;
             licenseTextBox.Text = FontInfo.License;
+            manufacturerTextBox.Text = FontInfo.Manufacturer;
             versionTextBox.Text = FontInfo.Version;
 
             // Put spaces around the URL in order to make it easy to select text.
