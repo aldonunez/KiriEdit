@@ -9,6 +9,6 @@ namespace KiriEdit
 {
     public interface IShell
     {
-        void OpenItem(object item);
+        void OpenItem( object item );
     }
 }
