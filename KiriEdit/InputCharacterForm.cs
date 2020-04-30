@@ -15,7 +15,7 @@ namespace KiriEdit
     {
         private Control _curChangingControl;
 
-        public delegate bool ValidateCharHandler(uint codePoint);
+        public delegate bool ValidateCharHandler( uint codePoint );
 
         public event ValidateCharHandler ValidateChar;
 
@@ -26,17 +26,17 @@ namespace KiriEdit
             InitializeComponent();
         }
 
-        private void charTextBox_TextChanged(object sender, EventArgs e)
+        private void charTextBox_TextChanged( object sender, EventArgs e )
         {
             // Validate the input for the OK button.
 
-            int codePointCount = CharUtils.GetCodePointCount(charTextBox.Text);
+            int codePointCount = CharUtils.GetCodePointCount( charTextBox.Text );
 
             okButton.Enabled = codePointCount == 1;
 
             // Change the other control.
 
-            if (_curChangingControl == null)
+            if ( _curChangingControl == null )
             {
                 _curChangingControl = charTextBox;
 
@@ -44,10 +44,10 @@ namespace KiriEdit
                 {
                     codePointTextBox.Text = "";
 
-                    if (codePointCount == 1)
+                    if ( codePointCount == 1 )
                     {
-                        uint codePoint = CharUtils.GetCodePoint(charTextBox.Text);
-                        codePointTextBox.Text = string.Format("U+{0:X4}", codePoint);
+                        uint codePoint = CharUtils.GetCodePoint( charTextBox.Text );
+                        codePointTextBox.Text = string.Format( "U+{0:X4}", codePoint );
                     }
                 }
                 finally
@@ -57,11 +57,11 @@ namespace KiriEdit
             }
         }
 
-        private void codepointTextBox_TextChanged(object sender, EventArgs e)
+        private void codepointTextBox_TextChanged( object sender, EventArgs e )
         {
             // Change the other control.
 
-            if (_curChangingControl == null)
+            if ( _curChangingControl == null )
             {
                 _curChangingControl = codePointTextBox;
 
@@ -71,12 +71,12 @@ namespace KiriEdit
 
                     string codePointText = codePointTextBox.Text;
 
-                    if (codePointText.StartsWith("U+", StringComparison.OrdinalIgnoreCase))
-                        codePointText = codePointText.Substring(2);
+                    if ( codePointText.StartsWith( "U+", StringComparison.OrdinalIgnoreCase ) )
+                        codePointText = codePointText.Substring( 2 );
 
-                    if (uint.TryParse(codePointText, NumberStyles.HexNumber, null, out uint codePoint))
+                    if ( uint.TryParse( codePointText, NumberStyles.HexNumber, null, out uint codePoint ) )
                     {
-                        charTextBox.Text = CharUtils.GetString(codePoint);
+                        charTextBox.Text = CharUtils.GetString( codePoint );
                     }
                 }
                 finally
@@ -86,18 +86,18 @@ namespace KiriEdit
             }
         }
 
-        private void okButton_Click(object sender, EventArgs e)
+        private void okButton_Click( object sender, EventArgs e )
         {
-            uint codePoint = CharUtils.GetCodePoint(charTextBox.Text);
+            uint codePoint = CharUtils.GetCodePoint( charTextBox.Text );
 
-            if (ValidateChar != null && !ValidateChar(codePoint))
+            if ( ValidateChar != null && !ValidateChar( codePoint ) )
                 return;
 
             CodePoint = codePoint;
             DialogResult = DialogResult.OK;
         }
 
-        private void cancelButton_Click(object sender, EventArgs e)
+        private void cancelButton_Click( object sender, EventArgs e )
         {
             DialogResult = DialogResult.Cancel;
         }

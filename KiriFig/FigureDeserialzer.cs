@@ -39,15 +39,15 @@ namespace KiriFig
 
         public Figure Figure { get; private set; }
 
-        public FigureParser(TextReader reader) :
-            base(reader)
+        public FigureParser( TextReader reader ) :
+            base( reader )
         {
             _nodeStack[0] = Node.None;
         }
 
-        private void PushLevel(Node node)
+        private void PushLevel( Node node )
         {
-            if (_level == _nodeStack.Length - 1)
+            if ( _level == _nodeStack.Length - 1 )
                 throw new ApplicationException();
 
             _level++;
@@ -56,7 +56,7 @@ namespace KiriFig
 
         private void PopLevel()
         {
-            if (_level == 0)
+            if ( _level == 0 )
                 throw new ApplicationException();
 
             _level--;
@@ -64,106 +64,106 @@ namespace KiriFig
 
         // An open record has more than one line. The first line ends with "begin".
 
-        protected override void OnBeginRecord(int id, string head, IList<Token> attrs, bool open)
+        protected override void OnBeginRecord( int id, string head, IList<Token> attrs, bool open )
         {
-            Console.WriteLine("{2} {0} ({1})", head, id, open ? "begin" : "record");
+            Console.WriteLine( "{2} {0} ({1})", head, id, open ? "begin" : "record" );
 
-            switch (_nodeStack[_level])
+            switch ( _nodeStack[_level] )
             {
                 case Node.None:
-                    if (head != "figure" || !open)
+                    if ( head != "figure" || !open )
                         throw new ApplicationException();
 
-                    PushLevel(Node.Figure);
+                    PushLevel( Node.Figure );
                     break;
 
                 case Node.Figure:
-                    HandleRecordInFigure(id, head, attrs, open);
+                    HandleRecordInFigure( id, head, attrs, open );
                     break;
 
                 case Node.Contour:
-                    HandleRecordInContour(id, head, attrs, open);
+                    HandleRecordInContour( id, head, attrs, open );
                     break;
 
                 case Node.Shape:
-                    HandleRecordInShape(id, head, attrs, open);
+                    HandleRecordInShape( id, head, attrs, open );
                     break;
             }
         }
 
-        private void HandleRecordInFigure(int id, string head, IList<Token> attrs, bool open)
+        private void HandleRecordInFigure( int id, string head, IList<Token> attrs, bool open )
         {
             bool stayOpen = false;
 
-            if (head == "width")
+            if ( head == "width" )
             {
-                if (attrs.Count != 1)
+                if ( attrs.Count != 1 )
                     throw new ApplicationException();
 
                 _width = attrs[0].GetInteger();
             }
-            else if (head == "height")
+            else if ( head == "height" )
             {
-                if (attrs.Count != 1)
+                if ( attrs.Count != 1 )
                     throw new ApplicationException();
 
                 _height = attrs[0].GetInteger();
             }
-            else if (head == "offsetx")
+            else if ( head == "offsetx" )
             {
-                if (attrs.Count != 1)
+                if ( attrs.Count != 1 )
                     throw new ApplicationException();
 
                 _offsetX = attrs[0].GetInteger();
             }
-            else if (head == "offsety")
+            else if ( head == "offsety" )
             {
-                if (attrs.Count != 1)
+                if ( attrs.Count != 1 )
                     throw new ApplicationException();
 
                 _offsetY = attrs[0].GetInteger();
             }
-            else if (head == "faceOrientation")
+            else if ( head == "faceOrientation" )
             {
-                if (attrs.Count != 1)
+                if ( attrs.Count != 1 )
                     throw new ApplicationException();
 
                 _faceOrientation = (FaceOrientation) attrs[0].GetInteger();
             }
-            else if (head == "pointgroup")
+            else if ( head == "pointgroup" )
             {
-                if (attrs.Count < 1)
+                if ( attrs.Count < 1 )
                     throw new ApplicationException();
 
                 bool isFixed = attrs[0].GetInteger() != 0;
                 PointGroup pointGroup;
 
-                if (isFixed)
+                if ( isFixed )
                 {
-                    pointGroup = new PointGroup(isFixed);
+                    pointGroup = new PointGroup( isFixed );
                 }
                 else
                 {
-                    if (attrs.Count != 2)
+                    if ( attrs.Count != 2 )
                         throw new ApplicationException();
 
                     int normalT = attrs[1].GetInteger();
-                    pointGroup = new PointGroup(normalT);
+                    pointGroup = new PointGroup( normalT );
                 }
 
-                _pointGroups.Add(id, pointGroup);
+                _pointGroups.Add( id, pointGroup );
             }
-            else if (head == "contour")
+            else if ( head == "contour" )
             {
-                PushLevel(Node.Contour);
+                PushLevel( Node.Contour );
                 _curContour = new Contour();
                 stayOpen = true;
 
-                _contours.Add(id, _curContour);
+                _contours.Add( id, _curContour );
             }
-            else if (head == "original-edge")
+            else if ( head == "original-edge" )
             {
-                if (attrs.Count < 3)
+                if ( attrs.Count < 3 )
                     throw new ApplicationException();
 
                 string type = attrs[0].GetWord();
@@ -173,11 +173,11 @@ namespace KiriFig
                 PointGroup pg1 = _pointGroups[id1];
                 Edge edge;
 
-                switch (type)
+                switch ( type )
                 {
                     case "line":
                         {
-                            LineEdge lineEdge = new LineEdge(pg0.Points[0], pg1.Points[0], id);
+                            LineEdge lineEdge = new LineEdge( pg0.Points[0], pg1.Points[0], id );
                             edge = lineEdge;
                         }
                         break;
@@ -186,8 +186,8 @@ namespace KiriFig
                         {
                             int c1X = attrs[3].GetInteger();
                             int c1Y = attrs[4].GetInteger();
-                            Point c1 = new Point(c1X, c1Y);
-                            ConicEdge conicEdge = new ConicEdge(pg0.Points[0], c1, pg1.Points[0], id);
+                            Point c1 = new Point( c1X, c1Y );
+                            ConicEdge conicEdge = new ConicEdge( pg0.Points[0], c1, pg1.Points[0], id );
                             edge = conicEdge;
                         }
                         break;
@@ -198,9 +198,9 @@ namespace KiriFig
                             int c1Y = attrs[4].GetInteger();
                             int c2X = attrs[5].GetInteger();
                             int c2Y = attrs[6].GetInteger();
-                            Point c1 = new Point(c1X, c1Y);
-                            Point c2 = new Point(c2X, c2Y);
-                            CubicEdge cubicEdge = new CubicEdge(pg0.Points[0], c1, c2, pg1.Points[0], id);
+                            Point c1 = new Point( c1X, c1Y );
+                            Point c2 = new Point( c2X, c2Y );
+                            CubicEdge cubicEdge = new CubicEdge( pg0.Points[0], c1, c2, pg1.Points[0], id );
                             edge = cubicEdge;
                         }
                         break;
@@ -212,9 +212,9 @@ namespace KiriFig
                 pg0.OriginalOutgoingEdge = edge;
                 pg1.OriginalIncomingEdge = edge;
             }
-            else if (head == "cut")
+            else if ( head == "cut" )
             {
-                if (attrs.Count < 4)
+                if ( attrs.Count < 4 )
                     throw new ApplicationException();
 
                 int idE1P1 = attrs[0].GetInteger();
@@ -229,20 +229,20 @@ namespace KiriFig
                 Edge edge1 = p0.OutgoingEdge;
                 Edge edge2 = p2.OutgoingEdge;
 
-                if (edge1.Type != EdgeType.Line
-                    || edge2.Type != EdgeType.Line)
+                if ( edge1.Type != EdgeType.Line
+                    || edge2.Type != EdgeType.Line )
                     throw new ApplicationException();
 
-                if (edge1.P2 != p1 || edge2.P2 != p3)
+                if ( edge1.P2 != p1 || edge2.P2 != p3 )
                     throw new ApplicationException();
 
-                Cut cut = new Cut((LineEdge) edge1, (LineEdge) edge2);
+                Cut cut = new Cut( (LineEdge) edge1, (LineEdge) edge2 );
 
-                _cuts.Add(cut);
+                _cuts.Add( cut );
             }
-            else if (head == "shape")
+            else if ( head == "shape" )
             {
-                PushLevel(Node.Shape);
+                PushLevel( Node.Shape );
                 _curShape = new Shape();
                 stayOpen = true;
             }
@@ -251,35 +251,35 @@ namespace KiriFig
                 throw new ApplicationException();
             }
 
-            if (stayOpen != open)
+            if ( stayOpen != open )
                 throw new ApplicationException();
         }
 
-        private void HandleRecordInContour(int id, string head, IList<Token> attrs, bool open)
+        private void HandleRecordInContour( int id, string head, IList<Token> attrs, bool open )
         {
-            if (head == "point")
+            if ( head == "point" )
             {
-                if (attrs.Count < 3)
+                if ( attrs.Count < 3 )
                     throw new ApplicationException();
 
                 int x = attrs[0].GetInteger();
                 int y = attrs[1].GetInteger();
                 int groupId = attrs[2].GetInteger();
-                Point point = new Point(x, y);
+                Point point = new Point( x, y );
                 PointGroup group = _pointGroups[groupId];
 
-                _points.Add(id, point);
+                _points.Add( id, point );
 
                 point.Group = group;
                 point.Contour = _curContour;
-                group.Points.Add(point);
+                group.Points.Add( point );
 
-                if (_curContour.FirstPoint == null)
+                if ( _curContour.FirstPoint == null )
                     _curContour.FirstPoint = point;
             }
-            else if (head == "edge")
+            else if ( head == "edge" )
             {
-                if (attrs.Count < 4)
+                if ( attrs.Count < 4 )
                     throw new ApplicationException();
 
                 string type = attrs[0].GetWord();
@@ -289,12 +289,12 @@ namespace KiriFig
                 Point p1 = _points[id1];
                 Edge edge;
 
-                switch (type)
+                switch ( type )
                 {
                     case "line":
                         {
                             bool unbreakable = attrs[3].GetInteger() != 0;
-                            LineEdge lineEdge = new LineEdge(p0, p1, id, unbreakable);
+                            LineEdge lineEdge = new LineEdge( p0, p1, id, unbreakable );
                             edge = lineEdge;
                         }
                         break;
@@ -303,8 +303,8 @@ namespace KiriFig
                         {
                             int c1X = attrs[3].GetInteger();
                             int c1Y = attrs[4].GetInteger();
-                            Point c1 = new Point(c1X, c1Y);
-                            ConicEdge conicEdge = new ConicEdge(p0, c1, p1, id);
+                            Point c1 = new Point( c1X, c1Y );
+                            ConicEdge conicEdge = new ConicEdge( p0, c1, p1, id );
                             edge = conicEdge;
                         }
                         break;
@@ -315,9 +315,9 @@ namespace KiriFig
                             int c1Y = attrs[4].GetInteger();
                             int c2X = attrs[5].GetInteger();
                             int c2Y = attrs[6].GetInteger();
-                            Point c1 = new Point(c1X, c1Y);
-                            Point c2 = new Point(c2X, c2Y);
-                            CubicEdge cubicEdge = new CubicEdge(p0, c1, c2, p1, id);
+                            Point c1 = new Point( c1X, c1Y );
+                            Point c2 = new Point( c2X, c2Y );
+                            CubicEdge cubicEdge = new CubicEdge( p0, c1, c2, p1, id );
                             edge = cubicEdge;
                         }
                         break;
@@ -334,26 +334,26 @@ namespace KiriFig
                 throw new ApplicationException();
             }
 
-            if (open)
+            if ( open )
                 throw new ApplicationException();
         }
 
-        private void HandleRecordInShape(int id, string head, IList<Token> attrs, bool open)
+        private void HandleRecordInShape( int id, string head, IList<Token> attrs, bool open )
         {
-            if (head == "contour")
+            if ( head == "contour" )
             {
-                if (attrs.Count < 1)
+                if ( attrs.Count < 1 )
                     throw new ApplicationException();
 
                 int contourId = attrs[0].GetInteger();
                 Contour contour = _contours[contourId];
 
-                _curShape.Contours.Add(contour);
+                _curShape.Contours.Add( contour );
                 contour.Shape = _curShape;
             }
-            else if (head == "enabled")
+            else if ( head == "enabled" )
             {
-                if (attrs.Count < 1)
+                if ( attrs.Count < 1 )
                     throw new ApplicationException();
 
                 _curShape.Enabled = (attrs[0].GetInteger() != 0);
@@ -363,13 +363,13 @@ namespace KiriFig
                 throw new ApplicationException();
             }
 
-            if (open)
+            if ( open )
                 throw new ApplicationException();
         }
 
         protected override void OnEndRecord()
         {
-            Console.WriteLine("end");
+            Console.WriteLine( "end" );
 
             PopLevel();
         }
@@ -382,15 +382,15 @@ namespace KiriFig
                 _pointGroups.Values,
                 _cuts,
                 _width, _height, _offsetX, _offsetY,
-                _faceOrientation);
+                _faceOrientation );
         }
     }
 
     public class FigureDeserialzer
     {
-        public static Figure Deserialize(TextReader reader)
+        public static Figure Deserialize( TextReader reader )
         {
-            var deserializer = new FigureParser(reader);
+            var deserializer = new FigureParser( reader );
 
             deserializer.Deserialize();
 

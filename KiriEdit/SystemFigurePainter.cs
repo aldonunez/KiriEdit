@@ -22,7 +22,7 @@ namespace KiriEdit
         private GraphicsPath _graphicsPath;
         private int _x, _y;
 
-        public SystemFigurePainter(FigureDocument document)
+        public SystemFigurePainter( FigureDocument document )
         {
             _document = document;
 
@@ -36,7 +36,7 @@ namespace KiriEdit
 
         public void Dispose()
         {
-            if (_graphicsPath != null)
+            if ( _graphicsPath != null )
             {
                 _graphicsPath.Dispose();
                 _graphicsPath = null;
@@ -44,22 +44,22 @@ namespace KiriEdit
         }
 
         // TODO: Call this from SetTransform.
-        public static Matrix BuildTransform(Figure figure, Rectangle rect)
+        public static Matrix BuildTransform( Figure figure, Rectangle rect )
         {
             float scale = (rect.Height - 1) / (float) figure.Height;
 
             Matrix m = new Matrix();
 
-            m.Scale(scale, -scale, MatrixOrder.Append);
+            m.Scale( scale, -scale, MatrixOrder.Append );
             m.Translate(
                 rect.X + (float) -figure.OffsetX * scale,
                 rect.Y + (rect.Height - 1) + (float) figure.OffsetY * scale,
-                MatrixOrder.Append);
+                MatrixOrder.Append );
 
             return m;
         }
 
-        public void SetTransform(Graphics g, Rectangle rect)
+        public void SetTransform( Graphics g, Rectangle rect )
         {
             float pixHeight = _document.Figure.Height;
 
@@ -68,19 +68,19 @@ namespace KiriEdit
             int bmpHeight = rect.Height;
 
             g.ResetTransform();
-            g.ScaleTransform(scale, -scale, MatrixOrder.Append);
+            g.ScaleTransform( scale, -scale, MatrixOrder.Append );
             g.TranslateTransform(
                 rect.X + (float) -_document.Figure.OffsetX * scale,
                 rect.Y + (bmpHeight - 1) + (float) _document.Figure.OffsetY * scale,
-                MatrixOrder.Append);
+                MatrixOrder.Append );
         }
 
-        private void PaintContour(Contour contour)
+        private void PaintContour( Contour contour )
         {
             _graphicsPath.StartFigure();
 
-            MoveTo(contour.FirstPoint);
-            _figureWalker.WalkContour(contour);
+            MoveTo( contour.FirstPoint );
+            _figureWalker.WalkContour( contour );
 
             _graphicsPath.CloseFigure();
         }
@@ -89,56 +89,56 @@ namespace KiriEdit
         {
             _graphicsPath.Reset();
 
-            foreach (var contour in _document.Figure.Contours)
+            foreach ( var contour in _document.Figure.Contours )
             {
-                PaintContour(contour);
+                PaintContour( contour );
             }
         }
 
-        public void PaintShape(int index)
+        public void PaintShape( int index )
         {
             _graphicsPath.Reset();
 
             var shape = _document.Figure.Shapes[index];
 
-            foreach (var contour in shape.Contours)
+            foreach ( var contour in shape.Contours )
             {
-                PaintContour(contour);
+                PaintContour( contour );
             }
         }
 
-        public void Draw(Graphics g)
+        public void Draw( Graphics g )
         {
-            Draw(g, Pens.Red);
+            Draw( g, Pens.Red );
         }
 
-        public void Draw(Graphics g, Pen pen)
+        public void Draw( Graphics g, Pen pen )
         {
-            g.DrawPath(pen, _graphicsPath);
+            g.DrawPath( pen, _graphicsPath );
         }
 
-        public void Fill(Graphics g)
+        public void Fill( Graphics g )
         {
-            Fill(g, Brushes.Black);
+            Fill( g, Brushes.Black );
         }
 
-        public void Fill(Graphics g, Brush brush)
+        public void Fill( Graphics g, Brush brush )
         {
-            g.FillPath(brush, _graphicsPath);
+            g.FillPath( brush, _graphicsPath );
         }
 
         private void BeginEdge()
         {
         }
 
-        private void MoveTo(Point p)
+        private void MoveTo( Point p )
         {
             var to = p;
             _x = to.X;
             _y = to.Y;
         }
 
-        private void LineTo(Edge edge)
+        private void LineTo( Edge edge )
         {
             BeginEdge();
             var to = edge.P2;
@@ -146,12 +146,12 @@ namespace KiriEdit
                 (float) _x,
                 (float) _y,
                 (float) to.X,
-                (float) to.Y);
+                (float) to.Y );
             _x = to.X;
             _y = to.Y;
         }
 
-        private void ConicTo(Edge edge)
+        private void ConicTo( Edge edge )
         {
             BeginEdge();
             var control1 = ((ConicEdge) edge).C1;
@@ -172,15 +172,15 @@ namespace KiriEdit
                     c1,
                     c2,
                     new PointF((float) to.X, (float) to.Y)
-                });
+                } );
 #else
-            DrawFlattenedCurve(edge);
+            DrawFlattenedCurve( edge );
 #endif
             _x = to.X;
             _y = to.Y;
         }
 
-        private void CubicTo(Edge edge)
+        private void CubicTo( Edge edge )
         {
             BeginEdge();
             var c1 = ((CubicEdge) edge).C1;
@@ -194,22 +194,22 @@ namespace KiriEdit
                     new PointF((float) c1.X, (float) c1.Y),
                     new PointF((float) c2.X, (float) c2.Y),
                     new PointF((float) to.X, (float) to.Y)
-                });
+                } );
 #else
-            DrawFlattenedCurve(edge);
+            DrawFlattenedCurve( edge );
 #endif
             _x = to.X;
             _y = to.Y;
         }
 
-        private void DrawFlattenedCurve(Edge edge)
+        private void DrawFlattenedCurve( Edge edge )
         {
-            PointF prevPoint = new PointF(_x, _y);
+            PointF prevPoint = new PointF( _x, _y );
 
-            foreach (var pd in edge.Flatten())
+            foreach ( var pd in edge.Flatten() )
             {
-                PointF pf = new PointF((float) pd.X, (float) pd.Y);
-                _graphicsPath.AddLine(prevPoint, pf);
+                PointF pf = new PointF( (float) pd.X, (float) pd.Y );
+                _graphicsPath.AddLine( prevPoint, pf );
                 prevPoint = pf;
             }
         }

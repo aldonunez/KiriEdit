@@ -25,9 +25,9 @@ namespace KiriFT
         {
         public:
             virtual property Int32 Length { Int32 get() abstract; };
-            virtual void SetIncluded(Int32 index, Boolean value) abstract;
-            virtual Int32 MapToIndex(UInt32 codePoint) abstract;
-            virtual UInt32 MapToCodePoint(Int32 index) abstract;
+            virtual void SetIncluded( Int32 index, Boolean value ) abstract;
+            virtual Int32 MapToIndex( UInt32 codePoint ) abstract;
+            virtual UInt32 MapToCodePoint( Int32 index ) abstract;
         };
 
         public ref class SequentialCharSet : CharSet
@@ -41,14 +41,14 @@ namespace KiriFT
             SequentialCharSet(
                 array<Int32>^ residencyMap,
                 Int32 firstCodePoint,
-                Int32 lastCodePoint);
+                Int32 lastCodePoint );
 
             virtual property Int32 Length { Int32 get() override; };
-            virtual void SetIncluded(Int32 index, Boolean value) override;
-            virtual Int32 MapToIndex(UInt32 codePoint) override;
-            virtual UInt32 MapToCodePoint(Int32 index) override;
+            virtual void SetIncluded( Int32 index, Boolean value ) override;
+            virtual Int32 MapToIndex( UInt32 codePoint ) override;
+            virtual UInt32 MapToCodePoint( Int32 index ) override;
 
-            static Int32 GetRecommendedMapSize(Int32 charCount);
+            static Int32 GetRecommendedMapSize( Int32 charCount );
         };
 
         public ref class CharGridRendererArgs
@@ -71,7 +71,7 @@ namespace KiriFT
             Int32 OffColor;
             Int32 FontStyle;
             Int32 StartRow;
-            property String^ FontFamily { String^ get(); void set(String^ value); }
+            property String^ FontFamily { String^ get(); void set( String^ value ); }
 
             CharGridMetrics GetMetrics();
 
@@ -82,7 +82,7 @@ namespace KiriFT
         public ref class CharGridRenderer
         {
         public:
-            static void Draw(CharGridRendererArgs^ args, CharSet^ charSet);
+            static void Draw( CharGridRendererArgs^ args, CharSet^ charSet );
 
             // TODO: Consider splitting the line drawing code into its own method.
 

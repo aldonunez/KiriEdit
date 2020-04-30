@@ -30,7 +30,7 @@ namespace KiriFig
         public PointD C2 => c2;
         public PointD C3 => c3;
 
-        public Curve(PointD c0, PointD c1, PointD c2)
+        public Curve( PointD c0, PointD c1, PointD c2 )
         {
             _curveType = CurveType.Conic;
             this.c0 = c0;
@@ -39,7 +39,7 @@ namespace KiriFig
             this.c3 = new PointD();
         }
 
-        public Curve(PointD c0, PointD c1, PointD c2, PointD c3)
+        public Curve( PointD c0, PointD c1, PointD c2, PointD c3 )
         {
             _curveType = CurveType.Cubic;
             this.c0 = c0;
@@ -48,89 +48,89 @@ namespace KiriFig
             this.c3 = c3;
         }
 
-        private static double GetLineLength(PointD p1, PointD p2)
+        private static double GetLineLength( PointD p1, PointD p2 )
         {
             double w = p2.X - p1.X;
             double h = p2.Y - p1.Y;
-            return Math.Sqrt(w * w + h * h);
+            return Math.Sqrt( w * w + h * h );
         }
 
-        public static double CalcConicDeltaT(PointD p0, PointD p1, PointD p2)
+        public static double CalcConicDeltaT( PointD p0, PointD p1, PointD p2 )
         {
             // Use the length of the line segments between each control point as an estimate of
             // the length of the curve.
 
             double length =
-                GetLineLength(p0, p1)
-                + GetLineLength(p1, p2);
+                GetLineLength( p0, p1 )
+                + GetLineLength( p1, p2 );
 
             double dt = 1.0 / length;
             return dt;
         }
 
-        public static double CalcCubicDeltaT(PointD p0, PointD p1, PointD p2, PointD p3)
+        public static double CalcCubicDeltaT( PointD p0, PointD p1, PointD p2, PointD p3 )
         {
             // Use the length of the line segments between each control point as an estimate of
             // the length of the curve.
 
             double length =
-                GetLineLength(p0, p1)
-                + GetLineLength(p1, p2)
-                + GetLineLength(p2, p3);
+                GetLineLength( p0, p1 )
+                + GetLineLength( p1, p2 )
+                + GetLineLength( p2, p3 );
 
             double dt = 1.0 / length;
             return dt;
         }
 
-        public PointD CalcConic(double t)
+        public PointD CalcConic( double t )
         {
             var result = new PointD();
 
             result.X =
-                c0.X * Math.Pow((1 - t), 2) +
+                c0.X * Math.Pow( (1 - t), 2 ) +
                 c1.X * 2 * t * (1 - t) +
-                c2.X * Math.Pow(t, 2)
+                c2.X * Math.Pow( t, 2 )
                 ;
 
             result.Y =
-                c0.Y * Math.Pow((1 - t), 2) +
+                c0.Y * Math.Pow( (1 - t), 2 ) +
                 c1.Y * 2 * t * (1 - t) +
-                c2.Y * Math.Pow(t, 2)
+                c2.Y * Math.Pow( t, 2 )
                 ;
 
             return result;
         }
 
-        public PointD CalcCubic(double t)
+        public PointD CalcCubic( double t )
         {
             var result = new PointD();
 
             result.X =
-                c0.X * Math.Pow((1 - t), 3) +
-                c1.X * 3 * t * Math.Pow((1 - t), 2) +
-                c2.X * 3 * Math.Pow(t, 2) * (1 - t) +
-                c3.X * Math.Pow(t, 3)
+                c0.X * Math.Pow( (1 - t), 3 ) +
+                c1.X * 3 * t * Math.Pow( (1 - t), 2 ) +
+                c2.X * 3 * Math.Pow( t, 2 ) * (1 - t) +
+                c3.X * Math.Pow( t, 3 )
                 ;
 
             result.Y =
-                c0.Y * Math.Pow((1 - t), 3) +
-                c1.Y * 3 * t * Math.Pow((1 - t), 2) +
-                c2.Y * 3 * Math.Pow(t, 2) * (1 - t) +
-                c3.Y * Math.Pow(t, 3)
+                c0.Y * Math.Pow( (1 - t), 3 ) +
+                c1.Y * 3 * t * Math.Pow( (1 - t), 2 ) +
+                c2.Y * 3 * Math.Pow( t, 2 ) * (1 - t) +
+                c3.Y * Math.Pow( t, 3 )
                 ;
 
             return result;
         }
 
-        public PointD CalcCurve(double t)
+        public PointD CalcCurve( double t )
         {
-            if (_curveType == CurveType.Conic)
-                return CalcConic(t);
+            if ( _curveType == CurveType.Conic )
+                return CalcConic( t );
             else
-                return CalcCubic(t);
+                return CalcCubic( t );
         }
 
-        public (double, PointD) GetProjectedPoint(PointD point)
+        public (double, PointD) GetProjectedPoint( PointD point )
         {
             // First use a rough pass to find the closest point among N samples along the curve
             // spaced at 1/(N-1) between each.
@@ -140,15 +140,15 @@ namespace KiriFig
 
             float t = 0;
             float minT = 0;
-            double minD = c0.GetDistance(point);
+            double minD = c0.GetDistance( point );
 
-            for (int i = 1; i < Segments; i++)
+            for ( int i = 1; i < Segments; i++ )
             {
                 t += DeltaT;
-                PointD p = CalcCurve(t);
-                double d = p.GetDistance(point);
+                PointD p = CalcCurve( t );
+                double d = p.GetDistance( point );
 
-                if (d < minD)
+                if ( d < minD )
                 {
                     minD = d;
                     minT = t;
@@ -161,52 +161,52 @@ namespace KiriFig
             float tBefore = minT - DeltaT;
             float tAfter = minT + DeltaT;
 
-            if (tBefore < 0)
+            if ( tBefore < 0 )
                 tBefore = 0;
 
-            if (tAfter > 1)
+            if ( tAfter > 1 )
                 tAfter = 1;
 
-            PointD pBefore = CalcCurve(tBefore);
-            PointD pAfter = CalcCurve(tAfter);
+            PointD pBefore = CalcCurve( tBefore );
+            PointD pAfter = CalcCurve( tAfter );
 
-            return FindNearestPoint(tBefore, tAfter, pBefore, pAfter, point);
+            return FindNearestPoint( tBefore, tAfter, pBefore, pAfter, point );
         }
 
-        private (double, PointD) FindNearestPoint(float t1, float t2, PointD p1, PointD p2, PointD p)
+        private (double, PointD) FindNearestPoint( float t1, float t2, PointD p1, PointD p2, PointD p )
         {
             // Use a binary search to find p. End when the interval is 1 or less.
 
-            double d1 = p1.GetDistance(p);
-            double d2 = p2.GetDistance(p);
-            double d12 = p1.GetDistance(p2);
+            double d1 = p1.GetDistance( p );
+            double d2 = p2.GetDistance( p );
+            double d12 = p1.GetDistance( p2 );
 
-            if (d12 <= 1.0)
+            if ( d12 <= 1.0 )
             {
-                if (d1 < d2)
+                if ( d1 < d2 )
                     return (t1, p1);
                 else
                     return (t2, p2);
             }
 
             float midT = (t1 + t2) / 2;
-            PointD midP = CalcCurve(midT);
+            PointD midP = CalcCurve( midT );
 
-            if (d1 < d2)
-                return FindNearestPoint(t1, midT, p1, midP, p);
+            if ( d1 < d2 )
+                return FindNearestPoint( t1, midT, p1, midP, p );
             else
-                return FindNearestPoint(midT, t2, midP, p2, p);
+                return FindNearestPoint( midT, t2, midP, p2, p );
         }
 
-        public (Curve, Curve) Split(double t, PointD midP)
+        public (Curve, Curve) Split( double t, PointD midP )
         {
-            if (_curveType == CurveType.Conic)
-                return SplitConic(t, midP);
+            if ( _curveType == CurveType.Conic )
+                return SplitConic( t, midP );
             else
-                return SplitCubic(t, midP);
+                return SplitCubic( t, midP );
         }
 
-        private (Curve, Curve) SplitConic(double t, PointD midP)
+        private (Curve, Curve) SplitConic( double t, PointD midP )
         {
             // Use de Casteljau's algorithm.
 
@@ -220,13 +220,13 @@ namespace KiriFig
                 (int) ((1 - t) * c1.Y + t * c2.Y)
             );
 
-            Curve curve1 = new Curve(c0, b0, midP);
-            Curve curve2 = new Curve(midP, b1, c2);
+            Curve curve1 = new Curve( c0, b0, midP );
+            Curve curve2 = new Curve( midP, b1, c2 );
 
             return (curve1, curve2);
         }
 
-        private (Curve, Curve) SplitCubic(double t, PointD midP)
+        private (Curve, Curve) SplitCubic( double t, PointD midP )
         {
             // Use de Casteljau's algorithm.
 
@@ -256,43 +256,43 @@ namespace KiriFig
                 (1 - t) * b1.Y + t * b2.Y
             );
 
-            Curve curve1 = new Curve(c0, b0, b3, midP);
-            Curve curve2 = new Curve(midP, b2, b4, c3);
+            Curve curve1 = new Curve( c0, b0, b3, midP );
+            Curve curve2 = new Curve( midP, b2, b4, c3 );
 
             return (curve1, curve2);
         }
 
-        public int SolveConicWithX(int x, double[] roots)
+        public int SolveConicWithX( int x, double[] roots )
         {
-            return SolveConic(C0.X, C1.X, C2.X, x, roots);
+            return SolveConic( C0.X, C1.X, C2.X, x, roots );
         }
 
-        public int SolveConicWithY(int y, double[] roots)
+        public int SolveConicWithY( int y, double[] roots )
         {
-            return SolveConic(C0.Y, C1.Y, C2.Y, y, roots);
+            return SolveConic( C0.Y, C1.Y, C2.Y, y, roots );
         }
 
-        private static int SolveConic(double c0, double c1, double c2, int coordinate, double[] roots)
+        private static int SolveConic( double c0, double c1, double c2, int coordinate, double[] roots )
         {
-            var solutions = new Solutions(roots);
+            var solutions = new Solutions( roots );
 
             double a = c0 - 2 * c1 + c2;
-            double sqrt = Math.Sqrt(coordinate * a + c1 * c1 - c0 * c2);
+            double sqrt = Math.Sqrt( coordinate * a + c1 * c1 - c0 * c2 );
 
-            solutions.Add((c0 - c1 - sqrt) / a);
-            solutions.Add((c0 - c1 + sqrt) / a);
+            solutions.Add( (c0 - c1 - sqrt) / a );
+            solutions.Add( (c0 - c1 + sqrt) / a );
 
             return solutions.Count;
         }
 
-        public int SolveCubicWithX(int x, double[] roots)
+        public int SolveCubicWithX( int x, double[] roots )
         {
-            return SolveCubic(C0.X, C1.X, C2.X, C3.X, x, roots);
+            return SolveCubic( C0.X, C1.X, C2.X, C3.X, x, roots );
         }
 
-        public int SolveCubicWithY(int y, double[] roots)
+        public int SolveCubicWithY( int y, double[] roots )
         {
-            return SolveCubic(C0.Y, C1.Y, C2.Y, C3.Y, y, roots);
+            return SolveCubic( C0.Y, C1.Y, C2.Y, C3.Y, y, roots );
         }
 
         private struct Solutions
@@ -300,15 +300,15 @@ namespace KiriFig
             public double[] Roots { get; }
             public int Count { get; private set; }
 
-            public Solutions(double[] roots)
+            public Solutions( double[] roots )
             {
                 Roots = roots;
                 Count = 0;
             }
 
-            public void Add(double root)
+            public void Add( double root )
             {
-                if (root >= 0 && root <= 1)
+                if ( root >= 0 && root <= 1 )
                 {
                     Roots[Count] = root;
                     Count++;
@@ -321,9 +321,9 @@ namespace KiriFig
         //  https://trans4mind.com/personal_development/mathematics/polynomials/cubicAlgebra.htm
         //  https://pomax.github.io/bezierinfo/#extremities
 
-        private static int SolveCubic(double c0, double c1, double c2, double c3, int coordinate, double[] roots)
+        private static int SolveCubic( double c0, double c1, double c2, double c3, int coordinate, double[] roots )
         {
-            var solutions = new Solutions(roots);
+            var solutions = new Solutions( roots );
 
             double a = 3 * c0 - 6 * c1 + 3 * c2;
             double b = -3 * c0 + 3 * c1;
@@ -334,24 +334,24 @@ namespace KiriFig
 
             // Check the coefficients to see if the curve is really of a lower order.
 
-            if (AboutEqual(d, 0))
+            if ( AboutEqual( d, 0 ) )
             {
-                if (AboutEqual(a, 0))
+                if ( AboutEqual( a, 0 ) )
                 {
-                    if (AboutEqual(b, 0))
+                    if ( AboutEqual( b, 0 ) )
                         // The curve isn't even linear. There are no solutions.
                         return 0;
 
                     // The curve is linear. There's at most one solution.
-                    solutions.Add(-c / b);
+                    solutions.Add( -c / b );
                     return solutions.Count;
                 }
 
                 // The curve is quardratic. There are at most two solutions.
-                q = Math.Sqrt(b * b - 4 * a * c);
+                q = Math.Sqrt( b * b - 4 * a * c );
                 double _2a = 2 * a;
-                solutions.Add((q - b) / _2a);
-                solutions.Add((-b - q) / _2a);
+                solutions.Add( (q - b) / _2a );
+                solutions.Add( (-b - q) / _2a );
                 return solutions.Count;
             }
 
@@ -368,56 +368,56 @@ namespace KiriFig
             double discriminant = q2 * q2 + p3 * p3 * p3;
 
             // There are three possible real roots.
-            if (discriminant < 0)
+            if ( discriminant < 0 )
             {
                 double mp3 = -p / 3;
-                double r = Math.Sqrt(mp3 * mp3 * mp3);
+                double r = Math.Sqrt( mp3 * mp3 * mp3 );
                 double t = -q / (2 * r);
                 double cosphi;
 
-                if (t < -1)
+                if ( t < -1 )
                     cosphi = -1;
-                else if (t > 1)
+                else if ( t > 1 )
                     cosphi = 1;
                 else
                     cosphi = t;
 
-                double phi = Math.Acos(cosphi);
-                double t1 = 2 * CubeRoot(r);
-                solutions.Add(t1 * Math.Cos(phi / 3) - a / 3);
-                solutions.Add(t1 * Math.Cos((phi + 2 * Math.PI) / 3) - a / 3);
-                solutions.Add(t1 * Math.Cos((phi + 4 * Math.PI) / 3) - a / 3);
+                double phi = Math.Acos( cosphi );
+                double t1 = 2 * CubeRoot( r );
+                solutions.Add( t1 * Math.Cos( phi / 3 ) - a / 3 );
+                solutions.Add( t1 * Math.Cos( (phi + 2 * Math.PI) / 3 ) - a / 3 );
+                solutions.Add( t1 * Math.Cos( (phi + 4 * Math.PI) / 3 ) - a / 3 );
                 return solutions.Count;
             }
 
             // There are three possible real roots. But two of them are equal.
-            if (discriminant == 0)
+            if ( discriminant == 0 )
             {
-                double u = -CubeRoot(q2);
-                solutions.Add(2 * u - a / 3);
-                solutions.Add(-u - a / 3);
+                double u = -CubeRoot( q2 );
+                solutions.Add( 2 * u - a / 3 );
+                solutions.Add( -u - a / 3 );
                 return solutions.Count;
             }
 
             // There's one real root and two complex roots.
-            double sd = Math.Sqrt(discriminant);
-            double u1 = CubeRoot(sd - q2);
-            double v1 = CubeRoot(sd + q2);
-            solutions.Add(u1 - v1 - a / 3);
+            double sd = Math.Sqrt( discriminant );
+            double u1 = CubeRoot( sd - q2 );
+            double v1 = CubeRoot( sd + q2 );
+            solutions.Add( u1 - v1 - a / 3 );
             return solutions.Count;
         }
 
-        private static bool AboutEqual(double a, double b)
+        private static bool AboutEqual( double a, double b )
         {
-            return Math.Abs(a - b) < Epsilon;
+            return Math.Abs( a - b ) < Epsilon;
         }
 
-        private static double CubeRoot(double x)
+        private static double CubeRoot( double x )
         {
-            if (x < 0)
-                return -Math.Pow(-x, 1 / 3d);
+            if ( x < 0 )
+                return -Math.Pow( -x, 1 / 3d );
 
-            return Math.Pow(x, 1 / 3d);
+            return Math.Pow( x, 1 / 3d );
         }
     }
 
@@ -426,17 +426,17 @@ namespace KiriFig
         public double X;
         public double Y;
 
-        public PointD(double x, double y)
+        public PointD( double x, double y )
         {
             X = x;
             Y = y;
         }
 
-        public double GetDistance(PointD otherPoint)
+        public double GetDistance( PointD otherPoint )
         {
             double w = otherPoint.X - X;
             double h = otherPoint.Y - Y;
-            return Math.Sqrt(w * w + h * h);
+            return Math.Sqrt( w * w + h * h );
         }
     }
 }

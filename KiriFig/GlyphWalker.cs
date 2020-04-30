@@ -27,10 +27,10 @@ namespace KiriFig
 
         public Figure Figure { get; private set; }
 
-        public GlyphWalker(Face face)
+        public GlyphWalker( Face face )
         {
             this._face = face;
-            _faceOrientation = (FaceOrientation) Face.GetOrientation(_face.Format);
+            _faceOrientation = (FaceOrientation) Face.GetOrientation( _face.Format );
         }
 
         public void Decompose()
@@ -43,7 +43,7 @@ namespace KiriFig
                 CubicTo = CubicToFunc,
             };
 
-            _face.Decompose(outlineFuncs);
+            _face.Decompose( outlineFuncs );
 
             CloseCurrentContour();
             AssignShapes();
@@ -58,7 +58,7 @@ namespace KiriFig
             int offsetX = bbox.Left;
             int offsetY = faceBbox.Bottom;
 
-            Figure = new Figure(_pointGroups, new Cut[0], width, height, offsetX, offsetY, _faceOrientation);
+            Figure = new Figure( _pointGroups, new Cut[0], width, height, offsetX, offsetY, _faceOrientation );
         }
 
         private void AssignShapes()
@@ -66,9 +66,9 @@ namespace KiriFig
             var tool = new OutlineTool(_contours, _faceOrientation);
             var shapes = tool.CalculateShapes();
 
-            foreach (var shape in shapes)
+            foreach ( var shape in shapes )
             {
-                foreach (var contour in shape.Contours)
+                foreach ( var contour in shape.Contours )
                 {
                     contour.Shape = shape;
                 }
@@ -77,20 +77,20 @@ namespace KiriFig
 
         private void CloseCurrentContour()
         {
-            if (_curContour == null)
+            if ( _curContour == null )
                 return;
 
-            if (_curContour.FirstPoint == _curPoint)
+            if ( _curContour.FirstPoint == _curPoint )
             {
-                _contours.Remove(_curContour);
-                _pointGroups.Remove(_curPoint.Group);
+                _contours.Remove( _curContour );
+                _pointGroups.Remove( _curPoint.Group );
                 return;
             }
 
             Point firstPoint = _curContour.FirstPoint;
             Point lastPoint = _curPoint;
 
-            _pointGroups.Remove(lastPoint.Group);
+            _pointGroups.Remove( lastPoint.Group );
 
             firstPoint.IncomingEdge = lastPoint.IncomingEdge;
             firstPoint.IncomingEdge.P2 = firstPoint;
@@ -100,7 +100,7 @@ namespace KiriFig
             _curPoint = null;
         }
 
-        private int MoveToFunc(ref FTVector to, IntPtr user)
+        private int MoveToFunc( ref FTVector to, IntPtr user )
         {
             CloseCurrentContour();
 
@@ -110,12 +110,12 @@ namespace KiriFig
             var newPoint = new Point(_x, _y);
 
             var newContour = new Contour();
-            _contours.Add(newContour);
+            _contours.Add( newContour );
 
             var newGroup = new PointGroup(isFixed: true);
-            newGroup.Points.Add(newPoint);
+            newGroup.Points.Add( newPoint );
             newPoint.Group = newGroup;
-            _pointGroups.Add(newGroup);
+            _pointGroups.Add( newGroup );
 
             _curPoint = newPoint;
             _curContour = newContour;
@@ -126,9 +126,9 @@ namespace KiriFig
             return 0;
         }
 
-        private int LineToFunc(ref FTVector to, IntPtr user)
+        private int LineToFunc( ref FTVector to, IntPtr user )
         {
-            if (to.X == _curPoint.X && to.Y == _curPoint.Y)
+            if ( to.X == _curPoint.X && to.Y == _curPoint.Y )
                 return 0;
 
             _x = to.X;
@@ -141,9 +141,9 @@ namespace KiriFig
             newPoint.IncomingEdge = edge;
 
             var newGroup = new PointGroup(isFixed: true);
-            newGroup.Points.Add(newPoint);
+            newGroup.Points.Add( newPoint );
             newPoint.Group = newGroup;
-            _pointGroups.Add(newGroup);
+            _pointGroups.Add( newGroup );
 
             _curPoint.Group.OriginalOutgoingEdge = edge;
             newPoint.Group.OriginalIncomingEdge = edge;
@@ -155,7 +155,7 @@ namespace KiriFig
             return 0;
         }
 
-        private int ConicToFunc(ref FTVector control, ref FTVector to, IntPtr user)
+        private int ConicToFunc( ref FTVector control, ref FTVector to, IntPtr user )
         {
             _x = to.X;
             _y = to.Y;
@@ -170,9 +170,9 @@ namespace KiriFig
             newPoint.IncomingEdge = edge;
 
             var newGroup = new PointGroup(isFixed: true);
-            newGroup.Points.Add(newPoint);
+            newGroup.Points.Add( newPoint );
             newPoint.Group = newGroup;
-            _pointGroups.Add(newGroup);
+            _pointGroups.Add( newGroup );
 
             _curPoint.Group.OriginalOutgoingEdge = edge;
             newPoint.Group.OriginalIncomingEdge = edge;
@@ -184,7 +184,7 @@ namespace KiriFig
             return 0;
         }
 
-        private int CubicToFunc(ref FTVector control1, ref FTVector control2, ref FTVector to, IntPtr user)
+        private int CubicToFunc( ref FTVector control1, ref FTVector control2, ref FTVector to, IntPtr user )
         {
             _x = to.X;
             _y = to.Y;
@@ -202,9 +202,9 @@ namespace KiriFig
             newPoint.IncomingEdge = edge;
 
             var newGroup = new PointGroup(isFixed: true);
-            newGroup.Points.Add(newPoint);
+            newGroup.Points.Add( newPoint );
             newPoint.Group = newGroup;
-            _pointGroups.Add(newGroup);
+            _pointGroups.Add( newGroup );
 
             _curPoint.Group.OriginalOutgoingEdge = edge;
             newPoint.Group.OriginalIncomingEdge = edge;

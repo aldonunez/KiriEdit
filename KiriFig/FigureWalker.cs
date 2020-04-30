@@ -13,9 +13,9 @@ using Point = KiriFig.Model.Point;
 
 namespace KiriFig
 {
-    public delegate void LineToHandler(Edge edge);
-    public delegate void ConicToHandler(Edge edge);
-    public delegate void CubicToHandler(Edge edge);
+    public delegate void LineToHandler( Edge edge );
+    public delegate void ConicToHandler( Edge edge );
+    public delegate void CubicToHandler( Edge edge );
 
     public class FigureWalker
     {
@@ -23,49 +23,49 @@ namespace KiriFig
         public event ConicToHandler ConicTo;
         public event CubicToHandler CubicTo;
 
-        public void WalkContour(Contour contour)
+        public void WalkContour( Contour contour )
         {
             Point point = contour.FirstPoint;
 
-            while (true)
+            while ( true )
             {
                 var edge = point.OutgoingEdge;
 
-                switch (edge.Type)
+                switch ( edge.Type )
                 {
                     case EdgeType.Line:
-                        OnLineTo(edge);
+                        OnLineTo( edge );
                         break;
 
                     case EdgeType.Conic:
-                        OnConicTo(edge);
+                        OnConicTo( edge );
                         break;
 
                     case EdgeType.Cubic:
-                        OnCubicTo(edge);
+                        OnCubicTo( edge );
                         break;
                 }
 
                 point = edge.P2;
 
-                if (point == contour.FirstPoint)
+                if ( point == contour.FirstPoint )
                     break;
             }
         }
 
-        protected virtual void OnLineTo(Edge edge)
+        protected virtual void OnLineTo( Edge edge )
         {
-            LineTo?.Invoke(edge);
+            LineTo?.Invoke( edge );
         }
 
-        protected virtual void OnConicTo(Edge edge)
+        protected virtual void OnConicTo( Edge edge )
         {
-            ConicTo?.Invoke(edge);
+            ConicTo?.Invoke( edge );
         }
 
-        protected virtual void OnCubicTo(Edge edge)
+        protected virtual void OnCubicTo( Edge edge )
         {
-            CubicTo?.Invoke(edge);
+            CubicTo?.Invoke( edge );
         }
     }
 
@@ -84,7 +84,7 @@ namespace KiriFig
 
         public Bitmap Bitmap { get { return bitmap; } }
 
-        public DebugFigureRenderer(Figure figure)
+        public DebugFigureRenderer( Figure figure )
         {
             _figure = figure;
 
@@ -96,14 +96,14 @@ namespace KiriFig
             int bmpWidth = figure.Width / 64;
             int bmpHeight = figure.Height / 64;
 
-            bitmap = new Bitmap(bmpWidth, bmpHeight);
+            bitmap = new Bitmap( bmpWidth, bmpHeight );
 
-            g = Graphics.FromImage(bitmap);
-            g.ScaleTransform(1 / 64f, -1 / 64f, MatrixOrder.Append);
+            g = Graphics.FromImage( bitmap );
+            g.ScaleTransform( 1 / 64f, -1 / 64f, MatrixOrder.Append );
             g.TranslateTransform(
                 (float) -figure.OffsetX / 64f,
                 (bmpHeight - 1) + (float) figure.OffsetY / 64f,
-                MatrixOrder.Append);
+                MatrixOrder.Append );
 
             _pens = new Pen[4]
             {
@@ -116,18 +116,18 @@ namespace KiriFig
 
         public void Render()
         {
-            foreach (var contour in _figure.Contours)
+            foreach ( var contour in _figure.Contours )
             {
-                BeginContour(contour);
-                MoveTo(contour.FirstPoint);
+                BeginContour( contour );
+                MoveTo( contour.FirstPoint );
 
-                _figureWalker.WalkContour(contour);
+                _figureWalker.WalkContour( contour );
             }
 
             EndFigure();
         }
 
-        private void BeginContour(Contour contour)
+        private void BeginContour( Contour contour )
         {
             _nextPenIndex = 0;
         }
@@ -143,14 +143,14 @@ namespace KiriFig
         {
             int j = 0;
 
-            foreach (var group in _figure.PointGroups)
+            foreach ( var group in _figure.PointGroups )
             {
                 Point p = group.Points[0];
                 Pen pen = null;
                 float radius = 5f * 64f;
                 float wideRadius = radius + 2f * 64f;
 
-                if (group.IsFixed)
+                if ( group.IsFixed )
                 {
                     pen = Pens.Red;
                 }
@@ -168,7 +168,7 @@ namespace KiriFig
                     radius * 2
                     );
 
-                if (group.Points.Count > 1)
+                if ( group.Points.Count > 1 )
                 {
                     g.DrawEllipse(
                         Pens.White,
@@ -181,30 +181,30 @@ namespace KiriFig
             }
         }
 
-        private void MoveTo(Point p)
+        private void MoveTo( Point p )
         {
             var to = p;
-            Console.WriteLine("MoveTo: {0}, {1}", to.X, to.Y);
+            Console.WriteLine( "MoveTo: {0}, {1}", to.X, to.Y );
             x = to.X;
             y = to.Y;
         }
 
-        private void LineTo(Edge edge)
+        private void LineTo( Edge edge )
         {
             BeginEdge();
             var to = edge.P2;
-            Console.WriteLine("LineTo: {0}, {1}", to.X, to.Y);
+            Console.WriteLine( "LineTo: {0}, {1}", to.X, to.Y );
             g.DrawLine(
                 pen,
                 (float) x,
                 (float) y,
                 (float) to.X,
-                (float) to.Y);
+                (float) to.Y );
             x = to.X;
             y = to.Y;
         }
 
-        private void ConicTo(Edge edge)
+        private void ConicTo( Edge edge )
         {
             BeginEdge();
             var control1 = ((ConicEdge) edge).C1;
@@ -217,7 +217,7 @@ namespace KiriFig
                 (to.X + 2 * control1.X) / 3.0f,
                 (to.Y + 2 * control1.Y) / 3.0f
                 );
-            Console.WriteLine("ConicTo: {0},{1} {2},{3}", control1.X, control1.Y, to.X, to.Y);
+            Console.WriteLine( "ConicTo: {0},{1} {2},{3}", control1.X, control1.Y, to.X, to.Y );
             g.DrawBeziers(
                 pen,
                 new PointF[]
@@ -226,18 +226,18 @@ namespace KiriFig
                     c1,
                     c2,
                     new PointF((float) to.X, (float) to.Y)
-                });
+                } );
             x = to.X;
             y = to.Y;
         }
 
-        private void CubicTo(Edge edge)
+        private void CubicTo( Edge edge )
         {
             BeginEdge();
             var c1 = ((CubicEdge) edge).C1;
             var c2 = ((CubicEdge) edge).C2;
             var to = edge.P2;
-            Console.WriteLine("CubicTo: {0},{1} {2},{3} {4},{5}", c1.X, c1.Y, c2.X, c2.Y, to.X, to.Y);
+            Console.WriteLine( "CubicTo: {0},{1} {2},{3} {4},{5}", c1.X, c1.Y, c2.X, c2.Y, to.X, to.Y );
             g.DrawBeziers(
                 pen,
                 new PointF[]
@@ -246,7 +246,7 @@ namespace KiriFig
                     new PointF((float) c1.X, (float) c1.Y),
                     new PointF((float) c2.X, (float) c2.Y),
                     new PointF((float) to.X, (float) to.Y)
-                });
+                } );
             x = to.X;
             y = to.Y;
         }

@@ -14,7 +14,7 @@ namespace KiriFig
     {
         private Library _library = new Library();
 
-        public FontFace OpenFace(string path, int index, bool ignoreTypographicNames = false)
+        public FontFace OpenFace( string path, int index, bool ignoreTypographicNames = false )
         {
             OpenParams @params =
                 ignoreTypographicNames ? OpenParams.IgnoreTypographicFamily : OpenParams.None;
@@ -28,7 +28,7 @@ namespace KiriFig
 
         public void Dispose()
         {
-            if (_library != null)
+            if ( _library != null )
             {
                 _library.Dispose();
                 _library = null;
@@ -40,20 +40,20 @@ namespace KiriFig
     {
         private Face _face;
 
-        internal FontFace(Face face)
+        internal FontFace( Face face )
         {
             _face = face;
         }
 
-        public Model.Figure DecomposeGlyph(uint character, int size = 0)
+        public Model.Figure DecomposeGlyph( uint character, int size = 0 )
         {
-            if (size < 0)
-                throw new ArgumentOutOfRangeException(nameof(size));
+            if ( size < 0 )
+                throw new ArgumentOutOfRangeException( nameof( size ) );
 
-            if (size > 0)
-                _face.SetPixelSizes(0, (uint) size);
+            if ( size > 0 )
+                _face.SetPixelSizes( 0, (uint) size );
 
-            _face.LoadChar(character, size == 0);
+            _face.LoadChar( character, size == 0 );
 
             var walker = new GlyphWalker(_face);
 
@@ -64,7 +64,7 @@ namespace KiriFig
 
         public void Dispose()
         {
-            if (_face != null)
+            if ( _face != null )
             {
                 _face.Dispose();
                 _face = null;

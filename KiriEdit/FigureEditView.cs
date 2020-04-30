@@ -43,7 +43,7 @@ namespace KiriEdit
             get => _figureItem;
             set
             {
-                if (!(value is FigureItem))
+                if ( !(value is FigureItem) )
                     throw new ArgumentException();
 
                 _figureItem = (FigureItem) value;
@@ -52,14 +52,14 @@ namespace KiriEdit
                 _title = string.Format(
                     "U+{0:X6}  {1} : {2}",
                     _figureItem.Parent.CodePoint,
-                    CharUtils.GetString(_figureItem.Parent.CodePoint),
-                    _figureItem.Name);
+                    CharUtils.GetString( _figureItem.Parent.CodePoint ),
+                    _figureItem.Name );
 
                 UpdateTitle();
             }
         }
 
-        private void _figureItem_Deleted(object sender, EventArgs e)
+        private void _figureItem_Deleted( object sender, EventArgs e )
         {
             _deleted = true;
             Close();
@@ -67,18 +67,18 @@ namespace KiriEdit
 
         public bool Save()
         {
-            _figureItem.Save(figureEditor.Document);
+            _figureItem.Save( figureEditor.Document );
 
             UpdateTitle();
 
             return true;
         }
 
-        private void FigureEditor_Modified(object sender, EventArgs e)
+        private void FigureEditor_Modified( object sender, EventArgs e )
         {
             _figureItem.IsDirty = true;
 
-            LoadProgressPicture(figureEditor.Document);
+            LoadProgressPicture( figureEditor.Document );
             UpdateTitle();
         }
 
@@ -86,33 +86,33 @@ namespace KiriEdit
         {
             Text = _title;
 
-            if (_figureItem.IsDirty)
+            if ( _figureItem.IsDirty )
                 Text += "*";
         }
 
-        private void FigureEditView_FormClosed(object sender, FormClosedEventArgs e)
+        private void FigureEditView_FormClosed( object sender, FormClosedEventArgs e )
         {
             _figureItem.IsDirty = false;
         }
 
-        private void FigureEditView_FormClosing(object sender, FormClosingEventArgs e)
+        private void FigureEditView_FormClosing( object sender, FormClosingEventArgs e )
         {
-            if (e.CloseReason == CloseReason.UserClosing && !_deleted)
+            if ( e.CloseReason == CloseReason.UserClosing && !_deleted )
             {
-                if (!ConfirmClose())
+                if ( !ConfirmClose() )
                     e.Cancel = true;
             }
         }
 
         private bool ConfirmClose()
         {
-            if (!IsDirty)
+            if ( !IsDirty )
                 return true;
 
-            string message = string.Format("Do you want to save '{0}'?", _title);
-            var result = MessageBox.Show(message, ShellForm.AppTitle, MessageBoxButtons.YesNoCancel);
+            string message = string.Format( "Do you want to save '{0}'?", _title );
+            var result = MessageBox.Show( message, ShellForm.AppTitle, MessageBoxButtons.YesNoCancel );
 
-            switch (result)
+            switch ( result )
             {
                 case DialogResult.Yes:
                     // Save, then close.
@@ -127,39 +127,39 @@ namespace KiriEdit
             }
         }
 
-        private void FigureEditView_Load(object sender, EventArgs e)
+        private void FigureEditView_Load( object sender, EventArgs e )
         {
             figureEditor.Document = _figureItem.Open();
             figureEditor.History = HistoryBuffer;
 
-            LoadMasterPicture(figureEditor.Document);
-            LoadProgressPicture(figureEditor.Document);
+            LoadMasterPicture( figureEditor.Document );
+            LoadProgressPicture( figureEditor.Document );
         }
 
-        private void LoadMasterPicture(FigureDocument masterDoc)
+        private void LoadMasterPicture( FigureDocument masterDoc )
         {
             Size picBoxSize = masterPictureBox.ClientSize;
             int height = (int) (picBoxSize.Height * 0.95f);
             int width = height;
 
-            Rectangle rect = DrawingUtils.CenterFigure(masterDoc.Figure, new Size(width, height));
+            Rectangle rect = DrawingUtils.CenterFigure( masterDoc.Figure, new Size( width, height ) );
 
-            Bitmap bitmap = new Bitmap(width, height);
+            Bitmap bitmap = new Bitmap( width, height );
 
-            using (var graphics = Graphics.FromImage(bitmap))
-            using (var painter = new SystemFigurePainter(masterDoc))
+            using ( var graphics = Graphics.FromImage( bitmap ) )
+            using ( var painter = new SystemFigurePainter( masterDoc ) )
             {
-                painter.SetTransform(graphics, rect);
+                painter.SetTransform( graphics, rect );
                 painter.PaintFull();
-                painter.Fill(graphics);
+                painter.Fill( graphics );
             }
 
             masterPictureBox.Image = bitmap;
         }
 
-        private void LoadProgressPicture(FigureDocument masterDoc)
+        private void LoadProgressPicture( FigureDocument masterDoc )
         {
-            if (progressPictureBox.BackgroundImage != null)
+            if ( progressPictureBox.BackgroundImage != null )
             {
                 progressPictureBox.BackgroundImage.Dispose();
                 progressPictureBox.BackgroundImage = null;
@@ -169,15 +169,15 @@ namespace KiriEdit
             int height = (int) (picBoxSize.Height * 0.95f);
             int width = height;
 
-            Rectangle rect = DrawingUtils.CenterFigure(masterDoc.Figure, new Size(width, height));
+            Rectangle rect = DrawingUtils.CenterFigure( masterDoc.Figure, new Size( width, height ) );
 
-            Bitmap bitmap = new Bitmap(width, height);
+            Bitmap bitmap = new Bitmap( width, height );
 
-            using (var graphics = Graphics.FromImage(bitmap))
+            using ( var graphics = Graphics.FromImage( bitmap ) )
             {
-                foreach (var pieceItem in _figureItem.Parent.PieceFigureItems)
+                foreach ( var pieceItem in _figureItem.Parent.PieceFigureItems )
                 {
-                    PaintPiece(pieceItem, graphics, rect);
+                    PaintPiece( pieceItem, graphics, rect );
                 }
             }
 
@@ -185,13 +185,13 @@ namespace KiriEdit
             progressPictureBox.Invalidate();
         }
 
-        private void PaintPiece(FigureItem pieceItem, Graphics graphics, Rectangle rect)
+        private void PaintPiece( FigureItem pieceItem, Graphics graphics, Rectangle rect )
         {
             FigureDocument pieceDoc;
             bool standOut;
 
             // Draw this view's figure item differently.
-            if (pieceItem == _figureItem)
+            if ( pieceItem == _figureItem )
             {
                 standOut = true;
                 pieceDoc = figureEditor.Document;
@@ -202,7 +202,7 @@ namespace KiriEdit
                 pieceDoc = pieceItem.Open();
             }
 
-            DrawingUtils.PaintPiece(pieceDoc, graphics, rect, standOut);
+            DrawingUtils.PaintPiece( pieceDoc, graphics, rect, standOut );
         }
     }
 }

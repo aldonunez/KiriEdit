@@ -43,7 +43,7 @@ namespace KiriEdit
             get => _characterItem;
             set
             {
-                if (!(value is CharacterItem))
+                if ( !(value is CharacterItem) )
                     throw new ArgumentException();
 
                 _characterItem = (CharacterItem) value;
@@ -53,27 +53,27 @@ namespace KiriEdit
                 Text = string.Format(
                     "U+{0:X6}  {1}",
                     _characterItem.CodePoint,
-                    CharUtils.GetString(_characterItem.CodePoint));
+                    CharUtils.GetString( _characterItem.CodePoint ) );
             }
         }
 
-        private void CharacterItem_Deleted(object sender, EventArgs e)
+        private void CharacterItem_Deleted( object sender, EventArgs e )
         {
             Close();
         }
 
-        private void CharacterItem_FigureItemModified(object sender, FigureItemModifiedEventArgs args)
+        private void CharacterItem_FigureItemModified( object sender, FigureItemModifiedEventArgs args )
         {
             LoadProgressPicture();
-            ReplacePieceImage(args.FigureItem);
+            ReplacePieceImage( args.FigureItem );
         }
 
-        protected override void ScaleControl(SizeF factor, BoundsSpecified specified)
+        protected override void ScaleControl( SizeF factor, BoundsSpecified specified )
         {
-            base.ScaleControl(factor, specified);
+            base.ScaleControl( factor, specified );
 
-            int side = (int) Math.Round(48 * factor.Height);
-            piecesImageList.ImageSize = new Size(side, side);
+            int side = (int) Math.Round( 48 * factor.Height );
+            piecesImageList.ImageSize = new Size( side, side );
         }
 
         public bool Save()
@@ -82,22 +82,22 @@ namespace KiriEdit
             return true;
         }
 
-        private void FigureEditView_Load(object sender, EventArgs e)
+        private void FigureEditView_Load( object sender, EventArgs e )
         {
             _masterDoc = _characterItem.MasterFigureItem.Open();
 
-            foreach (var pieceItem in _characterItem.PieceFigureItems)
+            foreach ( var pieceItem in _characterItem.PieceFigureItems )
             {
-                LoadPiece(pieceItem);
+                LoadPiece( pieceItem );
             }
 
             LoadMasterPicture();
             LoadProgressPicture();
         }
 
-        private void PiecesListView_SelectedIndexChanged(object sender, EventArgs e)
+        private void PiecesListView_SelectedIndexChanged( object sender, EventArgs e )
         {
-            if (piecesListView.SelectedIndices.Count == 0)
+            if ( piecesListView.SelectedIndices.Count == 0 )
             {
                 deletePieceButton.Enabled = false;
                 copyPieceButton.Enabled = false;
@@ -113,7 +113,7 @@ namespace KiriEdit
         {
             Image oldImage = progressPictureBox.BackgroundImage;
 
-            if (oldImage != null)
+            if ( oldImage != null )
             {
                 progressPictureBox.BackgroundImage = null;
                 oldImage.Dispose();
@@ -123,15 +123,15 @@ namespace KiriEdit
             int height = (int) (picBoxSize.Height * 0.95f);
             int width = height;
 
-            Rectangle rect = DrawingUtils.CenterFigure(_masterDoc.Figure, new Size(width, height));
+            Rectangle rect = DrawingUtils.CenterFigure( _masterDoc.Figure, new Size(width, height) );
 
-            Bitmap bitmap = new Bitmap(width, height);
+            Bitmap bitmap = new Bitmap( width, height );
 
-            using (var graphics = Graphics.FromImage(bitmap))
+            using ( var graphics = Graphics.FromImage( bitmap ) )
             {
-                foreach (var pieceItem in _characterItem.PieceFigureItems)
+                foreach ( var pieceItem in _characterItem.PieceFigureItems )
                 {
-                    PaintPiece(pieceItem, graphics, rect);
+                    PaintPiece( pieceItem, graphics, rect );
                 }
             }
 
@@ -139,11 +139,11 @@ namespace KiriEdit
             progressPictureBox.Invalidate();
         }
 
-        private void PaintPiece(FigureItem pieceItem, Graphics graphics, Rectangle rect)
+        private void PaintPiece( FigureItem pieceItem, Graphics graphics, Rectangle rect )
         {
             var pieceDoc = pieceItem.Open();
 
-            DrawingUtils.PaintPiece(pieceDoc, graphics, rect);
+            DrawingUtils.PaintPiece( pieceDoc, graphics, rect );
         }
 
         private void LoadMasterPicture()
@@ -152,89 +152,89 @@ namespace KiriEdit
             int height = (int) (picBoxSize.Height * 0.95f);
             int width = height;
 
-            Rectangle rect = DrawingUtils.CenterFigure(_masterDoc.Figure, new Size(width, height));
+            Rectangle rect = DrawingUtils.CenterFigure( _masterDoc.Figure, new Size(width, height) );
 
-            Bitmap bitmap = new Bitmap(width, height);
+            Bitmap bitmap = new Bitmap( width, height );
 
-            using (var graphics = Graphics.FromImage(bitmap))
-            using (var painter = new SystemFigurePainter(_masterDoc))
+            using ( var graphics = Graphics.FromImage( bitmap ) )
+            using ( var painter = new SystemFigurePainter( _masterDoc ) )
             {
-                painter.SetTransform(graphics, rect);
+                painter.SetTransform( graphics, rect );
                 painter.PaintFull();
-                painter.Fill(graphics);
+                painter.Fill( graphics );
             }
 
             masterPictureBox.Image = bitmap;
         }
 
-        private void addPieceButton_Click(object sender, EventArgs e)
+        private void addPieceButton_Click( object sender, EventArgs e )
         {
             AddPiece();
         }
 
-        private void deletePieceButton_Click(object sender, EventArgs e)
+        private void deletePieceButton_Click( object sender, EventArgs e )
         {
-            if (piecesListView.SelectedItems.Count > 0)
-                DeletePiece(piecesListView.SelectedItems[0]);
+            if ( piecesListView.SelectedItems.Count > 0 )
+                DeletePiece( piecesListView.SelectedItems[0] );
         }
 
-        private void copyPieceButton_Click(object sender, EventArgs e)
+        private void copyPieceButton_Click( object sender, EventArgs e )
         {
-            if (piecesListView.SelectedItems.Count > 0)
-                CopyPiece(piecesListView.SelectedItems[0]);
+            if ( piecesListView.SelectedItems.Count > 0 )
+                CopyPiece( piecesListView.SelectedItems[0] );
         }
 
-        private void PiecesListView_KeyUp(object sender, KeyEventArgs e)
+        private void PiecesListView_KeyUp( object sender, KeyEventArgs e )
         {
-            if (e.KeyCode == Keys.Delete)
-                deletePieceButton_Click(sender, e);
+            if ( e.KeyCode == Keys.Delete )
+                deletePieceButton_Click( sender, e );
         }
 
-        private void AddPiece(FigureItem template)
+        private void AddPiece( FigureItem template )
         {
             // TODO: make this an instance method
-            string fileName = CharacterItem.FindNextFileName(Project, _characterItem.CodePoint);
-            string name = Path.GetFileNameWithoutExtension(fileName);
+            string fileName = CharacterItem.FindNextFileName( Project, _characterItem.CodePoint );
+            string name = Path.GetFileNameWithoutExtension( fileName );
 
-            FigureItem figureItem = _characterItem.AddItem(name, template);
+            FigureItem figureItem = _characterItem.AddItem( name, template );
 
-            LoadPiece(figureItem);
+            LoadPiece( figureItem );
             LoadProgressPicture();
         }
 
         private void AddPiece()
         {
-            AddPiece(_characterItem.MasterFigureItem);
+            AddPiece( _characterItem.MasterFigureItem );
         }
 
-        private void CopyPiece(ListViewItem listViewItem)
+        private void CopyPiece( ListViewItem listViewItem )
         {
             var figureItem = (FigureItem) listViewItem.Tag;
 
-            AddPiece(figureItem);
+            AddPiece( figureItem );
         }
 
-        private void ReplacePieceImage(FigureItem figureItem)
+        private void ReplacePieceImage( FigureItem figureItem )
         {
             var pieceDoc = figureItem.Open();
 
             var imageListSize = piecesImageList.ImageSize;
 
-            Rectangle rect = DrawingUtils.CenterFigure(_masterDoc.Figure, imageListSize);
+            Rectangle rect = DrawingUtils.CenterFigure( _masterDoc.Figure, imageListSize );
 
-            Bitmap bitmap = new Bitmap(imageListSize.Width, imageListSize.Height);
+            Bitmap bitmap = new Bitmap( imageListSize.Width, imageListSize.Height );
 
             try
             {
-                using (var g = Graphics.FromImage(bitmap))
+                using ( var g = Graphics.FromImage( bitmap ) )
                 {
-                    DrawingUtils.PaintPiece(pieceDoc, g, rect);
+                    DrawingUtils.PaintPiece( pieceDoc, g, rect );
                 }
 
-                int imageIndex = piecesImageList.Images.IndexOfKey(figureItem.Name);
+                int imageIndex = piecesImageList.Images.IndexOfKey( figureItem.Name );
 
-                if (imageIndex < 0)
-                    piecesImageList.Images.Add(figureItem.Name, bitmap);
+                if ( imageIndex < 0 )
+                    piecesImageList.Images.Add( figureItem.Name, bitmap );
                 else
                     piecesImageList.Images[imageIndex] = bitmap;
 
@@ -242,59 +242,59 @@ namespace KiriEdit
             }
             catch
             {
-                if (bitmap != null)
+                if ( bitmap != null )
                     bitmap.Dispose();
                 throw;
             }
         }
 
-        private void LoadPiece(FigureItem figureItem)
+        private void LoadPiece( FigureItem figureItem )
         {
             string name = figureItem.Name;
 
-            var listItem = piecesListView.Items.Add(name, name, name);
+            var listItem = piecesListView.Items.Add( name, name, name );
 
             listItem.Tag = figureItem;
 
-            ReplacePieceImage(figureItem);
+            ReplacePieceImage( figureItem );
         }
 
-        private void DeletePiece(ListViewItem listViewItem)
+        private void DeletePiece( ListViewItem listViewItem )
         {
             var figureItem = (FigureItem) listViewItem.Tag;
 
-            if (!ConfirmDeletePiece(figureItem))
+            if ( !ConfirmDeletePiece( figureItem ) )
                 return;
 
-            _characterItem.DeleteItem(figureItem.Name);
+            _characterItem.DeleteItem( figureItem.Name );
 
-            piecesListView.Items.Remove(listViewItem);
-            piecesImageList.Images.RemoveByKey(figureItem.Name);
+            piecesListView.Items.Remove( listViewItem );
+            piecesImageList.Images.RemoveByKey( figureItem.Name );
 
             LoadProgressPicture();
         }
 
-        private bool ConfirmDeletePiece(FigureItem figureItem)
+        private bool ConfirmDeletePiece( FigureItem figureItem )
         {
-            string message = string.Format("'{0}' will be deleted permanently.", figureItem.Name);
-            DialogResult result = MessageBox.Show(message, ShellForm.AppTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+            string message = string.Format( "'{0}' will be deleted permanently.", figureItem.Name );
+            DialogResult result = MessageBox.Show( message, ShellForm.AppTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning );
 
-            if (result == DialogResult.OK)
+            if ( result == DialogResult.OK )
                 return true;
 
             return false;
         }
 
-        private void CharEditView_Shown(object sender, EventArgs e)
+        private void CharEditView_Shown( object sender, EventArgs e )
         {
             piecesListView.Focus();
         }
 
-        private void piecesListView_ItemActivate(object sender, EventArgs e)
+        private void piecesListView_ItemActivate( object sender, EventArgs e )
         {
             var figureItem = (FigureItem) piecesListView.SelectedItems[0].Tag;
 
-            Shell.OpenItem(figureItem);
+            Shell.OpenItem( figureItem );
         }
     }
 }

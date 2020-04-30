@@ -31,10 +31,10 @@ namespace KiriEdit
             InitializeComponent();
         }
 
-        private void FaceIndexComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void FaceIndexComboBox_SelectedIndexChanged( object sender, EventArgs e )
         {
             // Includes the empty entry (0).
-            if (typefaceComboBox.SelectedIndex < 1)
+            if ( typefaceComboBox.SelectedIndex < 1 )
             {
                 copyrightTextBox.Text = "";
                 infoLinkLabel.Enabled = false;
@@ -50,9 +50,9 @@ namespace KiriEdit
             UpdateOKButton();
         }
 
-        private void okButton_Click(object sender, EventArgs e)
+        private void okButton_Click( object sender, EventArgs e )
         {
-            if (!ValidateOK())
+            if ( !ValidateOK() )
                 return;
 
             ProjectSpec = PrepareProjectSpec();
@@ -74,55 +74,55 @@ namespace KiriEdit
 
         private bool ValidateOK()
         {
-            string fullProjFolder = Path.Combine(projPathTextBox.Text, projNameTextBox.Text);
+            string fullProjFolder = Path.Combine( projPathTextBox.Text, projNameTextBox.Text );
 
-            if (Directory.Exists(fullProjFolder))
+            if ( Directory.Exists( fullProjFolder ) )
             {
                 string message = "The project directory already exists. Choose a different name or location for your project.";
 
-                MessageBox.Show(message, ShellForm.AppTitle);
+                MessageBox.Show( message, ShellForm.AppTitle );
                 return false;
             }
 
             return true;
         }
 
-        private int GetFaceCount(string path)
+        private int GetFaceCount( string path )
         {
             Face face = null;
 
             try
             {
-                face = _library.OpenFace(path, -1);
+                face = _library.OpenFace( path, -1 );
                 return face.FaceCount;
             }
-            catch (FreeTypeException)
+            catch ( FreeTypeException )
             {
                 return 0;
             }
             finally
             {
-                if (face != null)
+                if ( face != null )
                     face.Dispose();
             }
         }
 
-        private FontListItem[] GetFaces(string path)
+        private FontListItem[] GetFaces( string path )
         {
-            int faceCount = GetFaceCount(path);
+            int faceCount = GetFaceCount( path );
             var items = new List<FontListItem>();
 
-            for (int i = 0; i < faceCount; i++)
+            for ( int i = 0; i < faceCount; i++ )
             {
                 try
                 {
-                    using (var face = _library.OpenFace(path, i))
+                    using ( var face = _library.OpenFace( path, i ) )
                     {
-                        if (RawValidateFont(face))
-                            items.Add(new FontListItem(face));
+                        if ( RawValidateFont( face ) )
+                            items.Add( new FontListItem( face ) );
                     }
                 }
-                catch (FreeTypeException)
+                catch ( FreeTypeException )
                 {
                     // Ignore the exception, so we can get the next face.
                 }
@@ -131,66 +131,66 @@ namespace KiriEdit
             return items.ToArray();
         }
 
-        private bool RawValidateFont(Face face)
+        private bool RawValidateFont( Face face )
         {
             return (face.Flags & FaceFlags.Scalable) == FaceFlags.Scalable;
         }
 
-        private void cancelButton_Click(object sender, EventArgs e)
+        private void cancelButton_Click( object sender, EventArgs e )
         {
             DialogResult = DialogResult.Cancel;
         }
 
-        private void projPathButton_Click(object sender, EventArgs e)
+        private void projPathButton_Click( object sender, EventArgs e )
         {
-            using (var dialog = new FolderSelect.FolderSelectDialog())
+            using ( var dialog = new FolderSelect.FolderSelectDialog() )
             {
                 dialog.Title = "Project Location";
 
-                if (!dialog.ShowDialog())
+                if ( !dialog.ShowDialog() )
                     return;
 
                 projPathTextBox.Text = dialog.FileName;
             }
         }
 
-        private void projPathTextBox_TextChanged(object sender, EventArgs e)
+        private void projPathTextBox_TextChanged( object sender, EventArgs e )
         {
             UpdateOKButton();
         }
 
-        private void projNameTextBox_TextChanged(object sender, EventArgs e)
+        private void projNameTextBox_TextChanged( object sender, EventArgs e )
         {
             UpdateOKButton();
         }
 
-        private void fontPathButton_Click(object sender, EventArgs e)
+        private void fontPathButton_Click( object sender, EventArgs e )
         {
-            using (var dialog = new OpenFileDialog())
+            using ( var dialog = new OpenFileDialog() )
             {
                 dialog.Title = "Font Location";
                 dialog.CheckFileExists = true;
                 dialog.Filter = FontFilter;
 
-                if (dialog.ShowDialog() != DialogResult.OK)
+                if ( dialog.ShowDialog() != DialogResult.OK )
                     return;
 
-                FontListItem[] items = GetFaces(dialog.FileName);
+                FontListItem[] items = GetFaces( dialog.FileName );
 
-                if (items.Length == 0)
+                if ( items.Length == 0 )
                 {
                     string message = "There are no supported typefaces in the font.";
-                    MessageBox.Show(message, ShellForm.AppTitle);
+                    MessageBox.Show( message, ShellForm.AppTitle );
                 }
                 else
                 {
                     fontPathTextBox.Text = dialog.FileName;
-                    UpdateFaceList(items);
+                    UpdateFaceList( items );
 
-                    if (items.Length > 1)
+                    if ( items.Length > 1 )
                     {
                         string message = "The font contains more than one typeface. Choose a typeface.";
-                        MessageBox.Show(message, ShellForm.AppTitle);
+                        MessageBox.Show( message, ShellForm.AppTitle );
                         typefaceComboBox.SelectedIndex = 0;
                     }
                     else
@@ -201,29 +201,29 @@ namespace KiriEdit
             }
         }
 
-        private void UpdateFaceList(FontListItem[] items)
+        private void UpdateFaceList( FontListItem[] items )
         {
             typefaceComboBox.Enabled = true;
             typefaceComboBox.Items.Clear();
-            typefaceComboBox.Items.Add("");
-            typefaceComboBox.Items.AddRange(items);
+            typefaceComboBox.Items.Add( "" );
+            typefaceComboBox.Items.AddRange( items );
 
-            if (items.Length <= 1)
+            if ( items.Length <= 1 )
                 typefaceComboBox.Enabled = false;
         }
 
-        private void fontPathTextBox_TextChanged(object sender, EventArgs e)
+        private void fontPathTextBox_TextChanged( object sender, EventArgs e )
         {
             UpdateOKButton();
         }
 
         private void UpdateOKButton()
         {
-            if (fontPathTextBox.TextLength > 0
+            if ( fontPathTextBox.TextLength > 0
                 && typefaceComboBox.SelectedIndex > 0
                 && projNameTextBox.TextLength > 0
                 && projPathTextBox.TextLength > 0
-                && Path.IsPathRooted(projPathTextBox.Text)
+                && Path.IsPathRooted( projPathTextBox.Text )
                 )
             {
                 okButton.Enabled = true;
@@ -234,14 +234,14 @@ namespace KiriEdit
             }
         }
 
-        private void infoLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void infoLinkLabel_LinkClicked( object sender, LinkLabelLinkClickedEventArgs e )
         {
             var listItem = (FontListItem) typefaceComboBox.SelectedItem;
 
             listItem.SawInfo = true;
             infoLinkLabel.LinkVisited = true;
 
-            using (var form = new FontInfoForm())
+            using ( var form = new FontInfoForm() )
             {
                 form.FontInfo = listItem.FontInfo;
                 form.ShowDialog();
@@ -259,12 +259,12 @@ namespace KiriEdit
             public FontInfo FontInfo { get; }
             public bool SawInfo { get; set; }
 
-            public FontListItem(Face face)
+            public FontListItem( Face face )
             {
                 FaceIndex = face.FaceIndex;
-                _itemText = string.Format("{0} ({1})", face.FamilyName, face.StyleName);
+                _itemText = string.Format( "{0} ({1})", face.FamilyName, face.StyleName );
 
-                FontInfo = new FontInfo(face);
+                FontInfo = new FontInfo( face );
             }
 
             public override string ToString()

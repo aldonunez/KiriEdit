@@ -19,30 +19,30 @@ namespace KiriEdit
             InitializeComponent();
         }
 
-        private void okButton_Click(object sender, EventArgs e)
+        private void okButton_Click( object sender, EventArgs e )
         {
             Close();
         }
 
-        private void WindowsForm_Load(object sender, EventArgs e)
+        private void WindowsForm_Load( object sender, EventArgs e )
         {
-            foreach (var view in DocumentContainer)
+            foreach ( var view in DocumentContainer )
             {
-                windowsListBox.Items.Add(new ListItem(view));
+                windowsListBox.Items.Add( new ListItem( view ) );
             }
 
-            if (windowsListBox.Items.Count > 0)
+            if ( windowsListBox.Items.Count > 0 )
                 windowsListBox.SelectedIndex = 0;
         }
 
-        private void windowsListBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void windowsListBox_SelectedIndexChanged( object sender, EventArgs e )
         {
-            if (windowsListBox.SelectedIndices.Count == 0)
+            if ( windowsListBox.SelectedIndices.Count == 0 )
             {
                 activateButton.Enabled = false;
                 closeWindowButton.Enabled = false;
             }
-            else if (windowsListBox.SelectedIndices.Count == 1)
+            else if ( windowsListBox.SelectedIndices.Count == 1 )
             {
                 activateButton.Enabled = true;
                 closeWindowButton.Enabled = true;
@@ -54,23 +54,23 @@ namespace KiriEdit
             }
         }
 
-        private void activateButton_Click(object sender, EventArgs e)
+        private void activateButton_Click( object sender, EventArgs e )
         {
-            DocumentContainer.Activate(((ListItem) windowsListBox.SelectedItem).View);
+            DocumentContainer.Activate( ((ListItem) windowsListBox.SelectedItem).View );
         }
 
-        private void closeWindowButton_Click(object sender, EventArgs e)
+        private void closeWindowButton_Click( object sender, EventArgs e )
         {
             object[] itemObjects = new object[windowsListBox.SelectedItems.Count];
 
-            windowsListBox.SelectedItems.CopyTo(itemObjects, 0);
+            windowsListBox.SelectedItems.CopyTo( itemObjects, 0 );
 
-            foreach (var obj in itemObjects)
+            foreach ( var obj in itemObjects )
             {
                 var view = ((ListItem) obj).View;
 
                 view.Form.Close();
-                windowsListBox.Items.Remove(obj);
+                windowsListBox.Items.Remove( obj );
             }
         }
 
@@ -81,7 +81,7 @@ namespace KiriEdit
         {
             public IView View { get; set; }
 
-            public ListItem(IView view)
+            public ListItem( IView view )
             {
                 View = view;
             }

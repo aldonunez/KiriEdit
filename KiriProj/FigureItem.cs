@@ -23,7 +23,7 @@ namespace KiriProj
 
         public event EventHandler Deleted;
 
-        internal FigureItem(string path, CharacterItem parent)
+        internal FigureItem( string path, CharacterItem parent )
         {
             string baseName = System.IO.Path.GetFileNameWithoutExtension(path);
 
@@ -32,7 +32,7 @@ namespace KiriProj
             Parent = parent;
         }
 
-        public void Save(FigureDocument document)
+        public void Save( FigureDocument document )
         {
             var writerOptions = new JsonWriterOptions();
             writerOptions.Indented = true;
@@ -40,23 +40,23 @@ namespace KiriProj
             var serializerOptions = new JsonSerializerOptions();
             serializerOptions.AllowTrailingCommas = true;
 
-            using (var stream = File.Create(Path))
-            using (var writer = new Utf8JsonWriter(stream, writerOptions))
+            using ( var stream = File.Create( Path ) )
+            using ( var writer = new Utf8JsonWriter( stream, writerOptions ) )
             {
-                JsonSerializer.Serialize(writer, document, serializerOptions);
+                JsonSerializer.Serialize( writer, document, serializerOptions );
             }
 
             bool wasDirty = IsDirty;
 
             IsDirty = false;
 
-            if (wasDirty)
-                Parent.NotifyItemModified(this);
+            if ( wasDirty )
+                Parent.NotifyItemModified( this );
         }
 
         public FigureDocument Open()
         {
-            using (var stream = File.OpenRead(Path))
+            using ( var stream = File.OpenRead( Path ) )
             {
                 var task = JsonSerializer.DeserializeAsync<FigureDocument>(stream);
                 FigureDocument document = task.Result;
@@ -66,19 +66,19 @@ namespace KiriProj
 
         internal void Delete()
         {
-            File.Delete(Path);
+            File.Delete( Path );
 
-            Deleted?.Invoke(this, EventArgs.Empty);
+            Deleted?.Invoke( this, EventArgs.Empty );
         }
 
-        internal static FigureItem Make(CharacterItem characterItem, string name, FigureItem template)
+        internal static FigureItem Make( CharacterItem characterItem, string name, FigureItem template )
         {
             string fileName = name + ".kefig";
             string figurePath = System.IO.Path.Combine(characterItem.RootPath, fileName);
 
             // Fail if the item or file exist.
 
-            if (File.Exists(figurePath))
+            if ( File.Exists( figurePath ) )
                 throw new ApplicationException();
 
             // Make the new item with a copy of the master figure.
@@ -87,7 +87,7 @@ namespace KiriProj
 
             FigureDocument pieceDoc = template.Open();
 
-            figureItem.Save(pieceDoc);
+            figureItem.Save( pieceDoc );
 
             return figureItem;
         }

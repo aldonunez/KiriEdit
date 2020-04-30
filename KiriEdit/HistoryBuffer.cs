@@ -23,7 +23,7 @@ namespace KiriEdit
 
         public void Undo()
         {
-            if (_topUndoIndex < 0)
+            if ( _topUndoIndex < 0 )
                 return;
 
             var cmd = _commands[_topUndoIndex];
@@ -37,7 +37,7 @@ namespace KiriEdit
 
         public void Redo()
         {
-            if (_topUndoIndex >= _commands.Count - 1)
+            if ( _topUndoIndex >= _commands.Count - 1 )
                 return;
 
             _topUndoIndex++;
@@ -49,14 +49,14 @@ namespace KiriEdit
             OnHistoryChanged();
         }
 
-        public void Add(HistoryCommand command)
+        public void Add( HistoryCommand command )
         {
             int index = _topUndoIndex + 1;
             int count = _commands.Count - index;
 
-            _commands.RemoveRange(index, count);
+            _commands.RemoveRange( index, count );
 
-            _commands.Add(command);
+            _commands.Add( command );
             _topUndoIndex++;
 
             OnHistoryChanged();
@@ -64,7 +64,7 @@ namespace KiriEdit
 
         private void OnHistoryChanged()
         {
-            HistoryChanged?.Invoke(this, EventArgs.Empty);
+            HistoryChanged?.Invoke( this, EventArgs.Empty );
         }
     }
 

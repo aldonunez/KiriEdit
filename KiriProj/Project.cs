@@ -15,13 +15,13 @@ using KiriFT;
 
 namespace KiriProj
 {
-    public delegate void CharacterItemModifiedHandler(object sender, CharacterItemModifiedEventArgs e);
+    public delegate void CharacterItemModifiedHandler( object sender, CharacterItemModifiedEventArgs e );
 
     public class CharacterItemModifiedEventArgs : EventArgs
     {
         public CharacterItem CharacterItem { get; }
 
-        public CharacterItemModifiedEventArgs(CharacterItem characterItem)
+        public CharacterItemModifiedEventArgs( CharacterItem characterItem )
         {
             CharacterItem = characterItem;
         }
@@ -48,7 +48,7 @@ namespace KiriProj
 
         public CharacterItemCollection Characters { get; }
 
-        public static Project Make(ProjectSpec spec)
+        public static Project Make( ProjectSpec spec )
         {
             // Figure out paths and names.
 
@@ -66,7 +66,7 @@ namespace KiriProj
             projectFile.FaceIndex = spec.FaceIndex;
             projectFile.CharactersFolderPath = "characters";
 
-            FillFontInfo(projectFile, spec);
+            FillFontInfo( projectFile, spec );
 
             // Runtime properties.
             projectFile.Path = projectFilePath;
@@ -75,9 +75,9 @@ namespace KiriProj
 
             DirectoryInfo dirInfo = null;
 
-            dirInfo = Directory.CreateDirectory(projectFolderPath);
-            dirInfo.CreateSubdirectory(projectFile.CharactersFolderPath);
-            File.Copy(spec.FontPath, importedFontPath);
+            dirInfo = Directory.CreateDirectory( projectFolderPath );
+            dirInfo.CreateSubdirectory( projectFile.CharactersFolderPath );
+            File.Copy( spec.FontPath, importedFontPath );
 
             Project project = new Project(projectFile);
 
@@ -86,20 +86,20 @@ namespace KiriProj
             return project;
         }
 
-        private static void FillFontInfo(ProjectFile projectFile, ProjectSpec spec)
+        private static void FillFontInfo( ProjectFile projectFile, ProjectSpec spec )
         {
             var openParams = OpenParams.IgnoreTypographicFamily;
 
-            using (var lib = new Library())
-            using (var face = lib.OpenFace(spec.FontPath, spec.FaceIndex, openParams))
+            using ( var lib = new Library() )
+            using ( var face = lib.OpenFace( spec.FontPath, spec.FaceIndex, openParams ) )
             {
                 uint count = face.GetSfntNameCount();
 
-                for (uint i = 0; i < count; i++)
+                for ( uint i = 0; i < count; i++ )
                 {
                     // TODO: literal number
                     var sfntName = face.GetSfntName(i);
-                    if (sfntName.NameId == 4)
+                    if ( sfntName.NameId == 4 )
                     {
                         projectFile.FontName = sfntName.String;
                         break;
@@ -107,45 +107,45 @@ namespace KiriProj
                 }
 
                 projectFile.FontFamily = face.FamilyName;
-                projectFile.FontStyle = Face.ParseLegacyStyle(face.StyleName);
+                projectFile.FontStyle = Face.ParseLegacyStyle( face.StyleName );
             }
         }
 
-        private Project(ProjectFile projectFile)
+        private Project( ProjectFile projectFile )
         {
-            Characters = new CharacterItemCollection(this);
+            Characters = new CharacterItemCollection( this );
 
             ProjectFile = projectFile;
 
-            Name = Path.GetFileNameWithoutExtension(projectFile.Path);
-            RootPath = Path.GetDirectoryName(projectFile.Path);
+            Name = Path.GetFileNameWithoutExtension( projectFile.Path );
+            RootPath = Path.GetDirectoryName( projectFile.Path );
 
-            _fullFontPath = GetFullItemPath(projectFile.FontPath);
-            _fullCharactersFolderPath = GetFullItemPath(projectFile.CharactersFolderPath);
+            _fullFontPath = GetFullItemPath( projectFile.FontPath );
+            _fullCharactersFolderPath = GetFullItemPath( projectFile.CharactersFolderPath );
         }
 
-        private string GetFullItemPath(string relativeItemPath)
+        private string GetFullItemPath( string relativeItemPath )
         {
-            return Path.Combine(RootPath, relativeItemPath);
+            return Path.Combine( RootPath, relativeItemPath );
         }
 
-        public static Project Open(string path)
+        public static Project Open( string path )
         {
             ProjectFile projectFile = LoadProjectFile(path);
 
             Project project = new Project(projectFile);
 
-            foreach (var item in CharacterItem.EnumerateCharacterItems(project))
+            foreach ( var item in CharacterItem.EnumerateCharacterItems( project ) )
             {
-                project.Characters.Add(item);
+                project.Characters.Add( item );
             }
 
             return project;
         }
 
-        private static ProjectFile LoadProjectFile(string path)
+        private static ProjectFile LoadProjectFile( string path )
         {
-            using (var stream = File.OpenRead(path))
+            using ( var stream = File.OpenRead( path ) )
             {
                 var task = JsonSerializer.DeserializeAsync<ProjectFile>(stream);
                 ProjectFile projectFile = task.Result;
@@ -156,10 +156,10 @@ namespace KiriProj
 
         public void Save()
         {
-            SaveProjectFile(ProjectFile);
+            SaveProjectFile( ProjectFile );
         }
 
-        private static void SaveProjectFile(ProjectFile project)
+        private static void SaveProjectFile( ProjectFile project )
         {
             var writerOptions = new JsonWriterOptions();
             writerOptions.Indented = true;
@@ -167,20 +167,20 @@ namespace KiriProj
             var serializerOptions = new JsonSerializerOptions();
             serializerOptions.AllowTrailingCommas = true;
 
-            using (var stream = File.OpenWrite(project.Path))
-            using (var writer = new Utf8JsonWriter(stream, writerOptions))
+            using ( var stream = File.OpenWrite( project.Path ) )
+            using ( var writer = new Utf8JsonWriter( stream, writerOptions ) )
             {
-                JsonSerializer.Serialize(writer, project, serializerOptions);
+                JsonSerializer.Serialize( writer, project, serializerOptions );
             }
         }
 
-        internal void NotifyItemModified(CharacterItem item)
+        internal void NotifyItemModified( CharacterItem item )
         {
-            if (CharacterItemModified != null)
+            if ( CharacterItemModified != null )
             {
                 var args = new CharacterItemModifiedEventArgs(item);
 
-                CharacterItemModified?.Invoke(this, args);
+                CharacterItemModified?.Invoke( this, args );
             }
         }
 
@@ -191,26 +191,26 @@ namespace KiriProj
         {
             private Project _project;
 
-            internal CharacterItemCollection(Project project)
+            internal CharacterItemCollection( Project project )
             {
                 _project = project;
             }
 
-            public CharacterItem Add(uint codePoint)
+            public CharacterItem Add( uint codePoint )
             {
                 var item = CharacterItem.Make(_project, codePoint);
-                AddInternal(codePoint, item);
+                AddInternal( codePoint, item );
                 return item;
             }
 
-            internal void Add(CharacterItem item)
+            internal void Add( CharacterItem item )
             {
-                AddInternal(item.CodePoint, item);
+                AddInternal( item.CodePoint, item );
             }
 
-            public void Delete(CharacterItem item)
+            public void Delete( CharacterItem item )
             {
-                if (RemoveInternal(item.CodePoint))
+                if ( RemoveInternal( item.CodePoint ) )
                 {
                     item.Delete();
                 }
@@ -225,27 +225,27 @@ namespace KiriProj
 
             public int Count { get => _set.Count; }
 
-            protected void AddInternal(K key, V value)
+            protected void AddInternal( K key, V value )
             {
-                _set.Add(key, value);
-                OnCollectionChanged(NotifyCollectionChangedAction.Add, value);
+                _set.Add( key, value );
+                OnCollectionChanged( NotifyCollectionChangedAction.Add, value );
             }
 
-            protected bool RemoveInternal(K key)
+            protected bool RemoveInternal( K key )
             {
-                if (_set.TryGetValue(key, out V value))
+                if ( _set.TryGetValue( key, out V value ) )
                 {
-                    _set.Remove(key);
-                    OnCollectionChanged(NotifyCollectionChangedAction.Remove, value);
+                    _set.Remove( key );
+                    OnCollectionChanged( NotifyCollectionChangedAction.Remove, value );
                     return true;
                 }
 
                 return false;
             }
 
-            public bool Contains(K key)
+            public bool Contains( K key )
             {
-                return _set.ContainsKey(key);
+                return _set.ContainsKey( key );
             }
 
             public IEnumerator<V> GetEnumerator()
@@ -258,12 +258,12 @@ namespace KiriProj
                 return _set.GetEnumerator();
             }
 
-            private void OnCollectionChanged(NotifyCollectionChangedAction action, V value)
+            private void OnCollectionChanged( NotifyCollectionChangedAction action, V value )
             {
-                if (CollectionChanged != null)
+                if ( CollectionChanged != null )
                 {
                     var e = new NotifyCollectionChangedEventArgs(action, value);
-                    CollectionChanged(this, e);
+                    CollectionChanged( this, e );
                 }
             }
         }

@@ -21,7 +21,7 @@ namespace KiriFig.Model
         public LineEdge PairedEdge1 { get; }
         public LineEdge PairedEdge2 { get; }
 
-        public Cut(LineEdge pairedEdge1, LineEdge pairedEdge2)
+        public Cut( LineEdge pairedEdge1, LineEdge pairedEdge2 )
         {
             PairedEdge1 = pairedEdge1;
             PairedEdge2 = pairedEdge2;
@@ -41,7 +41,7 @@ namespace KiriFig.Model
         public Edge edgeAfter;
         public double t;
 
-        public SplitResult(Point nearestPoint, Edge edgeBefore, Edge edgeAfter, double t)
+        public SplitResult( Point nearestPoint, Edge edgeBefore, Edge edgeAfter, double t )
         {
             this.nearestPoint = nearestPoint;
             this.edgeBefore = edgeBefore;
@@ -70,13 +70,13 @@ namespace KiriFig.Model
         public int Right;
         public int Bottom;
 
-        public bool Contains(int x, int y)
+        public bool Contains( int x, int y )
         {
             return (x >= Left) && (x <= Right)
                 && (y <= Top) && (y >= Bottom);
         }
 
-        public void Inflate(int width, int height)
+        public void Inflate( int width, int height )
         {
             Left -= width;
             Right += width;
@@ -100,10 +100,10 @@ namespace KiriFig.Model
 
         public Point P2;
 
-        protected Edge(EdgeType type, int label, bool unbreakable = false)
+        protected Edge( EdgeType type, int label, bool unbreakable = false )
         {
-            if (!unbreakable && label < 0)
-                throw new ArgumentOutOfRangeException(nameof(label));
+            if ( !unbreakable && label < 0 )
+                throw new ArgumentOutOfRangeException( nameof( label ) );
 
             Type = type;
             Unbreakable = unbreakable;
@@ -111,18 +111,18 @@ namespace KiriFig.Model
         }
 
         public abstract BBox GetBBox();
-        internal abstract SplitResult Split(Point point);
-        public abstract (double, PointD) GetProjectedPoint(int x, int y);
-        public abstract double GetIntersection(double referenceT, int coordinate, Axis axis);
-        public abstract PointD Calculate(double t);
-        public abstract IEnumerable<PointD> Flatten(int segments = 0);
+        internal abstract SplitResult Split( Point point );
+        public abstract (double, PointD) GetProjectedPoint( int x, int y );
+        public abstract double GetIntersection( double referenceT, int coordinate, Axis axis );
+        public abstract PointD Calculate( double t );
+        public abstract IEnumerable<PointD> Flatten( int segments = 0 );
         public abstract object Clone();
     }
 
     public class LineEdge : Edge
     {
-        public LineEdge(Point p1, Point p2, int label, bool unbreakable = false) :
-            base(EdgeType.Line, label, unbreakable)
+        public LineEdge( Point p1, Point p2, int label, bool unbreakable = false ) :
+            base( EdgeType.Line, label, unbreakable )
         {
             P1 = p1;
             P2 = p2;
@@ -137,27 +137,27 @@ namespace KiriFig.Model
         {
             BBox bbox = new BBox
             {
-                Left = Math.Min(P1.X, P2.X),
-                Right = Math.Max(P1.X, P2.X),
-                Top = Math.Max(P1.Y, P2.Y),
-                Bottom = Math.Min(P1.Y, P2.Y)
+                Left = Math.Min( P1.X, P2.X ),
+                Right = Math.Max( P1.X, P2.X ),
+                Top = Math.Max( P1.Y, P2.Y ),
+                Bottom = Math.Min( P1.Y, P2.Y )
             };
 
             return bbox;
         }
 
-        internal override SplitResult Split(Point point)
+        internal override SplitResult Split( Point point )
         {
-            var (t, p) = GetProjectedPoint(point.X, point.Y);
+            var (t, p) = GetProjectedPoint( point.X, point.Y );
 
-            var nearestPoint = Point.Trunc(p);
-            var edgeBefore = new LineEdge(P1, nearestPoint, Label);
-            var edgeAfter = new LineEdge(nearestPoint, P2, Label);
+            var nearestPoint = Point.Trunc( p );
+            var edgeBefore = new LineEdge( P1, nearestPoint, Label );
+            var edgeAfter = new LineEdge( nearestPoint, P2, Label );
 
-            return new SplitResult(nearestPoint, edgeBefore, edgeAfter, t);
+            return new SplitResult( nearestPoint, edgeBefore, edgeAfter, t );
         }
 
-        public override (double, PointD) GetProjectedPoint(int x, int y)
+        public override (double, PointD) GetProjectedPoint( int x, int y )
         {
             int dX = x - P1.X;
             int dY = y - P1.Y;
@@ -167,15 +167,15 @@ namespace KiriFig.Model
             int dotProduct = dX * dEdgeX + dY * dEdgeY;
             int lengthSquared = dEdgeX * dEdgeX + dEdgeY * dEdgeY;
 
-            if (lengthSquared != 0)
+            if ( lengthSquared != 0 )
             {
                 float t = dotProduct / (float) lengthSquared;
 
-                if (t >= 0 && t <= 1)
+                if ( t >= 0 && t <= 1 )
                 {
                     return (t, new PointD(
                         P1.X + t * dEdgeX,
-                        P1.Y + t * dEdgeY));
+                        P1.Y + t * dEdgeY ));
                 }
             }
 
@@ -184,23 +184,23 @@ namespace KiriFig.Model
 
         // There can only be one intersection, so referenceT doesn't matter.
 
-        public override double GetIntersection(double referenceT, int coordinate, Axis axis)
+        public override double GetIntersection( double referenceT, int coordinate, Axis axis )
         {
-            if (axis == Axis.X)
+            if ( axis == Axis.X )
                 return (double) (coordinate - P1.X) / (P2.X - P1.X);
             else
                 return (double) (coordinate - P1.Y) / (P2.Y - P1.Y);
         }
 
-        public override PointD Calculate(double t)
+        public override PointD Calculate( double t )
         {
             double x = (P2.X - P1.X) * t + P1.X;
             double y = (P2.Y - P1.Y) * t + P1.Y;
 
-            return new PointD(x, y);
+            return new PointD( x, y );
         }
 
-        public override IEnumerable<PointD> Flatten(int segments)
+        public override IEnumerable<PointD> Flatten( int segments )
         {
             yield return P2.ToPointD();
         }
@@ -210,22 +210,22 @@ namespace KiriFig.Model
     {
         public Point C1;
 
-        public ConicEdge(Point p1, Point c1, Point p2, int label) :
-            base(EdgeType.Conic, label)
+        public ConicEdge( Point p1, Point c1, Point p2, int label ) :
+            base( EdgeType.Conic, label )
         {
             P1 = p1;
             C1 = c1;
             P2 = p2;
         }
 
-        public override PointD Calculate(double t)
+        public override PointD Calculate( double t )
         {
             var curve = new Curve(
                 P1.ToPointD(),
                 C1.ToPointD(),
-                P2.ToPointD());
+                P2.ToPointD() );
 
-            return curve.CalcConic(t);
+            return curve.CalcConic( t );
         }
 
         public override object Clone()
@@ -233,25 +233,25 @@ namespace KiriFig.Model
             return MemberwiseClone();
         }
 
-        public override IEnumerable<PointD> Flatten(int segments)
+        public override IEnumerable<PointD> Flatten( int segments )
         {
-            if (segments <= 0)
+            if ( segments <= 0 )
                 segments = 4;
 
             var curve = new Curve(
                 P1.ToPointD(),
                 C1.ToPointD(),
-                P2.ToPointD());
+                P2.ToPointD() );
 
             double deltaT = 1d / segments;
 
-            for (double t = deltaT; t < 1d; t += deltaT)
+            for ( double t = deltaT; t < 1d; t += deltaT )
             {
-                PointD p = curve.CalcConic(t);
+                PointD p = curve.CalcConic( t );
                 yield return p;
             }
 
-            PointD pEnd = curve.CalcConic(1d);
+            PointD pEnd = curve.CalcConic( 1d );
             yield return pEnd;
         }
 
@@ -259,33 +259,33 @@ namespace KiriFig.Model
         {
             BBox bbox = new BBox
             {
-                Left = Math.Min(P1.X, Math.Min(P2.X, C1.X)),
-                Right = Math.Max(P1.X, Math.Max(P2.X, C1.X)),
-                Top = Math.Max(P1.Y, Math.Max(P2.Y, C1.Y)),
-                Bottom = Math.Min(P1.Y, Math.Min(P2.Y, C1.Y)),
+                Left = Math.Min( P1.X, Math.Min( P2.X, C1.X ) ),
+                Right = Math.Max( P1.X, Math.Max( P2.X, C1.X ) ),
+                Top = Math.Max( P1.Y, Math.Max( P2.Y, C1.Y ) ),
+                Bottom = Math.Min( P1.Y, Math.Min( P2.Y, C1.Y ) ),
             };
             return bbox;
         }
 
-        public override double GetIntersection(double referenceT, int coordinate, Axis axis)
+        public override double GetIntersection( double referenceT, int coordinate, Axis axis )
         {
             var curve = new Curve(
                 P1.ToPointD(),
                 C1.ToPointD(),
-                P2.ToPointD());
+                P2.ToPointD() );
 
             double[] solutions = new double[2];
             int solutionCount;
 
-            if (axis == Axis.X)
-                solutionCount = curve.SolveConicWithX(coordinate, solutions);
+            if ( axis == Axis.X )
+                solutionCount = curve.SolveConicWithX( coordinate, solutions );
             else
-                solutionCount = curve.SolveConicWithY(coordinate, solutions);
+                solutionCount = curve.SolveConicWithY( coordinate, solutions );
 
-            switch (solutionCount)
+            switch ( solutionCount )
             {
                 case 2:
-                    if (Math.Abs(referenceT - solutions[0]) < Math.Abs(referenceT - solutions[1]))
+                    if ( Math.Abs( referenceT - solutions[0] ) < Math.Abs( referenceT - solutions[1] ) )
                         return solutions[0];
                     return solutions[1];
 
@@ -297,35 +297,35 @@ namespace KiriFig.Model
             }
         }
 
-        public override (double, PointD) GetProjectedPoint(int x, int y)
+        public override (double, PointD) GetProjectedPoint( int x, int y )
         {
             var curve = new Curve(
                 P1.ToPointD(),
                 C1.ToPointD(),
-                P2.ToPointD());
+                P2.ToPointD() );
 
-            return curve.GetProjectedPoint(new PointD(x, y));
+            return curve.GetProjectedPoint( new PointD( x, y ) );
         }
 
-        internal override SplitResult Split(Point point)
+        internal override SplitResult Split( Point point )
         {
             var curve = new Curve(
                 P1.ToPointD(),
                 C1.ToPointD(),
-                P2.ToPointD());
+                P2.ToPointD() );
 
-            var (t, midP) = curve.GetProjectedPoint(new PointD(point.X, point.Y));
+            var (t, midP) = curve.GetProjectedPoint( new PointD( point.X, point.Y ) );
 
-            var (curve1, curve2) = curve.Split(t, midP);
+            var (curve1, curve2) = curve.Split( t, midP );
 
-            Point a0 = Point.Trunc(curve1.C1);
-            Point b0 = Point.Trunc(curve2.C1);
-            Point midPoint = Point.Trunc(curve2.C0);
+            Point a0 = Point.Trunc( curve1.C1 );
+            Point b0 = Point.Trunc( curve2.C1 );
+            Point midPoint = Point.Trunc( curve2.C0 );
 
-            ConicEdge edge1 = new ConicEdge(P1, a0, midPoint, Label);
-            ConicEdge edge2 = new ConicEdge(midPoint, b0, P2, Label);
+            ConicEdge edge1 = new ConicEdge( P1, a0, midPoint, Label );
+            ConicEdge edge2 = new ConicEdge( midPoint, b0, P2, Label );
 
-            return new SplitResult(midPoint, edge1, edge2, t);
+            return new SplitResult( midPoint, edge1, edge2, t );
         }
     }
 
@@ -334,8 +334,8 @@ namespace KiriFig.Model
         public Point C1;
         public Point C2;
 
-        public CubicEdge(Point p1, Point c1, Point c2, Point p2, int label) :
-            base(EdgeType.Cubic, label)
+        public CubicEdge( Point p1, Point c1, Point c2, Point p2, int label ) :
+            base( EdgeType.Cubic, label )
         {
             P1 = p1;
             C1 = c1;
@@ -343,15 +343,15 @@ namespace KiriFig.Model
             P2 = p2;
         }
 
-        public override PointD Calculate(double t)
+        public override PointD Calculate( double t )
         {
             var curve = new Curve(
                 P1.ToPointD(),
                 C1.ToPointD(),
                 C2.ToPointD(),
-                P2.ToPointD());
+                P2.ToPointD() );
 
-            return curve.CalcCubic(t);
+            return curve.CalcCubic( t );
         }
 
         public override object Clone()
@@ -359,26 +359,26 @@ namespace KiriFig.Model
             return MemberwiseClone();
         }
 
-        public override IEnumerable<PointD> Flatten(int segments)
+        public override IEnumerable<PointD> Flatten( int segments )
         {
-            if (segments <= 0)
+            if ( segments <= 0 )
                 segments = 6;
 
             var curve = new Curve(
                 P1.ToPointD(),
                 C1.ToPointD(),
                 C2.ToPointD(),
-                P2.ToPointD());
+                P2.ToPointD() );
 
             double deltaT = 1d / segments;
 
-            for (double t = deltaT; t < 1d; t += deltaT)
+            for ( double t = deltaT; t < 1d; t += deltaT )
             {
-                PointD p = curve.CalcCubic(t);
+                PointD p = curve.CalcCubic( t );
                 yield return p;
             }
 
-            PointD pEnd = curve.CalcCubic(1d);
+            PointD pEnd = curve.CalcCubic( 1d );
             yield return pEnd;
         }
 
@@ -386,39 +386,39 @@ namespace KiriFig.Model
         {
             BBox bbox = new BBox
             {
-                Left = Math.Min(P1.X, Math.Min(P2.X, Math.Min(C1.X, C2.X))),
-                Right = Math.Max(P1.X, Math.Max(P2.X, Math.Max(C1.X, C2.X))),
-                Top = Math.Max(P1.Y, Math.Max(P2.Y, Math.Max(C1.Y, C2.Y))),
-                Bottom = Math.Min(P1.Y, Math.Min(P2.Y, Math.Min(C1.Y, C2.Y))),
+                Left = Math.Min( P1.X, Math.Min( P2.X, Math.Min( C1.X, C2.X ) ) ),
+                Right = Math.Max( P1.X, Math.Max( P2.X, Math.Max( C1.X, C2.X ) ) ),
+                Top = Math.Max( P1.Y, Math.Max( P2.Y, Math.Max( C1.Y, C2.Y ) ) ),
+                Bottom = Math.Min( P1.Y, Math.Min( P2.Y, Math.Min( C1.Y, C2.Y ) ) ),
             };
             return bbox;
         }
 
-        public override double GetIntersection(double referenceT, int coordinate, Axis axis)
+        public override double GetIntersection( double referenceT, int coordinate, Axis axis )
         {
             var curve = new Curve(
                 P1.ToPointD(),
                 C1.ToPointD(),
                 C2.ToPointD(),
-                P2.ToPointD());
+                P2.ToPointD() );
 
             double[] solutions = new double[3];
             int solutionCount;
 
-            if (axis == Axis.X)
-                solutionCount = curve.SolveCubicWithX(coordinate, solutions);
+            if ( axis == Axis.X )
+                solutionCount = curve.SolveCubicWithX( coordinate, solutions );
             else
-                solutionCount = curve.SolveCubicWithY(coordinate, solutions);
+                solutionCount = curve.SolveCubicWithY( coordinate, solutions );
 
-            switch (solutionCount)
+            switch ( solutionCount )
             {
                 case 3:
-                    if (Math.Abs(referenceT - solutions[2]) < Math.Abs(referenceT - solutions[1]))
+                    if ( Math.Abs( referenceT - solutions[2] ) < Math.Abs( referenceT - solutions[1] ) )
                         solutions[1] = solutions[2];
                     goto case 2;
 
                 case 2:
-                    if (Math.Abs(referenceT - solutions[0]) < Math.Abs(referenceT - solutions[1]))
+                    if ( Math.Abs( referenceT - solutions[0] ) < Math.Abs( referenceT - solutions[1] ) )
                         return solutions[0];
                     return solutions[1];
 
@@ -430,39 +430,39 @@ namespace KiriFig.Model
             }
         }
 
-        public override (double, PointD) GetProjectedPoint(int x, int y)
+        public override (double, PointD) GetProjectedPoint( int x, int y )
         {
             var curve = new Curve(
                 P1.ToPointD(),
                 C1.ToPointD(),
                 C2.ToPointD(),
-                P2.ToPointD());
+                P2.ToPointD() );
 
-            return curve.GetProjectedPoint(new PointD(x, y));
+            return curve.GetProjectedPoint( new PointD( x, y ) );
         }
 
-        internal override SplitResult Split(Point point)
+        internal override SplitResult Split( Point point )
         {
             var curve = new Curve(
                 P1.ToPointD(),
                 C1.ToPointD(),
                 C2.ToPointD(),
-                P2.ToPointD());
+                P2.ToPointD() );
 
-            var (t, midP) = curve.GetProjectedPoint(new PointD(point.X, point.Y));
+            var (t, midP) = curve.GetProjectedPoint( new PointD( point.X, point.Y ) );
 
-            var (curve1, curve2) = curve.Split(t, midP);
+            var (curve1, curve2) = curve.Split( t, midP );
 
-            Point a0 = Point.Trunc(curve1.C1);
-            Point a1 = Point.Trunc(curve1.C2);
-            Point b0 = Point.Trunc(curve2.C1);
-            Point b1 = Point.Trunc(curve2.C2);
-            Point midPoint = Point.Trunc(curve2.C0);
+            Point a0 = Point.Trunc( curve1.C1 );
+            Point a1 = Point.Trunc( curve1.C2 );
+            Point b0 = Point.Trunc( curve2.C1 );
+            Point b1 = Point.Trunc( curve2.C2 );
+            Point midPoint = Point.Trunc( curve2.C0 );
 
-            CubicEdge edge1 = new CubicEdge(P1, a0, a1, midPoint, Label);
-            CubicEdge edge2 = new CubicEdge(midPoint, b0, b1, P2, Label);
+            CubicEdge edge1 = new CubicEdge( P1, a0, a1, midPoint, Label );
+            CubicEdge edge2 = new CubicEdge( midPoint, b0, b1, P2, Label );
 
-            return new SplitResult(midPoint, edge1, edge2, t);
+            return new SplitResult( midPoint, edge1, edge2, t );
         }
     }
 
@@ -477,25 +477,25 @@ namespace KiriFig.Model
         public Edge OriginalOutgoingEdge { get; set; }
         public List<Point> Points { get; } = new List<Point>();
 
-        public PointGroup(double t)
+        public PointGroup( double t )
         {
             int normalT = (int) (t * MaxNormalT);
             NormalT = normalT;
         }
 
-        public PointGroup(int normalT)
+        public PointGroup( int normalT )
         {
             NormalT = normalT;
         }
 
-        public PointGroup(bool isFixed)
+        public PointGroup( bool isFixed )
         {
             IsFixed = isFixed;
         }
 
         public Point MakePoint()
         {
-            Point p = new Point(Points[0].X, Points[0].Y);
+            Point p = new Point( Points[0].X, Points[0].Y );
             p.Group = this;
 
             return p;
@@ -512,21 +512,21 @@ namespace KiriFig.Model
         public Edge OutgoingEdge;
         public Edge IncomingEdge;
 
-        public Point(int x, int y)
+        public Point( int x, int y )
         {
             X = x;
             Y = y;
         }
 
-        internal Point(ValuePoint valuePoint)
+        internal Point( ValuePoint valuePoint )
         {
             X = valuePoint.X;
             Y = valuePoint.Y;
         }
 
-        public static Point Trunc(PointD pointD)
+        public static Point Trunc( PointD pointD )
         {
-            return new Point((int) pointD.X, (int) pointD.Y);
+            return new Point( (int) pointD.X, (int) pointD.Y );
         }
 
         internal ValuePoint ToValuePoint()
@@ -536,12 +536,12 @@ namespace KiriFig.Model
 
         public PointD ToPointD()
         {
-            return new PointD(X, Y);
+            return new PointD( X, Y );
         }
 
         public override string ToString()
         {
-            return string.Format("({0}, {1})", X, Y);
+            return string.Format( "({0}, {1})", X, Y );
         }
     }
 
@@ -550,7 +550,7 @@ namespace KiriFig.Model
         public int X;
         public int Y;
 
-        public ValuePoint(int x, int y)
+        public ValuePoint( int x, int y )
         {
             X = x;
             Y = y;
@@ -558,7 +558,7 @@ namespace KiriFig.Model
 
         public override string ToString()
         {
-            return string.Format("({0}, {1})", X, Y);
+            return string.Format( "({0}, {1})", X, Y );
         }
     }
 
@@ -573,10 +573,10 @@ namespace KiriFig.Model
         {
         }
 
-        public Shape(Contour outside, IReadOnlyCollection<Contour> insides)
+        public Shape( Contour outside, IReadOnlyCollection<Contour> insides )
         {
-            Contours.Add(outside);
-            Contours.AddRange(insides);
+            Contours.Add( outside );
+            Contours.AddRange( insides );
         }
     }
 }

@@ -34,7 +34,7 @@ namespace KiriFig
         public int MaskWidth { get => _maskWidth; }
         public int MaskHeight { get => _maskHeight; }
 
-        public OutlineRenderer(Figure figure)
+        public OutlineRenderer( Figure figure )
         {
             _figure = figure;
 
@@ -58,60 +58,60 @@ namespace KiriFig
             //    -(height - 1) - (float) figure.OffsetY);
         }
 
-        private void MoveTo(Point p)
+        private void MoveTo( Point p )
         {
             var to = p;
-            Console.WriteLine("MoveTo: {0}, {1}", to.X, to.Y);
+            Console.WriteLine( "MoveTo: {0}, {1}", to.X, to.Y );
             _x = to.X;
             _y = to.Y;
         }
 
-        private void LineTo(Edge edge)
+        private void LineTo( Edge edge )
         {
             var to = edge.P2;
-            Console.WriteLine("LineTo: {0}, {1}", to.X, to.Y);
-            DrawLine(to);
+            Console.WriteLine( "LineTo: {0}, {1}", to.X, to.Y );
+            DrawLine( to );
             _x = to.X;
             _y = to.Y;
         }
 
-        private void ConicTo(Edge edge)
+        private void ConicTo( Edge edge )
         {
             var c1 = ((ConicEdge) edge).C1;
             var to = edge.P2;
-            Console.WriteLine("ConicTo: {0},{1} {2},{3}", c1.X, c1.Y, to.X, to.Y);
-            DrawConic(c1, to);
+            Console.WriteLine( "ConicTo: {0},{1} {2},{3}", c1.X, c1.Y, to.X, to.Y );
+            DrawConic( c1, to );
             _x = to.X;
             _y = to.Y;
         }
 
-        private void CubicTo(Edge edge)
+        private void CubicTo( Edge edge )
         {
             var c1 = ((CubicEdge) edge).C1;
             var c2 = ((CubicEdge) edge).C2;
             var to = edge.P2;
-            Console.WriteLine("CubicTo: {0},{1} {2},{3} {4},{5}", c1.X, c1.Y, c2.X, c2.Y, to.X, to.Y);
-            DrawCubic(c1, c2, to);
+            Console.WriteLine( "CubicTo: {0},{1} {2},{3} {4},{5}", c1.X, c1.Y, c2.X, c2.Y, to.X, to.Y );
+            DrawCubic( c1, c2, to );
             _x = to.X;
             _y = to.Y;
         }
 
-        private void SetPixel(int x, int y)
+        private void SetPixel( int x, int y )
         {
             _maskBuf[y, x] = _color;
         }
 
-        private void DrawLine(Point to)
+        private void DrawLine( Point to )
         {
             int x0 = RoundAndClampX(TransformX(_x));
             int y0 = RoundAndClampY(TransformY(_y));
             int x1 = RoundAndClampX(TransformX(to.X));
             int y1 = RoundAndClampY(TransformY(to.Y));
 
-            DrawLine(x0, y0, x1, y1);
+            DrawLine( x0, y0, x1, y1 );
         }
 
-        private void DrawLine(int x0, int y0, int x1, int y1)
+        private void DrawLine( int x0, int y0, int x1, int y1 )
         {
             // https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
 
@@ -122,65 +122,65 @@ namespace KiriFig
 
             int err = dx + dy;
 
-            while (true)
+            while ( true )
             {
-                SetPixel(x0, y0);
+                SetPixel( x0, y0 );
 
-                if (x0 == x1 && y0 == y1)
+                if ( x0 == x1 && y0 == y1 )
                     break;
 
                 int e2 = 2 * err;
 
-                if (e2 >= dy)
+                if ( e2 >= dy )
                 {
                     err += dy;
                     x0 += sx;
                 }
-                if (e2 <= dx)
+                if ( e2 <= dx )
                 {
                     err += dx;
                     y0 += sy;
                 }
             }
         }
-        public int RoundAndClampX(double x)
+        public int RoundAndClampX( double x )
         {
             int iX = (int) Math.Round(x);
-            if (iX >= _maskWidth)
+            if ( iX >= _maskWidth )
                 iX = _maskWidth - 1;
-            else if (iX < 0)
+            else if ( iX < 0 )
                 iX = 0;
             return iX;
         }
 
-        public int RoundAndClampY(double y)
+        public int RoundAndClampY( double y )
         {
             int iY = (int) Math.Round(y);
-            if (iY >= _maskHeight)
+            if ( iY >= _maskHeight )
                 iY = _maskHeight - 1;
-            else if (iY < 0)
+            else if ( iY < 0 )
                 iY = 0;
             return iY;
         }
 
-        public double TransformX(int x)
+        public double TransformX( int x )
         {
             return (x - _figure.OffsetX) / Divisor;
         }
 
-        public double TransformY(int y)
+        public double TransformY( int y )
         {
             return (_figure.Height - y) / Divisor - 1 + _figure.OffsetY / Divisor;
         }
 
-        private PointD TransformPoint(Point point)
+        private PointD TransformPoint( Point point )
         {
             return new PointD(
-                TransformX(point.X),
-                TransformY(point.Y));
+                TransformX( point.X ),
+                TransformY( point.Y ) );
         }
 
-        private void DrawConic(Point c1, Point to)
+        private void DrawConic( Point c1, Point to )
         {
             PointD tFrom = new PointD(
                 TransformX(_x),
@@ -197,40 +197,40 @@ namespace KiriFig
 
             var curve = new Curve(tFrom, tControl, tTo);
 
-            for (double t = 0.0; t < 1.0; t += dt)
+            for ( double t = 0.0; t < 1.0; t += dt )
             {
-                p = curve.CalcConic(t);
+                p = curve.CalcConic( t );
 
-                x = RoundAndClampX(p.X);
-                y = RoundAndClampY(p.Y);
+                x = RoundAndClampX( p.X );
+                y = RoundAndClampY( p.Y );
 
-                if (((x - prevX) <= 1 && (x - prevX) >= -1)
-                    && ((y - prevY) <= 1 && (y - prevY) >= -1))
+                if ( ((x - prevX) <= 1 && (x - prevX) >= -1)
+                    && ((y - prevY) <= 1 && (y - prevY) >= -1) )
                 {
-                    SetPixel(x, y);
+                    SetPixel( x, y );
                 }
                 else
                 {
-                    DrawLine(prevX, prevY, x, y);
+                    DrawLine( prevX, prevY, x, y );
                 }
 
                 prevX = x;
                 prevY = y;
             }
 
-            p = curve.CalcConic(1.0);
+            p = curve.CalcConic( 1.0 );
 
-            x = RoundAndClampX(p.X);
-            y = RoundAndClampY(p.Y);
+            x = RoundAndClampX( p.X );
+            y = RoundAndClampY( p.Y );
 
-            if (((x - prevX) <= 1 && (x - prevX) >= -1)
-                && ((y - prevY) <= 1 && (y - prevY) >= -1))
+            if ( ((x - prevX) <= 1 && (x - prevX) >= -1)
+                && ((y - prevY) <= 1 && (y - prevY) >= -1) )
             {
-                SetPixel(x, y);
+                SetPixel( x, y );
             }
             else
             {
-                DrawLine(prevX, prevY, x, y);
+                DrawLine( prevX, prevY, x, y );
             }
 
             // TODO: Find a way to get rid of bunches of pixels.
@@ -238,7 +238,7 @@ namespace KiriFig
             //       then we can get rid of the previous one (b).
         }
 
-        private void DrawCubic(Point c1, Point c2, Point to)
+        private void DrawCubic( Point c1, Point c2, Point to )
         {
             PointD tFrom = new PointD(
                 TransformX(_x),
@@ -254,38 +254,38 @@ namespace KiriFig
 
             var curve = new Curve(tFrom, tControl1, tControl2, tTo);
 
-            for (double t = 0.0; t < 1.0; t += dt)
+            for ( double t = 0.0; t < 1.0; t += dt )
             {
-                p = curve.CalcCubic(t);
+                p = curve.CalcCubic( t );
 
-                x = RoundAndClampX(p.X);
-                y = RoundAndClampY(p.Y);
+                x = RoundAndClampX( p.X );
+                y = RoundAndClampY( p.Y );
 
-                SetPixel(x, y);
+                SetPixel( x, y );
             }
 
-            p = curve.CalcCubic(1.0);
+            p = curve.CalcCubic( 1.0 );
 
-            x = RoundAndClampX(p.X);
-            y = RoundAndClampY(p.Y);
+            x = RoundAndClampX( p.X );
+            y = RoundAndClampY( p.Y );
 
-            SetPixel(x, y);
+            SetPixel( x, y );
         }
 
-        public void DrawContour(Contour contour, byte color)
+        public void DrawContour( Contour contour, byte color )
         {
             _color = color;
-            MoveTo(contour.FirstPoint);
+            MoveTo( contour.FirstPoint );
 
-            _figureWalker.WalkContour(contour);
+            _figureWalker.WalkContour( contour );
         }
 
 #if DEBUG
-        public void DrawOutline(byte color = 1)
+        public void DrawOutline( byte color = 1 )
         {
-            foreach (var contour in _figure.Contours)
+            foreach ( var contour in _figure.Contours )
             {
-                DrawContour(contour, color);
+                DrawContour( contour, color );
             }
         }
 
@@ -294,12 +294,12 @@ namespace KiriFig
             var color = Color.Red;
             var bitmap = new Bitmap(_maskWidth, _maskHeight);
 
-            for (int y = 0; y < _maskHeight; y++)
+            for ( int y = 0; y < _maskHeight; y++ )
             {
-                for (int x = 0; x < _maskWidth; x++)
+                for ( int x = 0; x < _maskWidth; x++ )
                 {
-                    if (_maskBuf[y, x] != 0)
-                        bitmap.SetPixel(x, y, color);
+                    if ( _maskBuf[y, x] != 0 )
+                        bitmap.SetPixel( x, y, color );
                 }
             }
 

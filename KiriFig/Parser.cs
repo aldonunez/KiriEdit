@@ -22,7 +22,7 @@ namespace KiriFig
 
             public int GetInteger()
             {
-                if (Type != TokenType.Integer)
+                if ( Type != TokenType.Integer )
                     throw new ApplicationException();
 
                 return IntValue;
@@ -30,7 +30,7 @@ namespace KiriFig
 
             public string GetWord()
             {
-                if (Type != TokenType.Word)
+                if ( Type != TokenType.Word )
                     throw new ApplicationException();
 
                 return StringValue;
@@ -55,7 +55,7 @@ namespace KiriFig
         private TokenType _tokenType;
         private int _intVal;
 
-        internal Parser(TextReader reader)
+        internal Parser( TextReader reader )
         {
             _reader = reader;
 
@@ -69,12 +69,12 @@ namespace KiriFig
 
         private void ReadRecords()
         {
-            while (!IsAtEof())
+            while ( !IsAtEof() )
             {
                 ReadRecord();
             }
 
-            if (_nestingLevel != 0)
+            if ( _nestingLevel != 0 )
                 throw new ApplicationException();
         }
 
@@ -84,36 +84,36 @@ namespace KiriFig
 
             int id = -1;
 
-            if (_iChar == '-' || CharIsDigit(_iChar))
+            if ( _iChar == '-' || CharIsDigit( _iChar ) )
             {
                 id = ReadInteger();
             }
 
-            ReadRecord(id);
+            ReadRecord( id );
         }
 
-        private void ReadRecord(int id)
+        private void ReadRecord( int id )
         {
             ReadToken();
 
-            if (IsAtEof() || _tokenType == TokenType.Eol)
+            if ( IsAtEof() || _tokenType == TokenType.Eol )
             {
-                if (id >= 0)
+                if ( id >= 0 )
                     throw new ApplicationException();
 
                 return;
             }
 
-            if (_tokenType != TokenType.Word)
+            if ( _tokenType != TokenType.Word )
                 throw new ApplicationException();
 
-            if (WordMatches("end"))
+            if ( WordMatches( "end" ) )
             {
                 OnEndRecord();
 
                 _nestingLevel--;
 
-                if (_nestingLevel < 0)
+                if ( _nestingLevel < 0 )
                     throw new ApplicationException();
             }
             else
@@ -124,13 +124,13 @@ namespace KiriFig
 
                 ReadToken();
 
-                while (_tokenType != TokenType.Eol && _tokenType != TokenType.Eof)
+                while ( _tokenType != TokenType.Eol && _tokenType != TokenType.Eof )
                 {
-                    if (_tokenType == TokenType.Word && WordMatches("begin"))
+                    if ( _tokenType == TokenType.Word && WordMatches( "begin" ) )
                     {
                         ReadToken();
 
-                        if (_tokenType != TokenType.Eol)
+                        if ( _tokenType != TokenType.Eol )
                             throw new ApplicationException();
 
                         _nestingLevel++;
@@ -140,13 +140,13 @@ namespace KiriFig
                     {
                         var token = WrapCurrentToken();
 
-                        attrs.Add(token);
+                        attrs.Add( token );
 
                         ReadToken();
                     }
                 }
 
-                OnBeginRecord(id, head, attrs, openRecord);
+                OnBeginRecord( id, head, attrs, openRecord );
             }
         }
 
@@ -155,7 +155,7 @@ namespace KiriFig
             Token token = new Token();
             token.Type = _tokenType;
 
-            switch (_tokenType)
+            switch ( _tokenType )
             {
                 case TokenType.Word:
                     token.StringValue = _tokenChars.ToString();
@@ -169,17 +169,17 @@ namespace KiriFig
             return token;
         }
 
-        private bool WordMatches(string str)
+        private bool WordMatches( string str )
         {
-            if (_tokenType != TokenType.Word)
+            if ( _tokenType != TokenType.Word )
                 throw new ApplicationException();
 
-            if (_tokenChars.Length != str.Length)
+            if ( _tokenChars.Length != str.Length )
                 return false;
 
-            for (int i = 0; i < str.Length; i++)
+            for ( int i = 0; i < str.Length; i++ )
             {
-                if (_tokenChars[i] != str[i])
+                if ( _tokenChars[i] != str[i] )
                     return false;
             }
 
@@ -190,45 +190,45 @@ namespace KiriFig
         {
             SkipWhitespace();
 
-            if (_iChar < 0)
+            if ( _iChar < 0 )
                 _tokenType = TokenType.Eof;
-            else if (_iChar == '\r' || _iChar == '\n')
+            else if ( _iChar == '\r' || _iChar == '\n' )
                 ReadEol();
-            else if (CharIsLetter(_iChar))
+            else if ( CharIsLetter( _iChar ) )
                 ReadWord();
-            else if (_iChar == '-' || CharIsDigit(_iChar))
+            else if ( _iChar == '-' || CharIsDigit( _iChar ) )
                 ReadNumber();
             else
                 throw new ApplicationException();
         }
 
-        private static bool CharIsLetter(int c)
+        private static bool CharIsLetter( int c )
         {
-            if (c < 0)
+            if ( c < 0 )
                 return false;
 
-            return char.IsLetter((char) c);
+            return char.IsLetter( (char) c );
         }
 
-        private static bool CharIsDigit(int c)
+        private static bool CharIsDigit( int c )
         {
-            if (c < 0)
+            if ( c < 0 )
                 return false;
 
-            return char.IsDigit((char) c);
+            return char.IsDigit( (char) c );
         }
 
-        private static bool CharIsLetterOrDigit(int c)
+        private static bool CharIsLetterOrDigit( int c )
         {
-            if (c < 0)
+            if ( c < 0 )
                 return false;
 
-            return char.IsLetterOrDigit((char) c);
+            return char.IsLetterOrDigit( (char) c );
         }
 
-        private static bool CharIsWhiteSpace(int c)
+        private static bool CharIsWhiteSpace( int c )
         {
-            if (c < 0)
+            if ( c < 0 )
                 return false;
 
             char ch = (char) c;
@@ -236,9 +236,9 @@ namespace KiriFig
             return ch == ' ' || ch == '\t';
         }
 
-        private static bool CharIsSeparator(int c)
+        private static bool CharIsSeparator( int c )
         {
-            if (c < 0)
+            if ( c < 0 )
                 return true;
 
             char ch = (char) c;
@@ -248,13 +248,13 @@ namespace KiriFig
 
         private void ReadEol()
         {
-            if (_iChar == '\r')
+            if ( _iChar == '\r' )
             {
                 _tokenType = TokenType.Eol;
                 ReadChar();
             }
 
-            if (_iChar == '\n')
+            if ( _iChar == '\n' )
             {
                 _tokenType = TokenType.Eol;
                 ReadChar();
@@ -267,7 +267,7 @@ namespace KiriFig
 
             _tokenChars.Clear();
 
-            if (_iChar == '-')
+            if ( _iChar == '-' )
             {
                 negate = true;
                 ReadChar();
@@ -275,17 +275,17 @@ namespace KiriFig
 
             do
             {
-                if (!CharIsDigit(_iChar))
+                if ( !CharIsDigit( _iChar ) )
                     throw new ApplicationException();
 
-                TokenAppendChar(_iChar);
+                TokenAppendChar( _iChar );
                 ReadChar();
             }
-            while (!CharIsSeparator(_iChar));
+            while ( !CharIsSeparator( _iChar ) );
 
             _tokenType = TokenType.Integer;
-            _intVal = Convert.ToInt32(_tokenChars.ToString());
-            if (negate)
+            _intVal = Convert.ToInt32( _tokenChars.ToString() );
+            if ( negate )
                 _intVal = -_intVal;
         }
 
@@ -293,7 +293,7 @@ namespace KiriFig
         {
             ReadNumber();
 
-            if (_tokenType != TokenType.Integer)
+            if ( _tokenType != TokenType.Integer )
                 throw new ApplicationException();
 
             return _intVal;
@@ -305,25 +305,25 @@ namespace KiriFig
 
             do
             {
-                if (!CharIsLetterOrDigit(_iChar) && _iChar != '-')
+                if ( !CharIsLetterOrDigit( _iChar ) && _iChar != '-' )
                     throw new ApplicationException();
 
-                TokenAppendChar(_iChar);
+                TokenAppendChar( _iChar );
                 ReadChar();
             }
-            while (!CharIsSeparator(_iChar));
+            while ( !CharIsSeparator( _iChar ) );
 
             _tokenType = TokenType.Word;
         }
 
-        private void TokenAppendChar(int iChar)
+        private void TokenAppendChar( int iChar )
         {
-            _tokenChars.Append((char) iChar);
+            _tokenChars.Append( (char) iChar );
         }
 
         private void SkipWhitespace()
         {
-            while (CharIsWhiteSpace(_iChar))
+            while ( CharIsWhiteSpace( _iChar ) )
             {
                 ReadChar();
             }
@@ -338,14 +338,14 @@ namespace KiriFig
         {
             _iChar = _reader.Read();
 
-            if (_iChar < 0)
+            if ( _iChar < 0 )
                 return;
 
-            if (char.IsControl((char) _iChar) && _iChar != '\r' && _iChar != '\n' && _iChar != '\t')
+            if ( char.IsControl( (char) _iChar ) && _iChar != '\r' && _iChar != '\n' && _iChar != '\t' )
                 throw new ApplicationException();
         }
 
-        protected abstract void OnBeginRecord(int id, string head, IList<Token> attrs, bool open);
+        protected abstract void OnBeginRecord( int id, string head, IList<Token> attrs, bool open );
         protected abstract void OnEndRecord();
     }
 }
