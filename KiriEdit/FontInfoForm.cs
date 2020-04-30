@@ -18,9 +18,9 @@ namespace KiriEdit
             InitializeComponent();
         }
 
-        private void FontInfoForm_Load(object sender, System.EventArgs e)
+        private void FontInfoForm_Load( object sender, System.EventArgs e )
         {
-            typefaceTextBox.Text = string.Format("{0} ({1})", FontInfo.FamilyName, FontInfo.StyleName);
+            typefaceTextBox.Text = string.Format( "{0} ({1})", FontInfo.FamilyName, FontInfo.StyleName );
 
             copyrightTextBox.Text = FontInfo.Copyright;
             licenseTextBox.Text = FontInfo.License;
@@ -31,9 +31,9 @@ namespace KiriEdit
             licenseUrlRichTextBox.Text = " " + FontInfo.LicenseUrl + " ";
         }
 
-        private void licenseUrlRichTextBox_LinkClicked(object sender, LinkClickedEventArgs e)
+        private void licenseUrlRichTextBox_LinkClicked( object sender, LinkClickedEventArgs e )
         {
-            System.Diagnostics.Process.Start(e.LinkText);
+            System.Diagnostics.Process.Start( e.LinkText );
         }
     }
 }

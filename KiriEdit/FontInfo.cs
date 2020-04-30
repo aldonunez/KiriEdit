@@ -26,15 +26,15 @@ namespace KiriEdit
         public string Manufacturer { get; private set; }
         public string Version { get; private set; }
 
-        public FontInfo(Face face)
+        public FontInfo( Face face )
         {
             FamilyName = face.FamilyName;
             StyleName = face.StyleName;
 
-            ExtractStrings(face);
+            ExtractStrings( face );
         }
 
-        private void ExtractStrings(Face face)
+        private void ExtractStrings( Face face )
         {
             uint count = face.GetSfntNameCount();
             var localizedCopyright = new LocalizedSfntName();
@@ -43,30 +43,30 @@ namespace KiriEdit
             var localizedManufacturer = new LocalizedSfntName();
             var localizedVersion = new LocalizedSfntName();
 
-            for (uint i = 0; i < count; i++)
+            for ( uint i = 0; i < count; i++ )
             {
-                SfntName sfntName = face.GetSfntName(i);
+                SfntName sfntName = face.GetSfntName( i );
 
-                switch (sfntName.NameId)
+                switch ( sfntName.NameId )
                 {
                     case 0:
-                        SetLocalizedSfntName(sfntName.String, sfntName.LanguageId, ref localizedCopyright);
+                        SetLocalizedSfntName( sfntName.String, sfntName.LanguageId, ref localizedCopyright );
                         break;
 
                     case 5:
-                        SetLocalizedSfntName(sfntName.String, sfntName.LanguageId, ref localizedVersion);
+                        SetLocalizedSfntName( sfntName.String, sfntName.LanguageId, ref localizedVersion );
                         break;
 
                     case 8:
-                        SetLocalizedSfntName(sfntName.String, sfntName.LanguageId, ref localizedManufacturer);
+                        SetLocalizedSfntName( sfntName.String, sfntName.LanguageId, ref localizedManufacturer );
                         break;
 
                     case 13:
-                        SetLocalizedSfntName(sfntName.String, sfntName.LanguageId, ref localizedLicense);
+                        SetLocalizedSfntName( sfntName.String, sfntName.LanguageId, ref localizedLicense );
                         break;
 
                     case 14:
-                        SetLocalizedSfntName(sfntName.String, sfntName.LanguageId, ref localizedLicenseUrl);
+                        SetLocalizedSfntName( sfntName.String, sfntName.LanguageId, ref localizedLicenseUrl );
                         break;
                 }
             }
@@ -78,7 +78,7 @@ namespace KiriEdit
             Version = localizedVersion.String;
         }
 
-        private static void SetLocalizedSfntName(string s, int langId, ref LocalizedSfntName sfntName)
+        private static void SetLocalizedSfntName( string s, int langId, ref LocalizedSfntName sfntName )
         {
             int curLangId = System.Globalization.CultureInfo.CurrentCulture.LCID & 0xFFFF;
             int curPrimLangId = curLangId & 0x03FF;
@@ -90,7 +90,7 @@ namespace KiriEdit
             // Or the stored primary LANGID <> current primary LANGID
             //      And the incoming primary LANGID = English
 
-            if (sfntName.String == null
+            if ( sfntName.String == null
                 || langId == curLangId
                 || ((sfntName.LangId != curLangId) && (langId & 0x03FF) == curPrimLangId)
                 || ((sfntName.LangId & 0x03FF) != curPrimLangId && (langId & 0x03FF) == 9)
