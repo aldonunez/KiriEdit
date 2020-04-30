@@ -532,12 +532,9 @@ namespace KiriEdit
             {
                 switch ( CharacterItem.Completion )
                 {
-                    case CompletionState.Complete:
-                        return 0;
-                    case CompletionState.Incomplete:
-                        return 1;
-                    default:
-                        return -1;
+                    case CompletionState.Complete: return 0;
+                    case CompletionState.Incomplete: return 1;
+                    default: return -1;
                 }
             }
 

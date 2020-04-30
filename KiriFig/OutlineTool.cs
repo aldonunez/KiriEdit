@@ -24,13 +24,13 @@ namespace KiriFig
         private IReadOnlyList<Contour> _contours;
         private readonly FaceOrientation _faceOrientation;
 
-        public OutlineTool(IReadOnlyList<Contour> contours, FaceOrientation faceOrientation)
+        public OutlineTool( IReadOnlyList<Contour> contours, FaceOrientation faceOrientation )
         {
             _contours = contours;
             _faceOrientation = faceOrientation;
         }
 
-        private static Orientation GetOrientation(Contour contour)
+        private static Orientation GetOrientation( Contour contour )
         {
             // Use the method described here to determine the orientation of a contour:
             // https://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order
@@ -49,11 +49,11 @@ namespace KiriFig
             Point p = contour.FirstPoint;
             long area = 0;
 
-            while (true)
+            while ( true )
             {
                 var edge = p.OutgoingEdge;
 
-                switch (edge.Type)
+                switch ( edge.Type )
                 {
                     case EdgeType.Line:
                         area += (edge.P2.Y - prevY) * (edge.P2.X + prevX);
@@ -82,31 +82,31 @@ namespace KiriFig
 
                 p = p.OutgoingEdge.P2;
 
-                if (p == contour.FirstPoint)
+                if ( p == contour.FirstPoint )
                     break;
             }
 
-            if (area > 0)
+            if ( area > 0 )
                 return Orientation.Inside;
-            else if (area < 0)
+            else if ( area < 0 )
                 return Orientation.Outside;
             else
                 return Orientation.Unknown;
         }
 
-        private static Point FindRightmostPoint(Contour contour)
+        private static Point FindRightmostPoint( Contour contour )
         {
             Point p = contour.FirstPoint;
             Point rightP = new Point(0, 0);
 
-            while (true)
+            while ( true )
             {
-                if (p.X > rightP.X)
+                if ( p.X > rightP.X )
                     rightP = p;
 
                 p = p.OutgoingEdge.P2;
 
-                if (p == contour.FirstPoint)
+                if ( p == contour.FirstPoint )
                     break;
             }
 
@@ -118,30 +118,30 @@ namespace KiriFig
             var outsideContours = new List<Contour>();
             var insideContours = new List<Contour>();
 
-            foreach (var contour in _contours)
+            foreach ( var contour in _contours )
             {
                 Orientation orientation = GetOrientation(contour);
 
-                if (_faceOrientation != FaceOrientation.ClockwiseOut)
+                if ( _faceOrientation != FaceOrientation.ClockwiseOut )
                 {
-                    if (orientation == Orientation.Outside)
+                    if ( orientation == Orientation.Outside )
                         orientation = Orientation.Inside;
-                    else if (orientation == Orientation.Inside)
+                    else if ( orientation == Orientation.Inside )
                         orientation = Orientation.Outside;
                 }
 
-                switch (orientation)
+                switch ( orientation )
                 {
                     case Orientation.Inside:
-                        insideContours.Add(contour);
+                        insideContours.Add( contour );
                         break;
 
                     case Orientation.Outside:
-                        outsideContours.Add(contour);
+                        outsideContours.Add( contour );
                         break;
 
                     default:
-                        Debug.Fail("");
+                        Debug.Fail( "" );
                         break;
                 }
             }
@@ -155,31 +155,31 @@ namespace KiriFig
             public int Distance;
         }
 
-        private void TestLineCrossing(Point p, PointD p1, PointD p2, ref CrossingInfo crossing)
+        private void TestLineCrossing( Point p, PointD p1, PointD p2, ref CrossingInfo crossing )
         {
-            if (   (p1.Y <= p.Y && p2.Y  > p.Y)
-                || (p1.Y  > p.Y && p2.Y <= p.Y))
+            if ( (p1.Y <= p.Y && p2.Y > p.Y)
+                || (p1.Y > p.Y && p2.Y <= p.Y) )
             {
                 float proportion = (float) ((p.Y - p1.Y) / (p2.Y - p1.Y));
                 float intersectX = (float) (p1.X + proportion * (p2.X - p1.X));
 
-                if (p.X < intersectX)
+                if ( p.X < intersectX )
                 {
                     crossing.Number++;
 
-                    if (intersectX < crossing.Distance)
+                    if ( intersectX < crossing.Distance )
                         crossing.Distance = (int) intersectX;
                 }
             }
         }
 
-        private void TestCrossing(Point p, Edge edge, ref CrossingInfo crossing)
+        private void TestCrossing( Point p, Edge edge, ref CrossingInfo crossing )
         {
             PointD prevPoint = edge.P1.ToPointD();
 
-            foreach (var pd in edge.Flatten())
+            foreach ( var pd in edge.Flatten() )
             {
-                TestLineCrossing(p, prevPoint, pd, ref crossing);
+                TestLineCrossing( p, prevPoint, pd, ref crossing );
                 prevPoint = pd;
             }
         }
@@ -192,63 +192,63 @@ namespace KiriFig
         // means that a point is inside a shape. The closest of these edges belongs to the shape
         // that directly encloses the point.
 
-        private List<Contour>[] DetermineInsides(List<Contour> outsideContours, List<Contour> insideContours)
+        private List<Contour>[] DetermineInsides( List<Contour> outsideContours, List<Contour> insideContours )
         {
             var insideContourLists = new List<Contour>[outsideContours.Count];
 
-            for (int i = 0; i < outsideContours.Count; i++)
+            for ( int i = 0; i < outsideContours.Count; i++ )
                 insideContourLists[i] = new List<Contour>();
 
             var crossings = new CrossingInfo[outsideContours.Count];
 
-            foreach (var contour in insideContours)
+            foreach ( var contour in insideContours )
             {
                 Point rightP = FindRightmostPoint(contour);
 
-                Array.Clear(crossings, 0, crossings.Length);
+                Array.Clear( crossings, 0, crossings.Length );
 
-                for (int j = 0; j < outsideContours.Count; j++)
+                for ( int j = 0; j < outsideContours.Count; j++ )
                 {
                     var outerContour = outsideContours[j];
                     var p = outerContour.FirstPoint;
 
                     do
                     {
-                        TestCrossing(rightP, p.OutgoingEdge, ref crossings[j]);
+                        TestCrossing( rightP, p.OutgoingEdge, ref crossings[j] );
 
                         p = p.OutgoingEdge.P2;
                     }
-                    while (p != outerContour.FirstPoint);
+                    while ( p != outerContour.FirstPoint );
                 }
 
                 int minX = int.MaxValue;
                 int minContour = -1;
 
-                for (int j = 0; j < crossings.Length; j++)
+                for ( int j = 0; j < crossings.Length; j++ )
                 {
-                    if ((crossings[j].Number & 1) == 1
-                        && crossings[j].Distance < minX)
+                    if ( (crossings[j].Number & 1) == 1
+                        && crossings[j].Distance < minX )
                     {
                         minX = crossings[j].Distance;
                         minContour = j;
                     }
                 }
 
-                Debug.Assert(minContour >= 0);
+                Debug.Assert( minContour >= 0 );
 
-                insideContourLists[minContour].Add(contour);
+                insideContourLists[minContour].Add( contour );
             }
 
             return insideContourLists;
         }
 
-        private Shape[] PackageShapes(List<Contour> outsideContours, List<Contour>[] insideContourLists)
+        private Shape[] PackageShapes( List<Contour> outsideContours, List<Contour>[] insideContourLists )
         {
             var shapes = new Shape[outsideContours.Count];
 
-            for (int i = 0; i < shapes.Length; i++)
+            for ( int i = 0; i < shapes.Length; i++ )
             {
-                shapes[i] = new Shape(outsideContours[i], insideContourLists[i].ToArray());
+                shapes[i] = new Shape( outsideContours[i], insideContourLists[i].ToArray() );
             }
 
             return shapes;
@@ -259,7 +259,7 @@ namespace KiriFig
             var (outsideContours, insideContours) = PartitionContours();
             var insideContourLists = DetermineInsides(outsideContours, insideContours);
 
-            return PackageShapes(outsideContours, insideContourLists);
+            return PackageShapes( outsideContours, insideContourLists );
         }
     }
 }

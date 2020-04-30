@@ -37,7 +37,7 @@ namespace KiriFig.Model
             IEnumerable<PointGroup> pointGroups,
             IEnumerable<Cut> cuts,
             int width, int height, int offsetX, int offsetY,
-            FaceOrientation faceOrientation)
+            FaceOrientation faceOrientation )
         {
             Width = width;
             Height = height;
@@ -45,30 +45,30 @@ namespace KiriFig.Model
             OffsetY = offsetY;
             FaceOrientation = faceOrientation;
 
-            ValidatePointGroups(pointGroups);
-            ValidateCuts(cuts);
+            ValidatePointGroups( pointGroups );
+            ValidateCuts( cuts );
 
             var contours = new HashSet<Contour>();
 
-            foreach (var group in pointGroups)
+            foreach ( var group in pointGroups )
             {
-                foreach (var point in group.Points)
+                foreach ( var point in group.Points )
                 {
-                    contours.Add(point.Contour);
+                    contours.Add( point.Contour );
                 }
             }
 
             var shapes = new HashSet<Shape>();
 
-            foreach (var contour in contours)
+            foreach ( var contour in contours )
             {
-                shapes.Add(contour.Shape);
+                shapes.Add( contour.Shape );
             }
 
-            _pointGroups.AddRange(pointGroups);
-            _contours.AddRange(contours);
-            _shapes.AddRange(shapes);
-            _cuts.AddRange(cuts);
+            _pointGroups.AddRange( pointGroups );
+            _contours.AddRange( contours );
+            _shapes.AddRange( shapes );
+            _cuts.AddRange( cuts );
 
             PointGroups = _pointGroups.AsReadOnly();
             Contours = _contours.AsReadOnly();
@@ -76,16 +76,16 @@ namespace KiriFig.Model
             Cuts = _cuts.AsReadOnly();
         }
 
-        private void ValidatePointGroups(IEnumerable<PointGroup> pointGroups)
+        private void ValidatePointGroups( IEnumerable<PointGroup> pointGroups )
         {
-            foreach (var group in pointGroups)
+            foreach ( var group in pointGroups )
             {
-                if (group.Points.Count == 0)
-                    throw new ApplicationException("");
+                if ( group.Points.Count == 0 )
+                    throw new ApplicationException( "" );
 
                 var point = group.Points[0];
 
-                if (point.Contour == null
+                if ( point.Contour == null
                     || point.Group != group
                     || point.IncomingEdge == null
                     || point.OutgoingEdge == null
@@ -93,11 +93,11 @@ namespace KiriFig.Model
                     || point.OutgoingEdge.P1 != point
                     || point.Contour.FirstPoint == null
                     )
-                    throw new ApplicationException("");
+                    throw new ApplicationException( "" );
 
-                if (group.IsFixed)
+                if ( group.IsFixed )
                 {
-                    if (group.OriginalIncomingEdge == null
+                    if ( group.OriginalIncomingEdge == null
                         || group.OriginalOutgoingEdge == null
                         )
                         throw new ApplicationException();
@@ -107,7 +107,7 @@ namespace KiriFig.Model
 
         private void ValidateCuts( IEnumerable<Cut> cuts )
         {
-            foreach (var cut in cuts)
+            foreach ( var cut in cuts )
             {
                 if ( cut.PairedEdge1 == null
                     || cut.PairedEdge2 == null
@@ -124,25 +124,25 @@ namespace KiriFig.Model
             }
         }
 
-        public Point AddDiscardablePoint(Point point, Edge edge)
+        public Point AddDiscardablePoint( Point point, Edge edge )
         {
-            if (edge.Unbreakable)
-                throw new ApplicationException("");
+            if ( edge.Unbreakable )
+                throw new ApplicationException( "" );
 
-            var splitResult = SplitEdge(point, edge);
+            var splitResult = SplitEdge( point, edge );
 
-            var newGroup = new PointGroup(splitResult.t);
-            newGroup.Points.Add(splitResult.nearestPoint);
+            var newGroup = new PointGroup( splitResult.t );
+            newGroup.Points.Add( splitResult.nearestPoint );
             splitResult.nearestPoint.Group = newGroup;
             splitResult.nearestPoint.Contour = edge.P1.Contour;
-            _pointGroups.Add(newGroup);
+            _pointGroups.Add( newGroup );
 
             return splitResult.nearestPoint;
         }
 
-        private SplitResult SplitEdge(Point point, Edge edge)
+        private SplitResult SplitEdge( Point point, Edge edge )
         {
-            var splitResult = edge.Split(point);
+            var splitResult = edge.Split( point );
 
             splitResult.nearestPoint.IncomingEdge = splitResult.edgeBefore;
             splitResult.nearestPoint.OutgoingEdge = splitResult.edgeAfter;
@@ -153,13 +153,13 @@ namespace KiriFig.Model
             return splitResult;
         }
 
-        public Edge DeleteDiscardablePoint(PointGroup pointGroup)
+        public Edge DeleteDiscardablePoint( PointGroup pointGroup )
         {
-            if (pointGroup.IsFixed)
-                throw new ApplicationException("Can't delete a fixed point group.");
+            if ( pointGroup.IsFixed )
+                throw new ApplicationException( "Can't delete a fixed point group." );
 
-            if (pointGroup.Points.Count > 1)
-                throw new ApplicationException("Can't delete a point group that has more than one point.");
+            if ( pointGroup.Points.Count > 1 )
+                throw new ApplicationException( "Can't delete a point group that has more than one point." );
 
             Point pointToDelete = pointGroup.Points[0];
 
@@ -167,14 +167,14 @@ namespace KiriFig.Model
 
             Point fixedPointBefore = pointToDelete;
 
-            while (!fixedPointBefore.Group.IsFixed)
+            while ( !fixedPointBefore.Group.IsFixed )
             {
                 fixedPointBefore = fixedPointBefore.IncomingEdge.P1;
             }
 
             Point fixedPointAfter = pointToDelete;
 
-            while (!fixedPointAfter.Group.IsFixed)
+            while ( !fixedPointAfter.Group.IsFixed )
             {
                 fixedPointAfter = fixedPointAfter.OutgoingEdge.P2;
             }
@@ -185,8 +185,8 @@ namespace KiriFig.Model
 
             Edge directEdge = (Edge) fixedPointBefore.Group.OriginalOutgoingEdge.Clone();
 
-            directEdge.P1 = new Point(fixedPointBefore.X, fixedPointBefore.Y);
-            directEdge.P2 = new Point(fixedPointAfter.X, fixedPointAfter.Y);
+            directEdge.P1 = new Point( fixedPointBefore.X, fixedPointBefore.Y );
+            directEdge.P2 = new Point( fixedPointAfter.X, fixedPointAfter.Y );
 
             // Keep the original points and edges. But, successively split the copy of the original
             // edge in order to calculate the combined edge with the best accuracy.
@@ -198,14 +198,14 @@ namespace KiriFig.Model
 
             for ( Point p = firstEdgeToReplace.P2; p != fixedPointAfter; p = p.OutgoingEdge.P2 )
             {
-                if (p == pointToDelete)
+                if ( p == pointToDelete )
                     continue;
 
-                var splitResult = SplitEdge(p, edge);
+                var splitResult = SplitEdge( p, edge );
 
                 edge = splitResult.edgeAfter;
 
-                if (p == pointAfter)
+                if ( p == pointAfter )
                 {
                     edge = splitResult.edgeBefore;
                     break;
@@ -220,31 +220,31 @@ namespace KiriFig.Model
             pointAfter.IncomingEdge = edge;
             pointAfter.IncomingEdge.P1.OutgoingEdge = edge;
 
-            _pointGroups.Remove(pointGroup);
+            _pointGroups.Remove( pointGroup );
 
             // We might have deleted the contour's anchor point.
 
-            if (pointToDelete.Contour.FirstPoint == pointToDelete)
+            if ( pointToDelete.Contour.FirstPoint == pointToDelete )
                 pointToDelete.Contour.FirstPoint = fixedPointBefore;
 
             return pointBefore.OutgoingEdge;
         }
 
-        public Cut AddCut(Point point1, Point point2)
+        public Cut AddCut( Point point1, Point point2 )
         {
-            if (CutExists(point1.Group, point2.Group))
-                throw new ApplicationException("Only one cut is allowed between these point groups.");
+            if ( CutExists( point1.Group, point2.Group ) )
+                throw new ApplicationException( "Only one cut is allowed between these point groups." );
 
-            if (point1.OutgoingEdge.P2 == point2 || point1.IncomingEdge.P1 == point2)
-                throw new ApplicationException("Cuts are not allowed between directly connected points.");
+            if ( point1.OutgoingEdge.P2 == point2 || point1.IncomingEdge.P1 == point2 )
+                throw new ApplicationException( "Cuts are not allowed between directly connected points." );
 
             // Add a point to each point group: new points
 
             Point newPoint1 = point1.Group.MakePoint();
-            point1.Group.Points.Add(newPoint1);
+            point1.Group.Points.Add( newPoint1 );
 
             Point newPoint2 = point2.Group.MakePoint();
-            point2.Group.Points.Add(newPoint2);
+            point2.Group.Points.Add( newPoint2 );
 
             // Move half the edges from the old points to the new points.
 
@@ -258,8 +258,8 @@ namespace KiriFig.Model
 
             // Add a line edge between old points and between new points.
 
-            LineEdge lineForNew = new LineEdge(newPoint1, newPoint2, -1, unbreakable: true);
-            LineEdge lineForOld = new LineEdge(point2, point1, -1, unbreakable: true);
+            LineEdge lineForNew = new LineEdge( newPoint1, newPoint2, -1, unbreakable: true );
+            LineEdge lineForOld = new LineEdge( point2, point1, -1, unbreakable: true );
 
             newPoint1.OutgoingEdge = lineForNew;
             newPoint2.IncomingEdge = lineForNew;
@@ -272,44 +272,44 @@ namespace KiriFig.Model
             Contour oldContour1 = point1.Contour;
             Contour oldContour2 = point2.Contour;
 
-            ModifyContours(point1, newPoint1);
-            ModifyShapes(oldContour1, oldContour2, point1.Contour, newPoint1.Contour);
+            ModifyContours( point1, newPoint1 );
+            ModifyShapes( oldContour1, oldContour2, point1.Contour, newPoint1.Contour );
 
             // Save cut object.
 
-            Cut cut = new Cut(lineForNew, lineForOld);
+            Cut cut = new Cut( lineForNew, lineForOld );
 
-            _cuts.Add(cut);
+            _cuts.Add( cut );
 
             return cut;
         }
 
-        private bool CutExists(PointGroup group1, PointGroup group2)
+        private bool CutExists( PointGroup group1, PointGroup group2 )
         {
-            foreach (var cut in _cuts)
+            foreach ( var cut in _cuts )
             {
-                if ((cut.PairedEdge1.P1.Group == group1 && cut.PairedEdge1.P2.Group == group2)
-                    || (cut.PairedEdge1.P1.Group == group2 && cut.PairedEdge1.P2.Group == group1))
+                if ( (cut.PairedEdge1.P1.Group == group1 && cut.PairedEdge1.P2.Group == group2)
+                    || (cut.PairedEdge1.P1.Group == group2 && cut.PairedEdge1.P2.Group == group1) )
                     return true;
             }
 
             return false;
         }
 
-        private void ModifyContours(Point point1, Point point2)
+        private void ModifyContours( Point point1, Point point2 )
         {
             Point p = point1.OutgoingEdge.P2;
             bool separateContours = false;
 
-            while (true)
+            while ( true )
             {
-                if (p == point1)
+                if ( p == point1 )
                 {
                     // The points are in different contours.
                     separateContours = true;
                     break;
                 }
-                else if (p == point2)
+                else if ( p == point2 )
                 {
                     // The points are in the same contour.
                     separateContours = false;
@@ -319,33 +319,33 @@ namespace KiriFig.Model
                 p = p.OutgoingEdge.P2;
             }
 
-            ReplaceContours(point1);
+            ReplaceContours( point1 );
 
-            if (separateContours)
-                ReplaceContours(point2);
+            if ( separateContours )
+                ReplaceContours( point2 );
         }
 
-        private void ReplaceContours(Point point)
+        private void ReplaceContours( Point point )
         {
             Contour contour = new Contour();
             Point p = point;
 
             do
             {
-                _contours.Remove(p.Contour);
+                _contours.Remove( p.Contour );
                 p.Contour = contour;
 
                 p = p.OutgoingEdge.P2;
-            } while (p != point);
+            } while ( p != point );
 
             contour.FirstPoint = point;
-            _contours.Add(contour);
+            _contours.Add( contour );
         }
 
-        public void DeleteCut(Cut cut)
+        public void DeleteCut( Cut cut )
         {
-            if (!_cuts.Contains(cut))
-                throw new ApplicationException("This cut doesn't exist.");
+            if ( !_cuts.Contains( cut ) )
+                throw new ApplicationException( "This cut doesn't exist." );
 
             Point keepPoint1 = null;
             Point keepPoint2 = null;
@@ -368,23 +368,25 @@ namespace KiriFig.Model
 
             // Remove extra points from their groups.
 
-            deletePoint1.Group.Points.Remove(deletePoint1);
-            deletePoint2.Group.Points.Remove(deletePoint2);
+            deletePoint1.Group.Points.Remove( deletePoint1 );
+            deletePoint2.Group.Points.Remove( deletePoint2 );
 
             // Split or combine contours and shapes.
 
             Contour oldContour1 = edge1.P1.Contour;
             Contour oldContour2 = edge2.P1.Contour;
 
-            ModifyContours(keepPoint1, keepPoint2);
-            ModifyShapes(oldContour1, oldContour2, keepPoint1.Contour, keepPoint2.Contour);
+            ModifyContours( keepPoint1, keepPoint2 );
+            ModifyShapes( oldContour1, oldContour2, keepPoint1.Contour, keepPoint2.Contour );
 
             // Delete the cut.
 
-            _cuts.Remove(cut);
+            _cuts.Remove( cut );
         }
 
-        private void ModifyShapes(Contour oldContour1, Contour oldContour2, Contour newContour1, Contour newContour2)
+        private void ModifyShapes(
+            Contour oldContour1, Contour oldContour2,
+            Contour newContour1, Contour newContour2 )
         {
             // Get the old shapes.
 
@@ -395,38 +397,38 @@ namespace KiriFig.Model
 
             var contours = new List<Contour>();
 
-            foreach (var contour in oldShape1.Contours)
+            foreach ( var contour in oldShape1.Contours )
             {
-                if (contour != oldContour1 && contour != oldContour2)
-                    contours.Add(contour);
+                if ( contour != oldContour1 && contour != oldContour2 )
+                    contours.Add( contour );
             }
 
-            if (oldShape2 != oldShape1)
+            if ( oldShape2 != oldShape1 )
             {
-                foreach (var contour in oldShape2.Contours)
+                foreach ( var contour in oldShape2.Contours )
                 {
-                    if (contour != oldContour1 && contour != oldContour2)
-                        contours.Add(contour);
+                    if ( contour != oldContour1 && contour != oldContour2 )
+                        contours.Add( contour );
                 }
             }
 
             // Add new contours.
 
-            contours.Add(newContour1);
+            contours.Add( newContour1 );
 
-            if (newContour2 != newContour1)
-                contours.Add(newContour2);
+            if ( newContour2 != newContour1 )
+                contours.Add( newContour2 );
 
             // Recalculate shapes.
 
-            var tool = new OutlineTool(contours, FaceOrientation);
+            var tool = new OutlineTool( contours, FaceOrientation );
             var newShapes = tool.CalculateShapes();
 
             // Assign new shapes to all contours.
 
-            foreach (var shape in newShapes)
+            foreach ( var shape in newShapes )
             {
-                foreach (var contour in shape.Contours)
+                foreach ( var contour in shape.Contours )
                 {
                     contour.Shape = shape;
                 }
@@ -434,23 +436,23 @@ namespace KiriFig.Model
 
             // Replace old shapes with new ones.
 
-            _shapes.Remove(oldShape1);
-            _shapes.Remove(oldShape2);
+            _shapes.Remove( oldShape1 );
+            _shapes.Remove( oldShape2 );
 
-            _shapes.AddRange(newShapes);
+            _shapes.AddRange( newShapes );
 
             // Set the new enabled states to the combination of the old enabled states.
 
             bool oldEnabledState = oldShape1.Enabled && oldShape2.Enabled;
 
-            foreach (var shape in newShapes)
+            foreach ( var shape in newShapes )
             {
                 shape.Enabled = oldEnabledState;
             }
         }
 
 
-#region FindPointsForCut
+        #region FindPointsForCut
 
         private struct FindPointsResult
         {
@@ -458,7 +460,7 @@ namespace KiriFig.Model
             public Point Point1;
             public Point Point2;
 
-            public FindPointsResult(float dotProduct, Point point1, Point point2)
+            public FindPointsResult( float dotProduct, Point point1, Point point2 )
             {
                 DotProduct = dotProduct;
                 Point1 = point1;
@@ -466,7 +468,7 @@ namespace KiriFig.Model
             }
         }
 
-        public static (Point, Point) FindPointsForCut(PointGroup pointGroup1, PointGroup pointGroup2)
+        public static (Point, Point) FindPointsForCut( PointGroup pointGroup1, PointGroup pointGroup2 )
         {
             // Keep in mind, only points in the same shape are good.
 
@@ -474,43 +476,43 @@ namespace KiriFig.Model
 
             // First, look for two points on the outside.
 
-            foreach (var point1 in pointGroup1.Points)
+            foreach ( var point1 in pointGroup1.Points )
             {
-                foreach (var point2 in pointGroup2.Points)
+                foreach ( var point2 in pointGroup2.Points )
                 {
-                    if (point1.Contour.Shape == point2.Contour.Shape
-                        && ArePointsApart(point1, point2))
+                    if ( point1.Contour.Shape == point2.Contour.Shape
+                        && ArePointsApart( point1, point2 ) )
                     {
-                        float dotProduct = GetMutualDotProduct(point1, point2);
+                        float dotProduct = GetMutualDotProduct( point1, point2 );
 
-                        results.Add(new FindPointsResult(dotProduct, point1, point2));
+                        results.Add( new FindPointsResult( dotProduct, point1, point2 ) );
                     }
                 }
             }
 
-            if (results.Count > 0)
-                return FindBestPoints(results);
+            if ( results.Count > 0 )
+                return FindBestPoints( results );
 
             // Next, look for an outside-inside or inside-inside pair of points.
             // They must be in different contours.
 
-            foreach (var point1 in pointGroup1.Points)
+            foreach ( var point1 in pointGroup1.Points )
             {
-                foreach (var point2 in pointGroup2.Points)
+                foreach ( var point2 in pointGroup2.Points )
                 {
-                    if (point1.Contour.Shape == point2.Contour.Shape
+                    if ( point1.Contour.Shape == point2.Contour.Shape
                         && point1.Contour != point2.Contour
-                        && ArePointsApart(point1, point2))
+                        && ArePointsApart( point1, point2 ) )
                     {
-                        float dotProduct = GetMutualDotProduct(point1, point2);
+                        float dotProduct = GetMutualDotProduct( point1, point2 );
 
-                        results.Add(new FindPointsResult(dotProduct, point1, point2));
+                        results.Add( new FindPointsResult( dotProduct, point1, point2 ) );
                     }
                 }
             }
 
-            if (results.Count > 0)
-                return FindBestPoints(results);
+            if ( results.Count > 0 )
+                return FindBestPoints( results );
 
             return (null, null);
         }
@@ -518,16 +520,16 @@ namespace KiriFig.Model
         // Return the pair of points that point to each other to the greatest degree.
         // They'll have the biggest sum of dot products.
 
-        private static (Point, Point) FindBestPoints(List<FindPointsResult> results)
+        private static (Point, Point) FindBestPoints( List<FindPointsResult> results )
         {
-            Debug.Assert(results.Count > 0);
+            Debug.Assert( results.Count > 0 );
 
             float maxDotProduct = float.NegativeInfinity;
             int index = -1;
 
-            for (int i = 0; i < results.Count; i++)
+            for ( int i = 0; i < results.Count; i++ )
             {
-                if (results[i].DotProduct > maxDotProduct)
+                if ( results[i].DotProduct > maxDotProduct )
                 {
                     maxDotProduct = results[i].DotProduct;
                     index = i;
@@ -537,12 +539,12 @@ namespace KiriFig.Model
             return (results[index].Point1, results[index].Point2);
         }
 
-        private static bool ArePointsApart(Point point1, Point point2)
+        private static bool ArePointsApart( Point point1, Point point2 )
         {
             // Points have to be more than one edge apart.
 
-            if (   point1.OutgoingEdge.P2 == point2
-                || point2.OutgoingEdge.P2 == point1)
+            if ( point1.OutgoingEdge.P2 == point2
+                || point2.OutgoingEdge.P2 == point1 )
                 return false;
 
             return true;
@@ -550,7 +552,7 @@ namespace KiriFig.Model
 
         // Cutting outside points must yield two shapes.
 
-        private static float GeDotProductToTarget(Point jointPoint, Point targetPoint)
+        private static float GeDotProductToTarget( Point jointPoint, Point targetPoint )
         {
             Point p1, p2, p3;
             float angle;
@@ -559,22 +561,22 @@ namespace KiriFig.Model
             p2 = jointPoint;
             p3 = jointPoint.OutgoingEdge.P2;
 
-            angle = Utils.GetBisectorAngle(p1, p2, p3);
+            angle = Utils.GetBisectorAngle( p1, p2, p3 );
 
-            return Utils.GetAngleDotProduct(angle, p2, targetPoint);
+            return Utils.GetAngleDotProduct( angle, p2, targetPoint );
         }
 
         // The joint at each point should point at the other point.
         // The more they point to each other, the bigger positive number you get.
 
-        private static float GetMutualDotProduct(Point point1, Point point2)
+        private static float GetMutualDotProduct( Point point1, Point point2 )
         {
-            float dotProduct1 = GeDotProductToTarget(point1, point2);
-            float dotProduct2 = GeDotProductToTarget(point2, point1);
+            float dotProduct1 = GeDotProductToTarget( point1, point2 );
+            float dotProduct2 = GeDotProductToTarget( point2, point1 );
 
             return dotProduct1 + dotProduct2;
         }
 
-#endregion
+        #endregion
     }
 }
