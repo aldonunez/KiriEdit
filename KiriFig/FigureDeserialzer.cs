@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using KiriFig.Model;
 
@@ -66,7 +67,7 @@ namespace KiriFig
 
         protected override void OnBeginRecord( int id, string head, IList<Token> attrs, bool open )
         {
-            Console.WriteLine( "{2} {0} ({1})", head, id, open ? "begin" : "record" );
+            Debug.WriteLine( "{2} {0} ({1})", head, id, open ? "begin" : "record" );
 
             switch ( _nodeStack[_level] )
             {
@@ -369,7 +370,7 @@ namespace KiriFig
 
         protected override void OnEndRecord()
         {
-            Console.WriteLine( "end" );
+            Debug.WriteLine( "end" );
 
             PopLevel();
         }
