@@ -234,7 +234,8 @@ namespace KiriFig
                     }
                 }
 
-                Debug.Assert( minContour >= 0 );
+                if ( minContour < 0 )
+                    return null;
 
                 insideContourLists[minContour].Add( contour );
             }
@@ -258,6 +259,20 @@ namespace KiriFig
         {
             var (outsideContours, insideContours) = PartitionContours();
             var insideContourLists = DetermineInsides(outsideContours, insideContours);
+
+            if ( insideContourLists == null )
+            {
+                // These contours don't conform to the expected winding (face orientation).
+                // Swap inside and outside contours, and try again.
+
+                var temp = insideContours;
+                insideContours = outsideContours;
+                outsideContours = temp;
+
+                insideContourLists = DetermineInsides( outsideContours, insideContours );
+
+                Debug.Assert( insideContourLists != null );
+            }
 
             return PackageShapes( outsideContours, insideContourLists );
         }
