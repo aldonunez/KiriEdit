@@ -134,6 +134,8 @@ namespace KiriEdit
 
             LoadMasterPicture( figureEditor.Document );
             LoadProgressPicture( figureEditor.Document );
+
+            figureEditor.Select();
         }
 
         private void LoadMasterPicture( FigureDocument masterDoc )

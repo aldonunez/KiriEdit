@@ -342,7 +342,7 @@ namespace KiriFT
         if ( format == nullptr )
             throw gcnew ArgumentNullException( "format" );
 
-        if ( format->Equals( "TrueType" )
+        if (   format->Equals( "TrueType" )
             || format->Equals( "Type 42" ) )
             return FaceOrientation::ClockwiseOut;
 

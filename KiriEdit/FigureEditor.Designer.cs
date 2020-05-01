@@ -70,7 +70,7 @@
             this.lineButton.Name = "lineButton";
             this.lineButton.Size = new System.Drawing.Size(23, 22);
             this.lineButton.Text = "Cut";
-            this.lineButton.Click += new System.EventHandler(this.lineButton_Click);
+            this.lineButton.CheckedChanged += new System.EventHandler(this.lineButton_CheckedChanged);
             // 
             // pointButton
             // 
@@ -81,7 +81,7 @@
             this.pointButton.Name = "pointButton";
             this.pointButton.Size = new System.Drawing.Size(23, 22);
             this.pointButton.Text = "Point";
-            this.pointButton.Click += new System.EventHandler(this.pointButton_Click);
+            this.pointButton.CheckedChanged += new System.EventHandler(this.pointButton_CheckedChanged);
             // 
             // FigureEditor
             // 
@@ -91,6 +91,7 @@
             this.Controls.Add(this.editorToolStrip);
             this.Name = "FigureEditor";
             this.Size = new System.Drawing.Size(286, 255);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.FigureEditor_KeyUp);
             this.VisibleChanged += new System.EventHandler(this.FigureEditor_VisibleChanged);
             this.Resize += new System.EventHandler(this.FigureEditor_Resize);
             this.editorToolStrip.ResumeLayout(false);

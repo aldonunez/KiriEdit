@@ -153,6 +153,20 @@ namespace KiriEdit
             return null;
         }
 
+        private void FigureEditor_KeyUp( object sender, KeyEventArgs e )
+        {
+            switch ( e.KeyCode )
+            {
+                case Keys.C:
+                    lineButton.Checked = true;
+                    break;
+
+                case Keys.P:
+                    pointButton.Checked = true;
+                    break;
+            }
+        }
+
         private void FigureEditor_VisibleChanged( object sender, EventArgs e )
         {
             // Only handle this when shown for the first time.
@@ -353,16 +367,22 @@ namespace KiriEdit
             }
         }
 
-        private void lineButton_Click( object sender, EventArgs e )
+        private void lineButton_CheckedChanged( object sender, EventArgs e )
         {
-            _tool = new LineTool( this );
-            OnGroupButtonClick( sender, e );
+            if ( lineButton.Checked )
+            {
+                _tool = new LineTool( this );
+                OnGroupButtonClick( sender, e );
+            }
         }
 
-        private void pointButton_Click( object sender, EventArgs e )
+        private void pointButton_CheckedChanged( object sender, EventArgs e )
         {
-            _tool = new PointTool( this );
-            OnGroupButtonClick( sender, e );
+            if ( pointButton.Checked )
+            {
+                _tool = new PointTool( this );
+                OnGroupButtonClick( sender, e );
+            }
         }
 
         private void OnGroupButtonClick( object sender, EventArgs e )
