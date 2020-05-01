@@ -69,7 +69,7 @@
             this.lineButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.lineButton.Name = "lineButton";
             this.lineButton.Size = new System.Drawing.Size(23, 22);
-            this.lineButton.Text = "Cut";
+            this.lineButton.Text = "Cut (C)\nHold Ctrl to align with other points.";
             this.lineButton.CheckedChanged += new System.EventHandler(this.lineButton_CheckedChanged);
             // 
             // pointButton
@@ -80,7 +80,7 @@
             this.pointButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.pointButton.Name = "pointButton";
             this.pointButton.Size = new System.Drawing.Size(23, 22);
-            this.pointButton.Text = "Point";
+            this.pointButton.Text = "Point (P)";
             this.pointButton.CheckedChanged += new System.EventHandler(this.pointButton_CheckedChanged);
             // 
             // FigureEditor
