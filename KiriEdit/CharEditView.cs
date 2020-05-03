@@ -190,7 +190,7 @@ namespace KiriEdit
                 deletePieceButton_Click( sender, e );
         }
 
-        private void AddPiece( FigureItem template )
+        private void AddPiece( FigureItemBase template )
         {
             string fileName = CharacterItem.FindNextFileName( Project, _characterItem.CodePoint );
             string name = Path.GetFileNameWithoutExtension( fileName );

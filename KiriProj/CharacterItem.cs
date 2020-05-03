@@ -49,8 +49,7 @@ namespace KiriProj
         public uint CodePoint { get; }
         public string RootPath { get; }
 
-        // TODO: Use MasterFigureItem
-        public FigureItem MasterFigureItem { get; }
+        public FigureItemBase MasterFigureItem { get; }
         public IReadOnlyList<FigureItem> PieceFigureItems => _figureItems;
 
         public CompletionState Completion { get; set; }
@@ -66,8 +65,8 @@ namespace KiriProj
             Project = project;
             CodePoint = codePoint;
             RootPath = charRoot;
-            // TODO: Use MasterFigureItem
-            MasterFigureItem = new FigureItem( masterPath, this );
+
+            MasterFigureItem = new FigureItemBase( masterPath, this );
         }
 
         private void FillPieces( string rootPath )
@@ -189,7 +188,7 @@ namespace KiriProj
             return string.Format( "piece{0}.kefig", number );
         }
 
-        public FigureItem AddItem( string name, FigureItem template )
+        public FigureItem AddItem( string name, FigureItemBase template )
         {
             if ( string.IsNullOrEmpty( name ) )
                 throw new ArgumentException();
