@@ -20,7 +20,7 @@ namespace KiriEdit
 
         private void FontInfoForm_Load( object sender, System.EventArgs e )
         {
-            typefaceTextBox.Text = string.Format( "{0} ({1})", FontInfo.FamilyName, FontInfo.StyleName );
+            typefaceTextBox.Text = FontInfo.ComputedName;
 
             copyrightTextBox.Text = FontInfo.Copyright;
             licenseTextBox.Text = FontInfo.License;

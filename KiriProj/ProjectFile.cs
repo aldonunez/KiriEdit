@@ -14,7 +14,6 @@ namespace KiriProj
         public string FontPath { get; set; }
         public int FaceIndex { get; set; }
         public string FontFamily { get; set; }
-        public string FontName { get; set; }
         public int FontStyle { get; set; }
         public string CharactersFolderPath { get; set; }
 

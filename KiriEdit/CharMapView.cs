@@ -5,6 +5,7 @@
    See the LICENSE.txt file for details.
 */
 
+using KiriFT;
 using KiriFT.Drawing;
 using KiriProj;
 using System;
@@ -204,7 +205,14 @@ namespace KiriEdit
                 throw new ApplicationException();
 
             charGrid.Font = new Font( fontFamily, 12, (FontStyle) Project.FontStyle );
-            fontNameLabel.Text = Project.FontName;
+
+            using ( var lib = new Library() )
+            using ( var face = lib.OpenFace( Project.FontPath, Project.FaceIndex ) )
+            {
+                var fontInfo = new FontInfo( face );
+
+                fontNameLabel.Text = fontInfo.ComputedName;
+            }
 
             // Set up the character set for the grid.
 

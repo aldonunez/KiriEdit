@@ -18,6 +18,7 @@ namespace KiriEdit
         }
 
         public string FamilyName { get; private set; }
+        public string FullName { get; private set; }
         public string StyleName { get; private set; }
 
         public string Copyright { get; private set; }
@@ -25,6 +26,17 @@ namespace KiriEdit
         public string LicenseUrl { get; private set; }
         public string Manufacturer { get; private set; }
         public string Version { get; private set; }
+
+        public string ComputedName
+        {
+            get
+            {
+                if ( !string.IsNullOrEmpty( FullName ) )
+                    return FullName;
+
+                return string.Format( "{0} ({1})", FamilyName, StyleName );
+            }
+        }
 
         public FontInfo( Face face )
         {
@@ -38,6 +50,9 @@ namespace KiriEdit
         {
             uint count = face.GetSfntNameCount();
             var localizedCopyright = new LocalizedSfntName();
+            var localizedFamily = new LocalizedSfntName();
+            var localizedFullName = new LocalizedSfntName();
+            var localizedSubfamily = new LocalizedSfntName();
             var localizedLicense = new LocalizedSfntName();
             var localizedLicenseUrl = new LocalizedSfntName();
             var localizedManufacturer = new LocalizedSfntName();
@@ -51,6 +66,18 @@ namespace KiriEdit
                 {
                     case 0:
                         SetLocalizedSfntName( sfntName.String, sfntName.LanguageId, ref localizedCopyright );
+                        break;
+
+                    case 1:
+                        SetLocalizedSfntName( sfntName.String, sfntName.LanguageId, ref localizedFamily );
+                        break;
+
+                    case 2:
+                        SetLocalizedSfntName( sfntName.String, sfntName.LanguageId, ref localizedSubfamily );
+                        break;
+
+                    case 4:
+                        SetLocalizedSfntName( sfntName.String, sfntName.LanguageId, ref localizedFullName );
                         break;
 
                     case 5:
@@ -72,6 +99,9 @@ namespace KiriEdit
             }
 
             Copyright = localizedCopyright.String;
+            FamilyName = localizedFamily.String;
+            FullName = localizedFullName.String;
+            StyleName = localizedSubfamily.String;
             License = localizedLicense.String;
             LicenseUrl = localizedLicenseUrl.String;
             Manufacturer = localizedManufacturer.String;
