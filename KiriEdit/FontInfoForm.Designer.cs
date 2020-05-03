@@ -85,6 +85,7 @@
             this.licenseTextBox.Multiline = true;
             this.licenseTextBox.Name = "licenseTextBox";
             this.licenseTextBox.ReadOnly = true;
+            this.licenseTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.licenseTextBox.Size = new System.Drawing.Size(271, 153);
             this.licenseTextBox.TabIndex = 12;
             // 
