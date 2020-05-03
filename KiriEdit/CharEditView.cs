@@ -192,7 +192,6 @@ namespace KiriEdit
 
         private void AddPiece( FigureItem template )
         {
-            // TODO: make this an instance method
             string fileName = CharacterItem.FindNextFileName( Project, _characterItem.CodePoint );
             string name = Path.GetFileNameWithoutExtension( fileName );
 

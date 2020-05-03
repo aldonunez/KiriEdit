@@ -140,7 +140,7 @@ namespace KiriFT
             {
                 float xcell = (float) args->Left;
 
-                if ( residencyMap != nullptr )
+                if ( residencyMap != nullptr && codePoint <= (UINT32) seqCharSet->_lastCodePoint )
                 {
                     int index = codePoint - seqCharSet->_firstCodePoint;
                     int bitRow = index / 32;
@@ -148,7 +148,7 @@ namespace KiriFT
 
                     residencyWord = (UInt32) residencyMap[bitRow] >> bitCol;
 
-                    if ( bitCol > 0 )
+                    if ( bitCol > 0 && bitRow < residencyMap->Length - 1 )
                     {
                         bitRow++;
                         residencyWord |= (UInt32) residencyMap[bitRow] << (32 - bitCol);

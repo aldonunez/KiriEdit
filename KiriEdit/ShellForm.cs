@@ -213,10 +213,6 @@ namespace KiriEdit
 
             var project = Project.Open( path );
 
-            // TODO: Validate in Project.Open
-            //if (!ValidateProject(project))
-            //    return;
-
             EnterProjectMode( project );
         }
 
@@ -346,44 +342,6 @@ namespace KiriEdit
             }
 
             return null;
-        }
-
-        private bool ValidateProject( Project project )
-        {
-            if ( !File.Exists( project.FontPath )
-                || !Directory.Exists( project.CharactersFolderPath )
-                )
-            {
-                ShowBadProjectMessage();
-                return false;
-            }
-
-            using ( var lib = new Library() )
-            {
-                Face face = null;
-
-                try
-                {
-                    face = lib.OpenFace( project.FontPath, project.FaceIndex );
-                    if ( (face.Flags & FaceFlags.Scalable) != FaceFlags.Scalable )
-                    {
-                        ShowBadProjectMessage();
-                        return false;
-                    }
-                }
-                catch ( FreeTypeException )
-                {
-                    ShowBadProjectMessage();
-                    return false;
-                }
-                finally
-                {
-                    if ( face != null )
-                        face.Dispose();
-                }
-            }
-
-            return true;
         }
 
         private void ShowBadProjectMessage()

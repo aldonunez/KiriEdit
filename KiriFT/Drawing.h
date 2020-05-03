@@ -84,8 +84,6 @@ namespace KiriFT
         public:
             static void Draw( CharGridRendererArgs^ args, CharSet^ charSet );
 
-            // TODO: Consider splitting the line drawing code into its own method.
-
             static const Int32 MinimumColumns = 1;
             static const Int32 MaximumColumns = 32;
         };

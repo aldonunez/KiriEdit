@@ -43,7 +43,6 @@ namespace KiriEdit
             }
         }
 
-        // TODO: Call this from SetTransform.
         public static Matrix BuildTransform( Figure figure, Rectangle rect )
         {
             float scale = (rect.Height - 1) / (float) figure.Height;
@@ -61,18 +60,10 @@ namespace KiriEdit
 
         public void SetTransform( Graphics g, Rectangle rect )
         {
-            float pixHeight = _document.Figure.Height;
-
-            float scale = (rect.Height - 1) / pixHeight;
-
-            int bmpHeight = rect.Height;
-
-            g.ResetTransform();
-            g.ScaleTransform( scale, -scale, MatrixOrder.Append );
-            g.TranslateTransform(
-                rect.X + (float) -_document.Figure.OffsetX * scale,
-                rect.Y + (bmpHeight - 1) + (float) _document.Figure.OffsetY * scale,
-                MatrixOrder.Append );
+            using ( Matrix m = BuildTransform( _document.Figure, rect ) )
+            {
+                g.Transform = m;
+            }
         }
 
         private void PaintContour( Contour contour )

@@ -116,9 +116,8 @@ namespace KiriProj
         {
             string rootPath = GetRootPath(project, codePoint);
 
-            // TODO: still needed?
             if ( Directory.Exists( rootPath ) )
-                return null;
+                throw new ApplicationException();
 
             string figurePath = Path.Combine(rootPath, MasterFileName);
 
@@ -189,8 +188,6 @@ namespace KiriProj
 
             return string.Format( "piece{0}.kefig", number );
         }
-
-        // TODO: RenameItem?
 
         public FigureItem AddItem( string name, FigureItem template )
         {

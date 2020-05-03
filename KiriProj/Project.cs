@@ -135,12 +135,29 @@ namespace KiriProj
 
             Project project = new Project(projectFile);
 
+            Validate( project );
+
             foreach ( var item in CharacterItem.EnumerateCharacterItems( project ) )
             {
                 project.Characters.Add( item );
             }
 
             return project;
+        }
+
+        private static void Validate( Project project )
+        {
+            if ( !Directory.Exists( project.CharactersFolderPath )
+                || !Directory.Exists( project.RootPath )
+                || project.FaceIndex < 0
+                || string.IsNullOrWhiteSpace( project.FontFamily )
+                || string.IsNullOrWhiteSpace( project.FontName )
+                || !File.Exists( project.FontPath )
+                || project.FontStyle < 0
+                )
+            {
+                throw new ApplicationException();
+            }
         }
 
         private static ProjectFile LoadProjectFile( string path )

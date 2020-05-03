@@ -28,7 +28,7 @@ namespace KiriEdit
         private static extern void SetLastError( int error );
 
         private const uint FirstCodePoint = '!';
-        private const uint LastCodePoint = 0xFFFF;
+        private const uint LastCodePoint = 0x10FFFF;
         private const int CharSetSize = (int) (LastCodePoint - FirstCodePoint + 1);
 
         private Project _project;
@@ -119,8 +119,6 @@ namespace KiriEdit
 
             return true;
         }
-
-        // TODO: Support characters outside of basic multilingual plane.
 
         private void AddCharacter( uint codePoint )
         {
