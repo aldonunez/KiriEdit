@@ -212,6 +212,8 @@ namespace KiriFig
                     var outerContour = outsideContours[j];
                     var p = outerContour.FirstPoint;
 
+                    crossings[j].Distance = int.MaxValue;
+
                     do
                     {
                         TestCrossing( rightP, p.OutgoingEdge, ref crossings[j] );
