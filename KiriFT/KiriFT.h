@@ -78,6 +78,16 @@ namespace KiriFT
         ClockwiseIn,
     };
 
+    // An enum with values compatible with those in System.Drawing.FontStyle.
+
+    [Flags]
+    public enum class FaceStyle : Int32
+    {
+        Regular = 0,
+        Bold    = 1,
+        Italic  = 2,
+    };
+
     public value struct SfntName
     {
     public:
@@ -127,7 +137,7 @@ namespace KiriFT
         void LoadChar( UInt32 ch, Boolean noScale );
         void Decompose( OutlineHandlers^ handlers );
 
-        static Int32 ParseLegacyStyle( String^ styleName );
+        static FaceStyle ParseLegacyStyle( String^ styleName );
         static FaceOrientation GetOrientation( String^ format );
     };
 

@@ -15,6 +15,8 @@ namespace KiriEdit
 {
     internal static class DrawingUtils
     {
+        public const float GlyphImageHeightRatio = 0.95f;
+
         public static double GetLineLength( int x1, int y1, int x2, int y2 )
         {
             float dX = x2 - x1;
@@ -65,7 +67,7 @@ namespace KiriEdit
         public static void LoadMasterPicture( PictureBox masterPictureBox, FigureDocument masterDoc )
         {
             Size picBoxSize = masterPictureBox.ClientSize;
-            int height = (int) (picBoxSize.Height * 0.95f);
+            int height = (int) (picBoxSize.Height * GlyphImageHeightRatio);
             int width = height;
 
             Rectangle rect = DrawingUtils.CenterFigure( masterDoc.Figure, new Size( width, height ) );
@@ -99,7 +101,7 @@ namespace KiriEdit
             }
 
             Size picBoxSize = progressPictureBox.ClientSize;
-            int height = (int) (picBoxSize.Height * 0.95f);
+            int height = (int) (picBoxSize.Height * GlyphImageHeightRatio);
             int width = height;
 
             Rectangle rect = DrawingUtils.CenterFigure( masterDoc.Figure, new Size( width, height ) );

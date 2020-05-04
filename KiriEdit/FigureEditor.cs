@@ -207,7 +207,7 @@ namespace KiriEdit
             }
 
             Size picBoxSize = canvas.ClientSize;
-            int height = (int) (picBoxSize.Height * 0.95f);
+            int height = (int) (picBoxSize.Height * DrawingUtils.GlyphImageHeightRatio);
             int width = height;
 
             Rectangle rect = DrawingUtils.CenterFigure( _document.Figure, new Size( width, height ) );

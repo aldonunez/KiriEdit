@@ -93,7 +93,7 @@ namespace KiriProj
             using ( var face = lib.OpenFace( spec.FontPath, spec.FaceIndex, openParams ) )
             {
                 projectFile.FontFamily = face.FamilyName;
-                projectFile.FontStyle = Face.ParseLegacyStyle( face.StyleName );
+                projectFile.FontStyle = (int) Face.ParseLegacyStyle( face.StyleName );
             }
         }
 

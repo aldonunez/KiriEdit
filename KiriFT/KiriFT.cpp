@@ -314,10 +314,9 @@ namespace KiriFT
             throw gcnew FreeTypeException( error );
     }
 
-    Int32 Face::ParseLegacyStyle( String^ styleName )
+    FaceStyle Face::ParseLegacyStyle( String^ styleName )
     {
-        // TODO: literal numbers
-        Int32 style = 0;
+        FaceStyle style = FaceStyle::Regular;
 
         if (   styleName->IndexOf( "Fat", StringComparison::OrdinalIgnoreCase ) >= 0
             || styleName->IndexOf( "Heavy", StringComparison::OrdinalIgnoreCase ) >= 0
@@ -325,13 +324,13 @@ namespace KiriFT
             || styleName->IndexOf( "Bold", StringComparison::OrdinalIgnoreCase ) >= 0
             || styleName->IndexOf( "Black", StringComparison::OrdinalIgnoreCase ) >= 0 )
         {
-            style |= 1;
+            style = style | FaceStyle::Bold;
         }
 
         if (   styleName->IndexOf( "Oblique", StringComparison::OrdinalIgnoreCase ) >= 0
             || styleName->IndexOf( "Italic", StringComparison::OrdinalIgnoreCase ) >= 0 )
         {
-            style |= 2;
+            style = style | FaceStyle::Italic;
         }
 
         return style;
