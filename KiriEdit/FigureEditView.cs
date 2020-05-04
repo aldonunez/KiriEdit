@@ -7,7 +7,6 @@
 
 using KiriProj;
 using System;
-using System.Drawing;
 using System.Windows.Forms;
 
 namespace KiriEdit
@@ -153,50 +152,12 @@ namespace KiriEdit
 
         private void LoadProgressPicture( FigureDocument masterDoc )
         {
-            if ( progressPictureBox.BackgroundImage != null )
-            {
-                progressPictureBox.BackgroundImage.Dispose();
-                progressPictureBox.BackgroundImage = null;
-            }
-
-            Size picBoxSize = masterPictureBox.ClientSize;
-            int height = (int) (picBoxSize.Height * 0.95f);
-            int width = height;
-
-            Rectangle rect = DrawingUtils.CenterFigure( masterDoc.Figure, new Size( width, height ) );
-
-            Bitmap bitmap = new Bitmap( width, height );
-
-            using ( var graphics = Graphics.FromImage( bitmap ) )
-            {
-                foreach ( var pieceItem in _figureItem.Parent.PieceFigureItems )
-                {
-                    PaintPiece( pieceItem, graphics, rect );
-                }
-            }
-
-            progressPictureBox.BackgroundImage = bitmap;
-            progressPictureBox.Invalidate();
-        }
-
-        private void PaintPiece( FigureItem pieceItem, Graphics graphics, Rectangle rect )
-        {
-            FigureDocument pieceDoc;
-            bool standOut;
-
-            // Draw this view's figure item differently.
-            if ( pieceItem == _figureItem )
-            {
-                standOut = true;
-                pieceDoc = figureEditor.Document;
-            }
-            else
-            {
-                standOut = false;
-                pieceDoc = pieceItem.Open();
-            }
-
-            DrawingUtils.PaintPiece( pieceDoc, graphics, rect, standOut );
+            DrawingUtils.LoadProgressPicture(
+                progressPictureBox,
+                _figureItem.Parent,
+                masterDoc,
+                _figureItem,
+                figureEditor.Document );
         }
     }
 }

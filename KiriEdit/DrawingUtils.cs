@@ -82,5 +82,54 @@ namespace KiriEdit
 
             masterPictureBox.Image = bitmap;
         }
+
+        public static void LoadProgressPicture(
+            PictureBox progressPictureBox,
+            CharacterItem charItem,
+            FigureDocument masterDoc,
+            FigureItem standOutPiece,
+            FigureDocument standOutPieceDoc )
+        {
+            Image oldImage = progressPictureBox.BackgroundImage;
+
+            if ( oldImage != null )
+            {
+                progressPictureBox.BackgroundImage = null;
+                oldImage.Dispose();
+            }
+
+            Size picBoxSize = progressPictureBox.ClientSize;
+            int height = (int) (picBoxSize.Height * 0.95f);
+            int width = height;
+
+            Rectangle rect = DrawingUtils.CenterFigure( masterDoc.Figure, new Size( width, height ) );
+
+            Bitmap bitmap = new Bitmap( width, height );
+
+            using ( var graphics = Graphics.FromImage( bitmap ) )
+            {
+                foreach ( var pieceItem in charItem.PieceFigureItems )
+                {
+                    FigureDocument pieceDoc;
+                    bool standOut;
+
+                    if ( pieceItem == standOutPiece )
+                    {
+                        standOut = true;
+                        pieceDoc = standOutPieceDoc;
+                    }
+                    else
+                    {
+                        standOut = false;
+                        pieceDoc = pieceItem.Open();
+                    }
+
+                    PaintPiece( pieceDoc, graphics, rect, standOut );
+                }
+            }
+
+            progressPictureBox.BackgroundImage = bitmap;
+            progressPictureBox.Invalidate();
+        }
     }
 }

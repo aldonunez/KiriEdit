@@ -116,39 +116,12 @@ namespace KiriEdit
 
         private void LoadProgressPicture()
         {
-            Image oldImage = progressPictureBox.BackgroundImage;
-
-            if ( oldImage != null )
-            {
-                progressPictureBox.BackgroundImage = null;
-                oldImage.Dispose();
-            }
-
-            Size picBoxSize = masterPictureBox.ClientSize;
-            int height = (int) (picBoxSize.Height * 0.95f);
-            int width = height;
-
-            Rectangle rect = DrawingUtils.CenterFigure( _masterDoc.Figure, new Size(width, height) );
-
-            Bitmap bitmap = new Bitmap( width, height );
-
-            using ( var graphics = Graphics.FromImage( bitmap ) )
-            {
-                foreach ( var pieceItem in _characterItem.PieceFigureItems )
-                {
-                    PaintPiece( pieceItem, graphics, rect );
-                }
-            }
-
-            progressPictureBox.BackgroundImage = bitmap;
-            progressPictureBox.Invalidate();
-        }
-
-        private void PaintPiece( FigureItem pieceItem, Graphics graphics, Rectangle rect )
-        {
-            var pieceDoc = pieceItem.Open();
-
-            DrawingUtils.PaintPiece( pieceDoc, graphics, rect );
+            DrawingUtils.LoadProgressPicture(
+                progressPictureBox,
+                _characterItem,
+                _masterDoc,
+                null,
+                null );
         }
 
         private void LoadMasterPicture()
