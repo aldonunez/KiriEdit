@@ -325,6 +325,11 @@ namespace KiriEdit
             return true;
         }
 
+        public void CloseView( bool force )
+        {
+            Close();
+        }
+
         // Assumes that the map is all zero.
         //
         private void LoadResidencyMap( int[] map )

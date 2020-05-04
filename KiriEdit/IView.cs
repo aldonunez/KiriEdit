@@ -22,5 +22,6 @@ namespace KiriEdit
         HistoryBuffer HistoryBuffer { get; }
 
         bool Save();
+        void CloseView( bool force );
     }
 }

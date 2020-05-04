@@ -128,7 +128,7 @@ namespace KiriEdit
 
             foreach ( var view in views )
             {
-                view.Form.Close();
+                view.CloseView( force: true );
             }
 
             _views.Clear();

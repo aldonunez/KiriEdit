@@ -82,6 +82,11 @@ namespace KiriEdit
             return true;
         }
 
+        public void CloseView( bool force )
+        {
+            Close();
+        }
+
         private void FigureEditView_Load( object sender, EventArgs e )
         {
             _masterDoc = _characterItem.MasterFigureItem.Open();

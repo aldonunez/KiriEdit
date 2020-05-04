@@ -74,6 +74,14 @@ namespace KiriEdit
             return true;
         }
 
+        public void CloseView( bool force )
+        {
+            if ( force )
+                _figureItem.IsDirty = false;
+
+            Close();
+        }
+
         private void FigureEditor_Modified( object sender, EventArgs e )
         {
             _figureItem.IsDirty = true;
