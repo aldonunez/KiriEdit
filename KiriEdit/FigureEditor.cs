@@ -23,7 +23,9 @@ namespace KiriEdit
         private const float CirclePenWidth = 1;
         private const float LinePenWidth = 4;
         private const float LineBoundingWidth = LinePenWidth + 4;
-        private const float SnapMargin = 10;
+        private const float AlignMargin = 10;
+        private const float EdgeFineMargin = 10;
+        private const float EdgeBboxMargin = 20;
 
         private FigureDocument _document;
         private FigureContext _context;
@@ -618,7 +620,7 @@ namespace KiriEdit
             private PointF _candidatePoint;
             private Edge _candidateEdge;
             private PointGroup _hilitGroup;
-            private Point _snapPoint;
+            private Point _alignPoint;
 
             public PointTool( FigureEditor parent )
             {
@@ -714,22 +716,22 @@ namespace KiriEdit
 
                 // Only show a point along an edge, if it's near enough to it.
 
-                float visibleDistance = _parent.ScreenToWorld( 10 );
+                float visibleDistance = _parent.ScreenToWorld( EdgeFineMargin );
 
                 if ( result.Edge != null && result.Distance <= visibleDistance )
                 {
-                    _snapPoint = null;
+                    _alignPoint = null;
 
                     if ( (Control.ModifierKeys & Keys.Control) == Keys.Control )
                     {
-                        var (t, point) = FindPointToSnapTo( result.Edge, result.T );
+                        var (t, point) = FindPointToAlignTo( result.Edge, result.T );
 
                         if ( point != null )
                         {
                             PointD p = result.Edge.Calculate( t );
 
                             result.Point = new PointF( (float) p.X, (float) p.Y );
-                            _snapPoint = point;
+                            _alignPoint = point;
                         }
                     }
 
@@ -742,14 +744,16 @@ namespace KiriEdit
                 }
             }
 
-            private (double, Point) FindPointToSnapTo( Edge edge, double referenceT )
+            private (double, Point) FindPointToAlignTo( Edge edge, double referenceT )
             {
                 double leastT = 2;
                 Point point = null;
 
                 BBox bbox = edge.GetBBox();
 
-                int margin = (int) _parent.ScreenToWorld( SnapMargin );
+                // The margin around each point along X and Y axes.
+
+                int margin = (int) _parent.ScreenToWorld( AlignMargin );
 
                 // Look at each point that doesn't align with the edge's endpoints.
 
@@ -815,7 +819,7 @@ namespace KiriEdit
 
                 var p = new System.Drawing.Point( (int) pointFs[0].X, (int) pointFs[0].Y );
 
-                int margin = (int) _parent.ScreenToWorld( 20 );
+                int margin = (int) _parent.ScreenToWorld( EdgeBboxMargin );
 
                 // Check every edge whose bounding box the mouse cursor is in.
                 // Find the nearest point to the mouse cursor among these edges.
@@ -892,11 +896,11 @@ namespace KiriEdit
                         circleRadius * 2,
                         circleRadius * 2 );
 
-                    if ( _snapPoint != null )
+                    if ( _alignPoint != null )
                     {
                         PointF begin = pointFs[0];
 
-                        pointFs[0] = new PointF( _snapPoint.X, _snapPoint.Y );
+                        pointFs[0] = new PointF( _alignPoint.X, _alignPoint.Y );
                         _parent._worldToScreenMatrix.TransformPoints( pointFs );
 
                         pen.Color = Color.Yellow;

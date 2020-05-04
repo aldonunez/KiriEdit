@@ -41,5 +41,15 @@ namespace KiriEdit
 
             return Encoding.UTF32.GetString( codePointBytes );
         }
+
+        public static string GetCodePointTitle( uint codePoint )
+        {
+            return string.Format( "U+{0:X6}", codePoint );
+        }
+
+        public static string GetFullCharTitle( uint codePoint )
+        {
+            return string.Format( "U+{0:X6}  {1}", codePoint, GetString( codePoint ) );
+        }
     }
 }

@@ -315,7 +315,7 @@ namespace KiriEdit
         private static string MakeCharListItemText( CharacterItem item )
         {
             var codePoint = item.CodePoint;
-            var text = string.Format( "U+{0:X6}", codePoint );
+            var text = CharUtils.GetCodePointTitle( codePoint );
             return text;
         }
 

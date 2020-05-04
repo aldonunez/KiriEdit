@@ -50,10 +50,7 @@ namespace KiriEdit
                 _characterItem.FigureItemModified += CharacterItem_FigureItemModified;
                 _characterItem.Deleted += CharacterItem_Deleted;
 
-                Text = string.Format(
-                    "U+{0:X6}  {1}",
-                    _characterItem.CodePoint,
-                    CharUtils.GetString( _characterItem.CodePoint ) );
+                Text = CharUtils.GetFullCharTitle( _characterItem.CodePoint );
             }
         }
 
