@@ -392,7 +392,7 @@ namespace KiriEdit
             vScrollBar.Value = row;
         }
 
-        public void ScrollCenterTo( int index )
+        public void EnsureVisible( int index )
         {
             if ( index >= CharSet.Length )
                 return;
@@ -403,8 +403,27 @@ namespace KiriEdit
             int startIndex = GetPageStartRow() * Columns;
             int endIndex = startIndex + wholeRows * Columns;
 
-            if ( _curIndex >= startIndex && _curIndex < endIndex )
-                return;
+            if ( _curIndex >= startIndex )
+            {
+                if ( _curIndex < endIndex )
+                    return;
+
+                if ( _curIndex < (endIndex + Columns) )
+                {
+                    // Scroll down one row, so that the partial row becomes the last whole row.
+                    vScrollBar.Value++;
+
+                    // Move the mouse cursor so that it stays in the same cell. This is good for
+                    // consistency, and to prevent the jarring effect of jumping to further rows
+                    // only because the mouse button stays down.
+
+                    Point mousePosSc = MousePosition;
+                    mousePosSc.Y -= (int) Math.Ceiling( metrics.CellHeight );
+                    Cursor.Position = mousePosSc;
+
+                    return;
+                }
+            }
 
             int selectedRow = index / Columns;
             int row = selectedRow - wholeRows / 2;
@@ -418,7 +437,7 @@ namespace KiriEdit
         public void SelectCharacter( int index )
         {
             SelectedIndex = index;
-            ScrollCenterTo( index );
+            EnsureVisible( index );
             Invalidate();
         }
 
