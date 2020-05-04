@@ -6,9 +6,10 @@
 */
 
 using KiriProj;
+using KiriFig.Model;
 using System;
 using System.Drawing;
-using KiriFig.Model;
+using System.Windows.Forms;
 
 namespace KiriEdit
 {
@@ -59,6 +60,27 @@ namespace KiriEdit
                 painter.PaintFull();
                 painter.Draw( graphics );
             }
+        }
+
+        public static void LoadMasterPicture( PictureBox masterPictureBox, FigureDocument masterDoc )
+        {
+            Size picBoxSize = masterPictureBox.ClientSize;
+            int height = (int) (picBoxSize.Height * 0.95f);
+            int width = height;
+
+            Rectangle rect = DrawingUtils.CenterFigure( masterDoc.Figure, new Size( width, height ) );
+
+            Bitmap bitmap = new Bitmap( width, height );
+
+            using ( var graphics = Graphics.FromImage( bitmap ) )
+            using ( var painter = new SystemFigurePainter( masterDoc ) )
+            {
+                painter.SetTransform( graphics, rect );
+                painter.PaintFull();
+                painter.Fill( graphics );
+            }
+
+            masterPictureBox.Image = bitmap;
         }
     }
 }

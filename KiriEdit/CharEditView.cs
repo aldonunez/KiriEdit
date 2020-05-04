@@ -153,23 +153,7 @@ namespace KiriEdit
 
         private void LoadMasterPicture()
         {
-            Size picBoxSize = masterPictureBox.ClientSize;
-            int height = (int) (picBoxSize.Height * 0.95f);
-            int width = height;
-
-            Rectangle rect = DrawingUtils.CenterFigure( _masterDoc.Figure, new Size(width, height) );
-
-            Bitmap bitmap = new Bitmap( width, height );
-
-            using ( var graphics = Graphics.FromImage( bitmap ) )
-            using ( var painter = new SystemFigurePainter( _masterDoc ) )
-            {
-                painter.SetTransform( graphics, rect );
-                painter.PaintFull();
-                painter.Fill( graphics );
-            }
-
-            masterPictureBox.Image = bitmap;
+            DrawingUtils.LoadMasterPicture( masterPictureBox, _masterDoc );
         }
 
         private void addPieceButton_Click( object sender, EventArgs e )
