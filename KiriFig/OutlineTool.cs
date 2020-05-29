@@ -97,7 +97,7 @@ namespace KiriFig
         private static Point FindRightmostPoint( Contour contour )
         {
             Point p = contour.FirstPoint;
-            Point rightP = new Point(0, 0);
+            Point rightP = new Point( 0, 0 );
 
             while ( true )
             {
@@ -120,7 +120,7 @@ namespace KiriFig
 
             foreach ( var contour in _contours )
             {
-                Orientation orientation = GetOrientation(contour);
+                Orientation orientation = GetOrientation( contour );
 
                 if ( _faceOrientation != FaceOrientation.ClockwiseOut )
                 {
@@ -203,7 +203,7 @@ namespace KiriFig
 
             foreach ( var contour in insideContours )
             {
-                Point rightP = FindRightmostPoint(contour);
+                Point rightP = FindRightmostPoint( contour );
 
                 Array.Clear( crossings, 0, crossings.Length );
 
@@ -260,7 +260,7 @@ namespace KiriFig
         public Shape[] CalculateShapes()
         {
             var (outsideContours, insideContours) = PartitionContours();
-            var insideContourLists = DetermineInsides(outsideContours, insideContours);
+            var insideContourLists = DetermineInsides( outsideContours, insideContours );
 
             if ( insideContourLists == null )
             {

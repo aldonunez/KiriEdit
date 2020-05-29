@@ -63,7 +63,7 @@ namespace KiriFig
 
         private void AssignShapes()
         {
-            var tool = new OutlineTool(_contours, _faceOrientation);
+            var tool = new OutlineTool( _contours, _faceOrientation );
             var shapes = tool.CalculateShapes();
 
             foreach ( var shape in shapes )
@@ -107,12 +107,12 @@ namespace KiriFig
             _x = to.X;
             _y = to.Y;
 
-            var newPoint = new Point(_x, _y);
+            var newPoint = new Point( _x, _y );
 
             var newContour = new Contour();
             _contours.Add( newContour );
 
-            var newGroup = new PointGroup(isFixed: true);
+            var newGroup = new PointGroup( isFixed: true );
             newGroup.Points.Add( newPoint );
             newPoint.Group = newGroup;
             _pointGroups.Add( newGroup );
@@ -134,13 +134,13 @@ namespace KiriFig
             _x = to.X;
             _y = to.Y;
 
-            var newPoint = new Point(_x, _y);
+            var newPoint = new Point( _x, _y );
 
-            var edge = new LineEdge(_curPoint, newPoint, _nextEdge++);
+            var edge = new LineEdge( _curPoint, newPoint, _nextEdge++ );
             _curPoint.OutgoingEdge = edge;
             newPoint.IncomingEdge = edge;
 
-            var newGroup = new PointGroup(isFixed: true);
+            var newGroup = new PointGroup( isFixed: true );
             newGroup.Points.Add( newPoint );
             newPoint.Group = newGroup;
             _pointGroups.Add( newGroup );
@@ -162,14 +162,14 @@ namespace KiriFig
             int controlX = control.X;
             int controlY = control.Y;
 
-            var newPoint = new Point(_x, _y);
-            var controlPoint = new Point(controlX, controlY);
+            var newPoint = new Point( _x, _y );
+            var controlPoint = new Point( controlX, controlY );
 
-            var edge = new ConicEdge(_curPoint, controlPoint, newPoint, _nextEdge++);
+            var edge = new ConicEdge( _curPoint, controlPoint, newPoint, _nextEdge++ );
             _curPoint.OutgoingEdge = edge;
             newPoint.IncomingEdge = edge;
 
-            var newGroup = new PointGroup(isFixed: true);
+            var newGroup = new PointGroup( isFixed: true );
             newGroup.Points.Add( newPoint );
             newPoint.Group = newGroup;
             _pointGroups.Add( newGroup );
@@ -193,15 +193,15 @@ namespace KiriFig
             int controlX2 = control2.X;
             int controlY2 = control2.Y;
 
-            var newPoint = new Point(_x, _y);
-            var controlPoint1 = new Point(controlX1, controlY1);
-            var controlPoint2 = new Point(controlX2, controlY2);
+            var newPoint = new Point( _x, _y );
+            var controlPoint1 = new Point( controlX1, controlY1 );
+            var controlPoint2 = new Point( controlX2, controlY2 );
 
-            var edge = new CubicEdge(_curPoint, controlPoint1, controlPoint2, newPoint, _nextEdge++);
+            var edge = new CubicEdge( _curPoint, controlPoint1, controlPoint2, newPoint, _nextEdge++ );
             _curPoint.OutgoingEdge = edge;
             newPoint.IncomingEdge = edge;
 
-            var newGroup = new PointGroup(isFixed: true);
+            var newGroup = new PointGroup( isFixed: true );
             newGroup.Points.Add( newPoint );
             newPoint.Group = newGroup;
             _pointGroups.Add( newGroup );

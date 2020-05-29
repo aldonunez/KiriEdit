@@ -103,10 +103,10 @@ namespace KiriFig
 
         private void DrawLine( Point to )
         {
-            int x0 = RoundAndClampX(TransformX(_x));
-            int y0 = RoundAndClampY(TransformY(_y));
-            int x1 = RoundAndClampX(TransformX(to.X));
-            int y1 = RoundAndClampY(TransformY(to.Y));
+            int x0 = RoundAndClampX( TransformX( _x ) );
+            int y0 = RoundAndClampY( TransformY( _y ) );
+            int x1 = RoundAndClampX( TransformX( to.X ) );
+            int y1 = RoundAndClampY( TransformY( to.Y ) );
 
             DrawLine( x0, y0, x1, y1 );
         }
@@ -115,9 +115,9 @@ namespace KiriFig
         {
             // https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
 
-            int dx = Math.Abs(x1 - x0);
+            int dx = Math.Abs( x1 - x0 );
             int sx = x0 < x1 ? 1 : -1;
-            int dy = -Math.Abs(y1 - y0);
+            int dy = -Math.Abs( y1 - y0 );
             int sy = y0 < y1 ? 1 : -1;
 
             int err = dx + dy;
@@ -145,7 +145,7 @@ namespace KiriFig
         }
         public int RoundAndClampX( double x )
         {
-            int iX = (int) Math.Round(x);
+            int iX = (int) Math.Round( x );
             if ( iX >= _maskWidth )
                 iX = _maskWidth - 1;
             else if ( iX < 0 )
@@ -155,7 +155,7 @@ namespace KiriFig
 
         public int RoundAndClampY( double y )
         {
-            int iY = (int) Math.Round(y);
+            int iY = (int) Math.Round( y );
             if ( iY >= _maskHeight )
                 iY = _maskHeight - 1;
             else if ( iY < 0 )
@@ -183,19 +183,19 @@ namespace KiriFig
         private void DrawConic( Point c1, Point to )
         {
             PointD tFrom = new PointD(
-                TransformX(_x),
-                TransformY(_y));
-            PointD tControl = TransformPoint(c1);
-            PointD tTo = TransformPoint(to);
+                TransformX( _x ),
+                TransformY( _y ) );
+            PointD tControl = TransformPoint( c1 );
+            PointD tTo = TransformPoint( to );
 
-            double dt = Curve.CalcConicDeltaT(tFrom, tControl, tTo);
+            double dt = Curve.CalcConicDeltaT( tFrom, tControl, tTo );
             PointD p;
             int x;
             int y;
-            int prevX = RoundAndClampX(tFrom.X);
-            int prevY = RoundAndClampY(tFrom.Y);
+            int prevX = RoundAndClampX( tFrom.X );
+            int prevY = RoundAndClampY( tFrom.Y );
 
-            var curve = new Curve(tFrom, tControl, tTo);
+            var curve = new Curve( tFrom, tControl, tTo );
 
             for ( double t = 0.0; t < 1.0; t += dt )
             {
@@ -241,18 +241,18 @@ namespace KiriFig
         private void DrawCubic( Point c1, Point c2, Point to )
         {
             PointD tFrom = new PointD(
-                TransformX(_x),
-                TransformY(_y));
-            PointD tControl1 = TransformPoint(c1);
-            PointD tControl2 = TransformPoint(c2);
-            PointD tTo = TransformPoint(to);
+                TransformX( _x ),
+                TransformY( _y ) );
+            PointD tControl1 = TransformPoint( c1 );
+            PointD tControl2 = TransformPoint( c2 );
+            PointD tTo = TransformPoint( to );
 
-            double dt = Curve.CalcCubicDeltaT(tFrom, tControl1, tControl2, tTo);
+            double dt = Curve.CalcCubicDeltaT( tFrom, tControl1, tControl2, tTo );
             PointD p;
             int x;
             int y;
 
-            var curve = new Curve(tFrom, tControl1, tControl2, tTo);
+            var curve = new Curve( tFrom, tControl1, tControl2, tTo );
 
             for ( double t = 0.0; t < 1.0; t += dt )
             {
@@ -292,7 +292,7 @@ namespace KiriFig
         public Bitmap RenderBitmap()
         {
             var color = Color.Red;
-            var bitmap = new Bitmap(_maskWidth, _maskHeight);
+            var bitmap = new Bitmap( _maskWidth, _maskHeight );
 
             for ( int y = 0; y < _maskHeight; y++ )
             {

@@ -19,9 +19,9 @@ namespace KiriFig
             OpenParams @params =
                 ignoreTypographicNames ? OpenParams.IgnoreTypographicFamily : OpenParams.None;
 
-            Face face = _library.OpenFace(path, index, @params);
+            Face face = _library.OpenFace( path, index, @params );
 
-            FontFace fontFace = new FontFace(face);
+            FontFace fontFace = new FontFace( face );
 
             return fontFace;
         }
@@ -55,7 +55,7 @@ namespace KiriFig
 
             _face.LoadChar( character, size == 0 );
 
-            var walker = new GlyphWalker(_face);
+            var walker = new GlyphWalker( _face );
 
             walker.Decompose();
 

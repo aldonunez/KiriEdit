@@ -56,8 +56,8 @@ namespace KiriProj
 
         private CharacterItem( Project project, uint codePoint, bool enumPieces = false )
         {
-            string charRoot = GetRootPath(project, codePoint);
-            string masterPath = Path.Combine(charRoot, MasterFileName);
+            string charRoot = GetRootPath( project, codePoint );
+            string masterPath = Path.Combine( charRoot, MasterFileName );
 
             if ( enumPieces )
                 FillPieces( charRoot );
@@ -71,7 +71,7 @@ namespace KiriProj
 
         private void FillPieces( string rootPath )
         {
-            var charRootInfo = new DirectoryInfo(rootPath);
+            var charRootInfo = new DirectoryInfo( rootPath );
 
             foreach ( var fileInfo in charRootInfo.EnumerateFiles( FigureSearchPattern ) )
             {
@@ -81,17 +81,17 @@ namespace KiriProj
 
         internal static IEnumerable<CharacterItem> EnumerateCharacterItems( Project project )
         {
-            var charsFolderInfo = new DirectoryInfo(project.CharactersFolderPath);
+            var charsFolderInfo = new DirectoryInfo( project.CharactersFolderPath );
 
             foreach ( var dirInfo in charsFolderInfo.EnumerateDirectories( CharacterFolderSearchPattern ) )
             {
-                string substring = dirInfo.Name.Substring(2);
+                string substring = dirInfo.Name.Substring( 2 );
                 uint number;
 
                 if ( !uint.TryParse( substring, NumberStyles.HexNumber, null, out number ) )
                     continue;
 
-                var item = new CharacterItem(project, number, true);
+                var item = new CharacterItem( project, number, true );
 
                 yield return item;
             }
@@ -106,31 +106,31 @@ namespace KiriProj
 
         private static string GetRootPath( Project project, uint codePoint )
         {
-            string name = MakeCharacterFileName(codePoint);
-            string charPath = Path.Combine(project.CharactersFolderPath, name);
+            string name = MakeCharacterFileName( codePoint );
+            string charPath = Path.Combine( project.CharactersFolderPath, name );
             return charPath;
         }
 
         internal static CharacterItem Make( Project project, uint codePoint )
         {
-            string rootPath = GetRootPath(project, codePoint);
+            string rootPath = GetRootPath( project, codePoint );
 
             if ( Directory.Exists( rootPath ) )
                 throw new ApplicationException();
 
-            string figurePath = Path.Combine(rootPath, MasterFileName);
+            string figurePath = Path.Combine( rootPath, MasterFileName );
 
             Figure figure = FigureUtils.MakeMasterFigure(
                 project.FontPath,
                 project.FaceIndex,
-                codePoint);
+                codePoint );
 
             var document = new FigureDocument();
 
             document.Figure = figure;
 
-            var characterItem = new CharacterItem(project, codePoint);
-            var figureItem = new FigureItem(figurePath, characterItem);
+            var characterItem = new CharacterItem( project, codePoint );
+            var figureItem = new FigureItem( figurePath, characterItem );
 
             try
             {
@@ -148,23 +148,23 @@ namespace KiriProj
 
         private static void DeleteTree( Project project, uint codePoint )
         {
-            string rootPath = GetRootPath(project, codePoint);
+            string rootPath = GetRootPath( project, codePoint );
 
             Directory.Delete( rootPath, true );
         }
 
         public static string FindNextFileName( Project project, uint codePoint )
         {
-            string rootPath = GetRootPath(project, codePoint);
+            string rootPath = GetRootPath( project, codePoint );
 
-            DirectoryInfo rootInfo = new DirectoryInfo(rootPath);
+            DirectoryInfo rootInfo = new DirectoryInfo( rootPath );
             var numbers = new List<int>();
 
             foreach ( var fileInfo in rootInfo.EnumerateFiles( GenericNameSearchPattern ) )
             {
                 string fileName = fileInfo.Name;
-                int lastDot = fileName.LastIndexOf('.');
-                string substr = fileName.Substring(5, lastDot - 5);
+                int lastDot = fileName.LastIndexOf( '.' );
+                string substr = fileName.Substring( 5, lastDot - 5 );
 
                 if ( int.TryParse( substr, NumberStyles.None, null, out int n ) && n != 0 )
                     numbers.Add( n );
@@ -201,7 +201,7 @@ namespace KiriProj
                     throw new ApplicationException();
             }
 
-            var figureItem = FigureItem.Make(this, name, template);
+            var figureItem = FigureItem.Make( this, name, template );
 
             _figureItems.Add( figureItem );
             Project.NotifyItemModified( this );
@@ -227,7 +227,7 @@ namespace KiriProj
 
         public void DeleteItem( FigureItem item )
         {
-            int index = _figureItems.IndexOf(item);
+            int index = _figureItems.IndexOf( item );
             DeleteItem( item, index );
         }
 
@@ -268,7 +268,7 @@ namespace KiriProj
 
             if ( FigureItemModified != null )
             {
-                var args = new FigureItemModifiedEventArgs(figureItem);
+                var args = new FigureItemModifiedEventArgs( figureItem );
 
                 FigureItemModified?.Invoke( this, args );
             }

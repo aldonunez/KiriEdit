@@ -16,8 +16,8 @@ namespace KiriFig
         {
             // Calculate angles.
 
-            double angle3 = Math.Atan2(p3.Y - p2.Y, p3.X - p2.X);
-            double angle1 = Math.Atan2(p1.Y - p2.Y, p1.X - p2.X);
+            double angle3 = Math.Atan2( p3.Y - p2.Y, p3.X - p2.X );
+            double angle1 = Math.Atan2( p1.Y - p2.Y, p1.X - p2.X );
 
             if ( angle3 < 0 )
                 angle3 += 2 * Math.PI;
@@ -45,8 +45,8 @@ namespace KiriFig
 
         internal static float GetAngleDotProduct( float angle, Point refPoint, Point targetPoint )
         {
-            float unitBisectorX = (float) Math.Cos(angle);
-            float unitBisectorY = (float) Math.Sin(angle);
+            float unitBisectorX = (float) Math.Cos( angle );
+            float unitBisectorY = (float) Math.Sin( angle );
 
             int targetVX = targetPoint.X - refPoint.X;
             int targetVY = targetPoint.Y - refPoint.Y;

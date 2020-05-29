@@ -288,7 +288,7 @@ namespace KiriFig
 
         public static void Serialize( Figure figure, TextWriter writer )
         {
-            var serializer = new FigureSerializer(figure, writer);
+            var serializer = new FigureSerializer( figure, writer );
 
             serializer.Serialize();
         }

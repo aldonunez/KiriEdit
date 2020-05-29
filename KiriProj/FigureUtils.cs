@@ -17,7 +17,7 @@ namespace KiriProj
             using ( var lib = new FontLibrary() )
             using ( var face = lib.OpenFace( fontPath, faceIndex ) )
             {
-                Figure figure = face.DecomposeGlyph(character);
+                Figure figure = face.DecomposeGlyph( character );
                 return figure;
             }
         }

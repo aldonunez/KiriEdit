@@ -51,11 +51,11 @@ namespace KiriProj
         {
             // Figure out paths and names.
 
-            string projectFolderPath = Path.Combine(spec.ProjectLocation, spec.ProjectName);
+            string projectFolderPath = Path.Combine( spec.ProjectLocation, spec.ProjectName );
             string projectFileName = spec.ProjectName + ".kiriproj";
-            string projectFilePath = Path.Combine(projectFolderPath, projectFileName);
-            string fontFileName = Path.GetFileName(spec.FontPath);
-            string importedFontPath = Path.Combine(projectFolderPath, fontFileName);
+            string projectFilePath = Path.Combine( projectFolderPath, projectFileName );
+            string fontFileName = Path.GetFileName( spec.FontPath );
+            string importedFontPath = Path.Combine( projectFolderPath, fontFileName );
 
             // Set up the project object.
 
@@ -78,7 +78,7 @@ namespace KiriProj
             dirInfo.CreateSubdirectory( projectFile.CharactersFolderPath );
             File.Copy( spec.FontPath, importedFontPath );
 
-            Project project = new Project(projectFile);
+            Project project = new Project( projectFile );
 
             project.Save();
 
@@ -117,9 +117,9 @@ namespace KiriProj
 
         public static Project Open( string path )
         {
-            ProjectFile projectFile = LoadProjectFile(path);
+            ProjectFile projectFile = LoadProjectFile( path );
 
-            Project project = new Project(projectFile);
+            Project project = new Project( projectFile );
 
             Validate( project );
 
@@ -149,7 +149,7 @@ namespace KiriProj
         {
             using ( var stream = File.OpenRead( path ) )
             {
-                var task = JsonSerializer.DeserializeAsync<ProjectFile>(stream);
+                var task = JsonSerializer.DeserializeAsync<ProjectFile>( stream );
                 ProjectFile projectFile = task.Result;
                 projectFile.Path = path;
                 return projectFile;
@@ -180,7 +180,7 @@ namespace KiriProj
         {
             if ( CharacterItemModified != null )
             {
-                var args = new CharacterItemModifiedEventArgs(item);
+                var args = new CharacterItemModifiedEventArgs( item );
 
                 CharacterItemModified?.Invoke( this, args );
             }
@@ -200,7 +200,7 @@ namespace KiriProj
 
             public CharacterItem Add( uint codePoint )
             {
-                var item = CharacterItem.Make(_project, codePoint);
+                var item = CharacterItem.Make( _project, codePoint );
                 AddInternal( codePoint, item );
                 return item;
             }
@@ -264,7 +264,7 @@ namespace KiriProj
             {
                 if ( CollectionChanged != null )
                 {
-                    var e = new NotifyCollectionChangedEventArgs(action, value);
+                    var e = new NotifyCollectionChangedEventArgs( action, value );
                     CollectionChanged( this, e );
                 }
             }
