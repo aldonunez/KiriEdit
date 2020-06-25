@@ -43,6 +43,8 @@
             this.redoMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.characterMapMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.fontInfoMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeAllDocumentsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
@@ -54,8 +56,8 @@
             this.helpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutAppMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-            this.fontInfoMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.compileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.mainMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -83,6 +85,8 @@
             this.saveItemMenuItem,
             this.saveAllMenuItem,
             this.toolStripSeparator1,
+            this.compileMenuItem,
+            this.toolStripSeparator5,
             this.exitMenuItem});
             this.fileMenuItem.Name = "fileMenuItem";
             this.fileMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -158,7 +162,7 @@
             this.undoMenuItem.Enabled = false;
             this.undoMenuItem.Name = "undoMenuItem";
             this.undoMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.undoMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.undoMenuItem.Size = new System.Drawing.Size(180, 22);
             this.undoMenuItem.Text = "&Undo";
             this.undoMenuItem.Click += new System.EventHandler(this.undoMenuItem_Click);
             // 
@@ -167,7 +171,7 @@
             this.redoMenuItem.Enabled = false;
             this.redoMenuItem.Name = "redoMenuItem";
             this.redoMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
-            this.redoMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.redoMenuItem.Size = new System.Drawing.Size(180, 22);
             this.redoMenuItem.Text = "&Redo";
             this.redoMenuItem.Click += new System.EventHandler(this.redoMenuItem_Click);
             // 
@@ -187,6 +191,19 @@
             this.characterMapMenuItem.Size = new System.Drawing.Size(180, 22);
             this.characterMapMenuItem.Text = "Character &Map";
             this.characterMapMenuItem.Click += new System.EventHandler(this.characterMapMenuItem_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(177, 6);
+            // 
+            // fontInfoMenuItem
+            // 
+            this.fontInfoMenuItem.Enabled = false;
+            this.fontInfoMenuItem.Name = "fontInfoMenuItem";
+            this.fontInfoMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.fontInfoMenuItem.Text = "&Font Information ...";
+            this.fontInfoMenuItem.Click += new System.EventHandler(this.fontInfoMenuItem_Click);
             // 
             // windowMenuItem
             // 
@@ -265,7 +282,7 @@
             // aboutAppMenuItem
             // 
             this.aboutAppMenuItem.Name = "aboutAppMenuItem";
-            this.aboutAppMenuItem.Size = new System.Drawing.Size(147, 22);
+            this.aboutAppMenuItem.Size = new System.Drawing.Size(180, 22);
             this.aboutAppMenuItem.Text = "&About KiriEdit";
             this.aboutAppMenuItem.Click += new System.EventHandler(this.aboutAppMenuItem_Click);
             // 
@@ -277,18 +294,17 @@
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
             // 
-            // toolStripSeparator4
+            // compileMenuItem
             // 
-            this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(177, 6);
+            this.compileMenuItem.Name = "compileMenuItem";
+            this.compileMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.compileMenuItem.Text = "Compile ...";
+            this.compileMenuItem.Click += new System.EventHandler(this.compileMenuItem_Click);
             // 
-            // fontInfoMenuItem
+            // toolStripSeparator5
             // 
-            this.fontInfoMenuItem.Enabled = false;
-            this.fontInfoMenuItem.Name = "fontInfoMenuItem";
-            this.fontInfoMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.fontInfoMenuItem.Text = "&Font Information ...";
-            this.fontInfoMenuItem.Click += new System.EventHandler(this.fontInfoMenuItem_Click);
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(195, 6);
             // 
             // ShellForm
             // 
@@ -340,6 +356,8 @@
         private System.Windows.Forms.ToolStripMenuItem aboutAppMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripMenuItem fontInfoMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem compileMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
     }
 }
 

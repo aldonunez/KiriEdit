@@ -233,6 +233,7 @@ namespace KiriEdit
             saveAllMenuItem.Enabled = false;
             characterMapMenuItem.Enabled = false;
             fontInfoMenuItem.Enabled = false;
+            compileMenuItem.Enabled = false;
 
             _documentContainer.Clear();
 
@@ -253,6 +254,7 @@ namespace KiriEdit
             saveAllMenuItem.Enabled = true;
             characterMapMenuItem.Enabled = true;
             fontInfoMenuItem.Enabled = true;
+            compileMenuItem.Enabled = true;
 
             UpdateViewHostingState();
             string baseName = project.Name;
@@ -437,6 +439,30 @@ namespace KiriEdit
                 form.FontInfo = _fontInfo;
                 form.ShowDialog();
             }
+        }
+
+        private void compileMenuItem_Click( object sender, EventArgs e )
+        {
+            string path;
+
+            using ( var dialog = new SaveFileDialog() )
+            {
+                dialog.Title = "Compile To";
+                dialog.RestoreDirectory = true;
+                dialog.OverwritePrompt = true;
+                dialog.Filter = "Kiri character set (*.kiriset)|*.kiriset";
+
+                if ( dialog.ShowDialog() != DialogResult.OK )
+                    return;
+
+                path = dialog.FileName;
+            }
+
+            // TODO: check completion of all charItems. Warn if any aren't complete.
+
+            FigureUtils.CompileProject( _project, path );
+
+            // TODO: show a progress bar.
         }
     }
 }
