@@ -46,6 +46,11 @@ namespace KiriFig
             }
 
             _edgeIntervals = new List<Interval>[maxLabel + 1];
+
+            foreach ( var shape in referenceFigure.Shapes )
+            {
+                AllocateIntervals( shape.Contours[0], _edgeIntervals );
+            }
         }
 
         public void AddComponentFigure( Figure figure )
@@ -62,11 +67,11 @@ namespace KiriFig
                 {
                     int label = p.OutgoingEdge.Label;
 
-                    if ( label >= 0 )
+                    if ( label >= 0
+                        && label < _edgeIntervals.Length
+                        && _edgeIntervals[label] != null
+                        )
                     {
-                        if ( _edgeIntervals[label] == null )
-                            _edgeIntervals[label] = new List<Interval>();
-
                         PointGroup pg1 = p.Group;
                         PointGroup pg2 = p.OutgoingEdge.P2.Group;
                         int begin, end;
@@ -151,6 +156,21 @@ namespace KiriFig
             }
 
             return (count, max);
+        }
+
+        private static void AllocateIntervals( Contour contour, List<Interval>[] intervals )
+        {
+            Point p = contour.FirstPoint;
+
+            while ( true )
+            {
+                intervals[p.OutgoingEdge.Label] = new List<Interval>();
+
+                p = p.OutgoingEdge.P2;
+
+                if ( p == contour.FirstPoint )
+                    break;
+            }
         }
 
         private static bool AboutGreaterOrEqual( int a, int b )
